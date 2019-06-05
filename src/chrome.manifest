@@ -1,0 +1,22 @@
+content i2pbutton chrome/content/
+overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+resource i2pbutton ./
+resource i2pbutton-assets resource://i2pbutton/chrome/skin/ contentaccessible=yes
+
+# browser branding
+override chrome://branding/locale/brand.dtd chrome://i2pbutton/locale/brand.dtd
+override chrome://branding/locale/brand.properties chrome://i2pbutton/locale/brand.properties
+overlay chrome://browser/content/aboutDialog.xul chrome://i2pbutton/content/aboutDialog.xul
+
+skin torbutton classic/1.0 chrome/skin/
+style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbutton.css
+
+# Firefox 4-style component registration
+component {f605ec27-d867-44b5-ad97-2a29276642c3} components/dragDropFilter.js
+contract @geti2p.net/i2pbutton-dragDropFilter;1 {f605ec27-d867-44b5-ad97-2a29276642c3}
+
+component {f36d72c9-9718-4134-b550-e109638331d7} components/i2pbutton-logger.js
+contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
+
+category profile-after-change DragDropFilter @geti2p.net/i2pbutton-dragDropFilter;1
+

@@ -1,0 +1,6 @@
+content i2pbutton jar:chrome/i2pbutton.jar!/content/
+overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+
+skin i2pbutton classic/1.0 jar:chrome/i2pbutton.jar!/skin/
+style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbutton.css
+

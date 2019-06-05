@@ -1,0 +1,22 @@
+#filter substitution
+
+i2pbutton.jar:
+
+% content i2pbutton %content/
+
+ content/       (chrome/content/*)
+ components/    (components/*)
+ defaults/      (defaults/*)
+ modules/       (modules/*)
+ skin/          (chrome/skin/*)
+
+% overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+
+% resource i2pbutton %
+% resource i2pbutton-assets resource://i2pbutton/skin/ contentaccessible=yes
+
+# browser branding
+% override chrome://branding/locale/brand.dtd chrome://i2pbutton/locale/brand.dtd
+% override chrome://branding/locale/brand.properties chrome://i2pbutton/locale/brand.properties
+% overlay chrome://browser/content/aboutDialog.xul chrome://i2pbutton/content/aboutDialog.xul
+
