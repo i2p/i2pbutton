@@ -10,6 +10,27 @@ Cu.importGlobalProperties(["URL"])
 
 const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService)
 
+/**
+ *
+ *
+var pps = Components.classes["@mozilla.org/network/protocol-proxy-service;1"]
+          .getService(Components.interfaces.nsIProtocolProxyService);
+
+// Create the proxy info object in advance to avoid creating one every time
+var myProxyInfo = pps.newProxyInfo("http", "127.0.0.1", 8080, 0, -1, 0);
+
+var filter = {
+  applyFilter: function(pps, uri, proxy)
+  {
+    if (uri.spec == ...)
+      return myProxyInfo;
+    else
+      return proxy;
+  }
+};
+pps.registerFilter(filter, 1000);
+ */
+
 const getProfileDir = function() {
   let directoryService =
     Cc["@mozilla.org/file/directory_service;1"].
@@ -117,4 +138,8 @@ var showDialog = function (parent, url, name, features) {
     dialogsByName[name] = newDialog;
     return newDialog;
   }
-};
+}
+
+var openTabWithFocus = function (url) {
+  gBrowser.selectedTab = gBrowser.addTab(url)
+}

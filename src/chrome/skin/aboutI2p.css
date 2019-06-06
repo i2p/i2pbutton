@@ -21,5 +21,38 @@ body {
   background-size: 100% 100%;
 }
 
+.background {
+  background-color: #3960b5;
+  padding: 120px;
+  height: 100%;
+}
 
+p {
+  margin-top: 40px;
+  font-family: Open Sans, sans-serif;
+  font-weight: 300;
+  line-height: 32px;
+  font-size: 17px;
+}
+
+.content {
+  padding: 110px;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0px 30px 200px rgba(61,0,84,0.7);
+}
+
+h1 {
+  margin-right: auto;
+  font-family: Montserrat, sans-serif;
+  font-weight: 600;
+  font-size: 25px;
+  text-transform: uppercase;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 80px;
+}
 

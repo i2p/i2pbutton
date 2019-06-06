@@ -56,6 +56,48 @@ function i2pbutton_close_tabs_on_new_identity() {
   i2pbutton_log(3, "Closed all tabs");
 }
 
+function i2pbutton_check_protections()
+{
+  var env = Cc["@mozilla.org/process/environment;1"]
+              .getService(Ci.nsIEnvironment);
+
+  // Bug 14100: check for the existence of an environment variable
+  // in order to toggle the visibility of networksettings menuitem
+  if (env.exists("TOR_NO_DISPLAY_NETWORK_SETTINGS"))
+    document.getElementById("i2pbutton-networksettings").hidden = true;
+  else
+    document.getElementById("i2pbutton-networksettings").hidden = false;
+
+  // Bug 21091: check for the existence of an environment variable
+  // in order to toggle the visibility of the i2pbutton-checkForUpdate
+  // menuitem and its separator.
+  if (env.exists("TOR_HIDE_UPDATE_CHECK_UI")) {
+    document.getElementById("i2pbutton-checkForUpdateSeparator").hidden = true;
+    document.getElementById("i2pbutton-checkForUpdate").hidden = true;
+  } else {
+    document.getElementById("i2pbutton-checkForUpdateSeparator").hidden = false;
+    document.getElementById("i2pbutton-checkForUpdate").hidden = false;
+  }
+
+  var cookie_pref = m_tb_prefs.getBoolPref("extensions.i2pbutton.cookie_protections");
+  document.getElementById("i2pbutton-cookie-protector").disabled = !cookie_pref;
+
+  // XXX: Bug 14632: The cookie dialog is useless in private browsing mode in FF31ESR
+  // See https://trac.torproject.org/projects/tor/ticket/10353 for more info.
+  document.getElementById("i2pbutton-cookie-protector").hidden = m_tb_prefs.getBoolPref("browser.privatebrowsing.autostart");
+
+  if (!m_tb_control_pass || (!m_tb_control_ipc_file && !m_tb_control_port)) {
+    // TODO: Remove the Torbutton menu entry again once we have done our
+    // security control redesign.
+    document.getElementById("i2pbutton-new-identity").disabled = true;
+    document.getElementById("menu_newIdentity").disabled = true;
+    document.getElementById("appMenuNewIdentity").disabled = true;
+  }
+
+  if (!m_tb_tbb && m_tb_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
+      i2pbutton_inform_about_tbb();
+  }
+}
 
 function i2pbutton_new_identity() {
   try {
@@ -519,9 +561,9 @@ function i2pbutton_do_startup()
         }
 
         // Still need this in case people shove this thing back into FF
-        if (!m_tb_tbb && m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_torbrowser")) {
-          var warning = i2pbutton_get_property_string("i2pbutton.popup.short_torbrowser");
-          var title = i2pbutton_get_property_string("i2pbutton.title.prompt_torbrowser");
+        if (!m_tb_tbb && m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
+          var warning = i2pbutton_get_property_string("i2pbutton.popup.short_i2pbrowser");
+          var title = i2pbutton_get_property_string("i2pbutton.title.prompt_i2pbrowser");
           var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
           prompts.alert(null, title, warning);
         }
