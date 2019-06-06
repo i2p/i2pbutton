@@ -3,7 +3,7 @@ const kMODULE_NAME = "about:i2p";
 const kMODULE_CONTRACTID = "@mozilla.org/network/protocol/about;1?what=i2p";
 const kMODULE_CID = Components.ID("84d47da6-79c3-4661-aa9f-8049476f7bf5");
 
-const kAboutTorURL = "chrome://i2pbutton/content/aboutI2p/aboutI2p.xhtml";
+const kAboutI2pURL = "chrome://i2pbutton/content/aboutI2p/aboutI2p.xhtml";
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -16,7 +16,7 @@ function AboutI2p()
 }
 
 
-AboutTor.prototype =
+AboutI2p.prototype =
 {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIAboutModule]),
 

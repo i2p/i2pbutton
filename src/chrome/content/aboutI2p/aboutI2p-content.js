@@ -31,7 +31,7 @@ var AboutI2pListener = {
   },
 
   receiveMessage: function(aMessage) {
-    if (!this.isAboutTor)
+    if (!this.isAboutI2p)
       return;
 
     switch (aMessage.name) {

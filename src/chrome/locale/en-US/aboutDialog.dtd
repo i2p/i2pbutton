@@ -1,0 +1,12 @@
+<!ENTITY project.start           "&brandShortName; is developed by ">
+<!ENTITY project.tpoLink         "the &vendorShortName;">
+<!ENTITY project.end             ", a nonprofit working to defend your privacy and freedom online.">
+<!ENTITY help.start              "Want to help? ">
+<!ENTITY help.donateLink         "Donate">
+<!ENTITY help.or                 " or ">
+<!ENTITY help.getInvolvedLink    "get involved">
+<!ENTITY help.end                "!">
+<!ENTITY bottomLinks.questions   "Questions?">
+<!ENTITY bottomLinks.grow        "Help the I2P Network Grow!">
+<!ENTITY bottomLinks.license  "Licensing Information">
+<!ENTITY tor.TrademarkStatement   "'I2P' are registered trademarks of the I2P Project.">

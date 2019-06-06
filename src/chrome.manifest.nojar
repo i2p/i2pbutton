@@ -1,5 +1,9 @@
-content torbutton chrome/content/
+content i2pbutton chrome/content/
 overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+overlay chrome://messenger/content/messenger.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+
+locale i2pbutton en chrome/locale/en/
 
 skin i2pbutton classic/1.0 chrome/skin/
 style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbutton.css

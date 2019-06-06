@@ -1,5 +1,9 @@
 content i2pbutton chrome/content/
 overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+overlay chrome://messenger/content/messenger.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+overlay about:addons chrome://i2pbutton/content/i2pbutton-extensions.xul
+overlay chrome://mozapps/content/extensions/extensions.xul chrome://i2pbutton/content/i2pbutton-extensions.xul
 resource i2pbutton ./
 resource i2pbutton-assets resource://i2pbutton/chrome/skin/ contentaccessible=yes
 
@@ -8,16 +12,27 @@ override chrome://branding/locale/brand.dtd chrome://i2pbutton/locale/brand.dtd
 override chrome://branding/locale/brand.properties chrome://i2pbutton/locale/brand.properties
 overlay chrome://browser/content/aboutDialog.xul chrome://i2pbutton/content/aboutDialog.xul
 
-skin torbutton classic/1.0 chrome/skin/
+# UI customization
+overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-items-overlay.xul
+
+# Strings for the about:ibupdate page
+override chrome://browser/locale/aboutIBUpdate.dtd chrome://i2pbutton/locale/aboutIBUpdate.dtd
+
+locale i2pbutton en chrome/locale/en-US/
+
+skin i2pbutton classic/1.0 chrome/skin/
 style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbutton.css
 
 # Firefox 4-style component registration
 component {f605ec27-d867-44b5-ad97-2a29276642c3} components/dragDropFilter.js
 contract @geti2p.net/i2pbutton-dragDropFilter;1 {f605ec27-d867-44b5-ad97-2a29276642c3}
 
+component {06322def-6fde-4c06-aef6-47ae8e799629} components/startup-observer.js
+contract @geti2p.net/startup-observer;1 {06322def-6fde-4c06-aef6-47ae8e799629}
+
 component {f36d72c9-9718-4134-b550-e109638331d7} components/i2pbutton-logger.js
 contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
 
-
+category profile-after-change StartupObserver @geti2p.net/startup-observer;1
 category profile-after-change DragDropFilter @geti2p.net/i2pbutton-dragDropFilter;1
 

@@ -6,7 +6,7 @@
   %htmlDTD;
   <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd">
   %globalDTD;
-  <!ENTITY % aboutTorDTD SYSTEM "chrome://i2pbutton/locale/aboutI2p.dtd">
+  <!ENTITY % aboutI2pDTD SYSTEM "chrome://i2pbutton/locale/aboutI2p.dtd">
   %aboutI2pDTD;
   <!ENTITY % ibUpdateDTD SYSTEM "chrome://browser/locale/aboutIBUpdate.dtd">
   %ibUpdateDTD;
@@ -15,7 +15,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>&aboutTor.title;</title>
+  <title>&aboutI2p.title;</title>
   <link rel="stylesheet" type="text/css" media="all"
         href="resource://i2pbutton-assets/aboutI2p.css"/>
 <script type="text/javascript">
@@ -28,7 +28,9 @@ window.addEventListener("pageshow", function() {
 </script>
 </head>
 <body dir="&locale.dir;">
-
+  <div>
+    <b>It works!</b>
+  </div>
 </body>
 </html>
 

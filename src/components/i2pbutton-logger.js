@@ -62,7 +62,7 @@ function padInt(i)
     return (i < 10) ? '0' + i : i;
 }
 
-TorbuttonLogger.prototype =
+I2pbuttonLogger.prototype =
 {
   QueryInterface: function(iid)
   {
@@ -158,7 +158,7 @@ TorbuttonLogger.prototype =
                 Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
                   true);
               } else if (Services.prefs.
-                getIntPref("extensions.torlauncher.logmethod", 3) !== 0) {
+                getIntPref("extensions.i2plauncher.logmethod", 3) !== 0) {
                 // If Tor Launcher is not available or its log method is not 0
                 // then let's reset the dump pref.
                 Services.prefs.setBoolPref("browser.dom.window.dump.enabled",

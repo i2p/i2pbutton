@@ -27,10 +27,6 @@
                   insertafter="context-stop"
                   hidden="true"
                   oncommand="i2pbutton_open_cookie_dialog()"/>
-        <menuitem id="i2pbutton-networksettings"
-                  label="&i2pbutton.context_menu.networksettings;"
-                  accesskey="&i2pbutton.context_menu.networksettings.key;"
-                  oncommand="i2pbutton_open_network_settings()"/>
         <menuseparator id="i2pbutton-checkForUpdateSeparator"/>
         <menuitem id="i2pbutton-checkForUpdate"
                   label="&i2pbutton.context_menu.downloadUpdate;"

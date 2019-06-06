@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://i2pbutton/skin/torbutton.css" type="text/css"?>
+<?xml-stylesheet href="chrome://i2pbutton/skin/i2pbutton.css" type="text/css"?>
 <?xul-overlay href="chrome://i2pbutton/content/popup.xul"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/i2pbutton.dtd">
 
 <overlay id="i2pbutton-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
     <script type="application/x-javascript" src="chrome://i2pbutton/content/i2pbutton_util.js" />
     <script type="application/x-javascript" src="chrome://i2pbutton/content/i2pbutton.js" />
     <script language="JavaScript">
@@ -18,26 +17,22 @@
         <stringbundle id="i2pbutton-bundle" src="chrome://i2pbutton/locale/i2pbutton.properties"/>
     </stringbundleset>
 
-    <!-- Place the context menu in the nav bar, so that the lack
-         of the status bar on FF4 doesn't make it invisible -->
-    <toolbar id="nav-bar">
-        <menupopup id="i2pbutton-context-menu"/>
-    </toolbar>
-
-    <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarpalette id="MailToolbarPalette">
         <toolbarbutton
-            id="i2pbutton-button"
-            class="toolbarbutton-1 chromeclass-toolbar-additional"
-            type="menu"
-            orient="horizontal"
-            label="I2pbutton"
+            id="i2pbutton-button-tb"
+            class="toolbarbutton-1"
+            label="i2pbutton"
             tooltiptext="&i2pbutton.button.tooltip;"
-            menu="i2pbutton-context-menu"
-            context="i2pbutton-context-menu"/>
+            context="i2pbutton-context-menu" />
     </toolbarpalette>
 
-<!-- Global keyboard shortcuts for new identity. -->
-   <keyset>
-        <key id="i2pbutton-new-identity-key" modifiers="accel shift" key="U" oncommand="i2pbutton_new_identity()"/>
-   </keyset>
+    <toolbarpalette id="MsgComposeToolbarPalette">
+        <toolbarbutton
+            id="i2pbutton-button-tb-msg"
+            class="toolbarbutton-1"
+            label="i2pbutton"
+            tooltiptext="&i2pbutton.button.tooltip;"
+            context="i2pbutton-context-menu" />
+    </toolbarpalette>
+
 </overlay>

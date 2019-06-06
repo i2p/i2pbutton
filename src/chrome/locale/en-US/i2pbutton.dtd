@@ -1,0 +1,41 @@
+<!ENTITY i2pbutton.context_menu.new_identity "New Identity">
+<!ENTITY i2pbutton.context_menu.new_identity_key "I">
+<!ENTITY i2pbutton.context_menu.new_circuit "New Tor Circuit for this Site">
+<!ENTITY i2pbutton.context_menu.new_circuit_key "C">
+<!ENTITY i2pbutton.context_menu.networksettings "Tor Network Settings…">
+<!ENTITY i2pbutton.context_menu.networksettings.key "N">
+<!ENTITY i2pbutton.context_menu.downloadUpdate "Check for I2P Browser Update…">
+<!ENTITY i2pbutton.context_menu.downloadUpdate.key "U">
+<!ENTITY i2pbutton.context_menu.cookieProtections "Cookie Protections…">
+<!ENTITY i2pbutton.context_menu.cookieProtections.key "C">
+<!ENTITY i2pbutton.button.tooltip "Click to initialize i2pbutton">
+<!ENTITY i2pbutton.prefs.security_settings "I2P Browser Security Settings">
+<!ENTITY i2pbutton.cookiedialog.title "Manage Cookie Protections">
+<!ENTITY i2pbutton.cookiedialog.lockCol "Protected">
+<!ENTITY i2pbutton.cookiedialog.domainCol "Host">
+<!ENTITY i2pbutton.cookiedialog.nameCol "Name">
+<!ENTITY i2pbutton.cookiedialog.pathCol "Path">
+<!ENTITY i2pbutton.cookiedialog.protectCookie "Protect Cookie">
+<!ENTITY i2pbutton.cookiedialog.removeCookie "Remove Cookie">
+<!ENTITY i2pbutton.cookiedialog.unprotectCookie "Unprotect Cookie">
+<!ENTITY i2pbutton.cookiedialog.removeAllBut "Remove All But Protected">
+<!ENTITY i2pbutton.cookiedialog.saveAllCookies "Protect New Cookies">
+<!ENTITY i2pbutton.cookiedialog.doNotSaveAllCookies "Do Not Protect New Cookies">
+<!ENTITY i2pbutton.prefs.sec_caption "Security Level">
+<!ENTITY i2pbutton.prefs.sec_caption_tooltip "The Security Slider lets you disable certain browser features that may make your browser more vulnerable to hacking attempts.">
+<!ENTITY i2pbutton.prefs.sec_standard_label "Standard">
+<!ENTITY i2pbutton.prefs.sec_standard_description "All I2P Browser and website features are enabled.">
+<!ENTITY i2pbutton.prefs.sec_safer_label "Safer">
+<!ENTITY i2pbutton.prefs.sec_safer_description "Disables website features that are often dangerous, causing some sites to lose functionality.">
+<!ENTITY i2pbutton.prefs.sec_safer_list_label "At the safer setting:">
+<!ENTITY i2pbutton.prefs.sec_safest_label "Safest">
+<!ENTITY i2pbutton.prefs.sec_safest_description "Only allows website features required for static sites and basic services. These changes affect images, media, and scripts.">
+<!ENTITY i2pbutton.prefs.sec_safest_list_label "At the safest setting:">
+<!ENTITY i2pbutton.prefs.sec_learn_more_label "Learn more">
+<!ENTITY i2pbutton.prefs.sec_js_on_https_sites_only "JavaScript is disabled on non-HTTPS sites.">
+<!ENTITY i2pbutton.prefs.sec_js_disabled "JavaScript is disabled by default on all sites.">
+<!ENTITY i2pbutton.prefs.sec_limit_typography "Some fonts and math symbols are disabled.">
+<!ENTITY i2pbutton.prefs.sec_limit_graphics_and_typography "Some fonts, icons, math symbols, and images are disabled.">
+<!ENTITY i2pbutton.prefs.sec_click_to_play_media "Audio and video (HTML5 media), and WebGL are click-to-play.">
+<!ENTITY i2pbutton.circuit_display.title "Tor Circuit">
+<!ENTITY i2pbutton.circuit_display.new_circuit "New Circuit for this Site">

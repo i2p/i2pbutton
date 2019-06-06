@@ -11,6 +11,10 @@ i2pbutton.jar:
  skin/          (chrome/skin/*)
 
 % overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+% overlay chrome://messenger/content/messenger.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+% overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://i2pbutton/content/i2pbutton_tb.xul
+% overlay about:addons chrome://i2pbutton/content/i2pbutton-extensions.xul
+% overlay chrome://mozapps/content/extensions/extensions.xul chrome://i2pbutton/content/i2pbutton-extensions.xul
 
 % resource i2pbutton %
 % resource i2pbutton-assets resource://i2pbutton/skin/ contentaccessible=yes
@@ -20,11 +24,18 @@ i2pbutton.jar:
 % override chrome://branding/locale/brand.properties chrome://i2pbutton/locale/brand.properties
 % overlay chrome://browser/content/aboutDialog.xul chrome://i2pbutton/content/aboutDialog.xul
 
+# UI customization
+% overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-items-overlay.xul
+
+
+# Strings for the about:ibupdate page
+% override chrome://browser/locale/aboutIBUpdate.dtd chrome://i2pbutton/locale/aboutIBUpdate.dtd
+
 % locale i2pbutton en-US %locale/en-US/
  locale/en-US/ (chrome/locale/en-US/*)
 
 
-% skin torbutton classic/1.0 %skin/
+% skin i2pbutton classic/1.0 %skin/
 % style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbutton.css
 
 # Firefox 4-style component registration

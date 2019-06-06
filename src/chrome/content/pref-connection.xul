@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/i2pbutton.dtd">
+
+<overlay id="i2pbutton-prefs-notice"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+</overlay>
