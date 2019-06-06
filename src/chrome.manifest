@@ -18,5 +18,6 @@ contract @geti2p.net/i2pbutton-dragDropFilter;1 {f605ec27-d867-44b5-ad97-2a29276
 component {f36d72c9-9718-4134-b550-e109638331d7} components/i2pbutton-logger.js
 contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
 
+
 category profile-after-change DragDropFilter @geti2p.net/i2pbutton-dragDropFilter;1
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- Mode: HTML -*- -->
+<?xml-stylesheet href="chrome://i2pbutton/skin/aboutDialog.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % aboutDialogDTD SYSTEM "chrome://i2pbutton/locale/aboutDialog.dtd" >
+%aboutDialogDTD;
+]>
+
+<overlay id="main-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <vbox id="rightBox">
+  <vbox id="detailsBox">
+      <description class="text-blurb" id="projectDesc">
+        &project.start;
+        <label class="text-link"
+                     href="https://geti2p.net/">
+          &project.tpoLink;
+        </label>&project.end;
+      </description>
+      <description class="text-blurb" id="helpDesc">
+        &help.start;
+        <label class="text-link"
+               href="https://geti2p.net/en/get-involved/donate">
+          &help.donateLink;
+        </label>
+        &help.or;
+        <label class="text-link"
+               href="https://geti2p.net/en/get-involved">
+          &help.getInvolvedLink;
+        </label>&help.end;
+      </description>
+   </vbox>
+  </vbox>
+
+  <vbox id="bottomBox">
+    <hbox id="newBottom" pack="center" position="1">
+      <label class="text-link bottom-link"
+             href="https://geti2p.net/en/faq">
+        &bottomLinks.questions;
+      </label>
+      <label class="text-link bottom-link"
+             href="https://geti2p.net/en/get-involved">
+        &bottomLinks.grow;
+      </label>
+      <label class="text-link bottom-link"
+             href="about:license">
+        &bottomLinks.license;
+      </label>
+    </hbox>
+    <description id="trademarkI2p" insertafter="trademark">
+        Test test.
+    </description>
+  </vbox>
+</overlay>
+

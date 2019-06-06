@@ -1,0 +1,25 @@
+#contributeDesc {
+  display: none;
+}
+
+#communityDesc {
+  display: none;
+}
+
+#trademark {
+  display: none;
+}
+
+#trademarkI2p {
+  font-size: xx-small;
+  text-align: center;
+  color: #999999;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#bottomBox > hbox:not(#newBottom) {
+  display: none;
+}
+
+
