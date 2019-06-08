@@ -42,7 +42,7 @@ AboutI2p.prototype =
     return Ci.nsIAboutModule.URI_SAFE_FOR_UNTRUSTED_CONTENT |
            Ci.nsIAboutModule.URI_MUST_LOAD_IN_CHILD |
            Ci.nsIAboutModule.ALLOW_SCRIPT;
-  }
+  },
 };
 
 

@@ -1,5 +1,50 @@
-body {
+@keyframes blink-update {
+  0% {
+    list-style-image: url("chrome://i2pbutton/skin/i2pbutton-update-needed.svg");
+  }
+  100% {
+    list-style-image: url("chrome://i2pbutton/skin/itoopie.svg");
+  }
 }
 
+#i2pbutton-button {
+  list-style-image: url("chrome://i2pbutton/skin/itoopie.svg");
+}
+#i2pbutton-button[ibstatus="on"] {
+  opacity: 1.0;
+}
+#i2pbutton-button[ibstatus="off"] {
+  opacity: 0.4;
+}
+#i2pbutton-button[ibUpdateNeeded="true"] {
+  opacity: 1.0;
+  animation: blink-update normal 1s infinite ease-in-out;
+}
 
+#i2pbutton-button-ib {
+  list-style-image: url("chrome://i2pbutton/skin/itoopie.svg");
+}
+#i2pbutton-button-ib[ibstatus="on"] {
+  opacity: 1.0;
+}
+#i2pbutton-button-ib[ibstatus="off"] {
+  opacity: 0.4;
+}
 
+#i2pbutton-button-ib-msg {
+  list-style-image: url("chrome://i2pbutton/skin/itoopie.svg");
+}
+#i2pbutton-button-ib-msg[ibstatus="on"] {
+  opacity: 1.0;
+}
+#i2pbutton-button-ib-msg[ibstatus="off"] {
+  opacity: 0.4;
+}
+
+#i2pbutton-checkForUpdate[ibUpdateNeeded] {
+    font-weight: bold;
+}
+
+#appMenuNewIdentity {
+    list-style-image: url("chrome://browser/skin/reload.svg");
+}

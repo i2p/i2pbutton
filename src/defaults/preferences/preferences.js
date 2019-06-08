@@ -7,7 +7,7 @@ pref("extensions.i2pbutton.updateNeeded", false);
 
 // Tor check and proxy prefs
 pref("extensions.i2pbutton.test_enabled",true);
-pref("extensions.i2pbutton.test_url","http://4mucxjk5rxn2pmlgnjdbfdflhjmqqile5zxrltzl5o77mutl7jiq.b32.i2p/?I2PButton=true");
+pref("extensions.i2pbutton.test_url","http://4mucxjk5rxn2pmlgnjdbfdflhjmqqile5zxrltzl5o77mutl7jiq.b32.i2p/index.json?I2PButton=true");
 pref("extensions.i2pbutton.local_i2p_check",true);
 
 // Opt out of Firefox addon pings:

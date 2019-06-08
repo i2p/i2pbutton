@@ -31,6 +31,9 @@ contract @geti2p.net/i2pbutton-dragDropFilter;1 {f605ec27-d867-44b5-ad97-2a29276
 component {06322def-6fde-4c06-aef6-47ae8e799629} components/startup-observer.js
 contract @geti2p.net/startup-observer;1 {06322def-6fde-4c06-aef6-47ae8e799629}
 
+component {5d57312b-5d8c-4169-b4af-e80d6a28a72e} components/i2p-check-service.js
+contract @geti2p.net/i2pbutton-i2pCheckService;1 {5d57312b-5d8c-4169-b4af-e80d6a28a72e}
+
 component {f36d72c9-9718-4134-b550-e109638331d7} components/i2pbutton-logger.js
 contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
 

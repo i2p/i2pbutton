@@ -3,6 +3,108 @@ const {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.j
 
 var m_ib_prefs = Services.prefs
 
+function checkI2P(callback,proxyCallback) {
+  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
+  let req = checkSvc.createCheckConsoleRequest(true);
+  req.onreadystatechange = function(event) {
+    if (req.readyState === 4) {
+      // Done
+      let result = checkSvc.parseCheckConsoleResponse(req)
+      i2pbutton_log(3, "I2P Console check done. Result: " + result)
+      callback(result)
+    }
+  }
+  req.send(null)
+
+  let proxyReq = checkSvc.createCheckProxyRequest(true)
+  proxyReq.onreadystatechange = function (event) {
+    if (proxyReq.readyState === 4) {
+      let result = checkSvc.parseCheckProxyResponse(proxyReq)
+      i2pbutton_log(3, "I2P Proxy check done. Result: " + result)
+      proxyCallback(result)
+    }
+  }
+  proxyReq.send(null)
+}
+
+function i2pbutton_init() {
+  checkI2P(function (res) {
+    i2pbutton_log(3, `Check: ${res}`)
+  },function (res) {
+    i2pbutton_log(3, `Check: ${res}`)
+  })
+
+  // Add about:i2p IPC message listener.
+  window.messageManager.addMessageListener("AboutI2p:Loaded", i2pbutton_abouti2p_message_handler);
+
+  // Arrange for our about:i2p content script to be loaded in each frame.
+  window.messageManager.loadFrameScript("chrome://i2pbutton/content/aboutI2p/aboutI2p-content.js", true);
+
+  i2pbutton_log(3, 'init completed');
+}
+
+function i2pbutton_is_mobile() {
+  return false;
+}
+
+function i2pbutton_i2p_check_ok()
+{
+  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"]
+                   .getService(Ci.nsISupports).wrappedJSObject;
+  return (checkSvc.kCheckFailed != checkSvc.statusOfI2PCheck);
+}
+
+var i2pbutton_abouti2p_message_handler = {
+  // Receive IPC messages from the about:i2p content script.
+  receiveMessage: function(aMessage) {
+    switch(aMessage.name) {
+      case "AboutI2p:Loaded":
+        aMessage.target.messageManager.sendAsyncMessage("AboutI2p:ChromeData",
+                                                    this.getChromeData(true));
+        break;
+    }
+  },
+
+  // Send privileged data to all of the about:tor content scripts.
+  updateAllOpenPages: function() {
+    window.messageManager.broadcastAsyncMessage("AboutI2p:ChromeData",
+                                                this.getChromeData(false));
+  },
+
+  // The chrome data contains all of the data needed by the about:i2p
+  // content process that is only available here (in the chrome process).
+  // It is sent to the content process when an about:i2p window is opened
+  // and in response to events such as the browser noticing that I2P is
+  // not working.
+  getChromeData: function(aIsRespondingToPageLoad) {
+    let dataObj = {
+      mobile: i2pbutton_is_mobile(),
+      updateChannel: AppConstants.MOZ_UPDATE_CHANNEL,
+      i2pOn: i2pbutton_i2p_check_ok()
+    };
+
+    if (aIsRespondingToPageLoad) {
+      const kShouldNotifyPref = "i2pbrowser.post_update.shouldNotify";
+      if (m_ib_prefs.getBoolPref(kShouldNotifyPref, false)) {
+        m_ib_prefs.clearUserPref(kShouldNotifyPref);
+        dataObj.hasBeenUpdated = true;
+        dataObj.updateMoreInfoURL = this.getUpdateMoreInfoURL();
+      }
+    }
+
+    return dataObj;
+  },
+
+  getUpdateMoreInfoURL: function() {
+    try {
+      return Services.prefs.getCharPref("i2pbrowser.post_update.url");
+    } catch (e) {}
+
+    // Use the default URL as a fallback.
+    return Services.urlFormatter.formatURLPref("startup.homepage_override_url");
+  }
+};
+
 // This function closes all XUL browser windows except this one. For this
 // window, it closes all existing tabs and creates one about:blank tab.
 function i2pbutton_close_tabs_on_new_identity() {
