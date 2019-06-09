@@ -116,6 +116,7 @@ IBI2PCheckService.prototype =
     if(aReq.status == 200) {
       if(!aReq.response) {
         this._logger.log(5, "Check failed! Not text/html!");
+        this._statusOfI2PCheck = this.kCheckFailed
         ret = 1;
       } else {
         if (aReq.response.indexOf('router.version') > 0) {
@@ -129,6 +130,7 @@ IBI2PCheckService.prototype =
     } else {
       this._logger.log(5, "I2P test failed. HTTP Error: "+aReq.status);
       ret = 3;
+      this._statusOfI2PCheck = this.kCheckFailed
     }
     return ret;
   },
@@ -140,6 +142,7 @@ IBI2PCheckService.prototype =
       console.log(aReq)
         if(!aReq.response) {
             this._logger.log(5, "Check failed! Not text/html!");
+            this._statusOfI2PCheck = this.kCheckFailed
             ret = 1;
         } else {
           try {
@@ -151,6 +154,7 @@ IBI2PCheckService.prototype =
           } catch (e) {
             this._logger.log(5, `Parsing failed due to: ${e}`)
             ret = 5;
+            this._statusOfI2PCheck = this.kCheckFailed
           }
         }
       } else {
@@ -160,6 +164,7 @@ IBI2PCheckService.prototype =
             if (req.status == Cr.NS_ERROR_PROXY_CONNECTION_REFUSED)
             {
               this._logger.log(5, "I2P test failed. Proxy connection refused");
+              this._statusOfI2PCheck = this.kCheckFailed
               ret = 8;
             }
           } catch (e) {}
@@ -168,6 +173,7 @@ IBI2PCheckService.prototype =
         if (ret == 0)
         {
           this._logger.log(5, "I2P test failed. HTTP Error: "+aReq.status);
+          this._statusOfI2PCheck = this.kCheckFailed
           ret = -aReq.status;
         }
       }

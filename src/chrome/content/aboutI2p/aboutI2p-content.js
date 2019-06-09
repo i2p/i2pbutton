@@ -36,6 +36,7 @@ var AboutI2pListener = {
 
     switch (aMessage.name) {
       case this.kAboutI2pChromeDataMessage:
+        console.log(aMessage)
         this.onChromeDataUpdate(aMessage.data);
         break;
     }
@@ -65,6 +66,18 @@ var AboutI2pListener = {
 
   onChromeDataUpdate: function(aData) {
     let body = content.document.body;
+
+    if (aData.i2pOn) {
+      body.setAttribute("i2pon", "yes")
+    } else {
+      body.removeAttribute("i2pon")
+    }
+
+    if (aData.i2pConsoleOn) {
+      body.setAttribute("i2pconsoleon", "yes")
+    } else {
+      body.removeAttribute("i2pconsoleon")
+    }
 
     if (aData.updateChannel)
       body.setAttribute("updatechannel", aData.updateChannel);

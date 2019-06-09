@@ -49,12 +49,18 @@ function i2pbutton_is_mobile() {
 
 function i2pbutton_i2p_check_ok()
 {
-  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"]
-                   .getService(Ci.nsISupports).wrappedJSObject;
-  return (checkSvc.kCheckFailed != checkSvc.statusOfI2PCheck);
+  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
+  // It's important to check both if failed and if it's initialised to not report wrong to the end user
+  return (checkSvc.isConsoleWorking && checkSvc.isProxyWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
+}
+function i2pbutton_i2p_console_check_ok()
+{
+  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
+  // It's important to check both if failed and if it's initialised to not report wrong to the end user
+  return (checkSvc.isConsoleWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
 }
 
-var i2pbutton_abouti2p_message_handler = {
+let i2pbutton_abouti2p_message_handler = {
   // Receive IPC messages from the about:i2p content script.
   receiveMessage: function(aMessage) {
     switch(aMessage.name) {
@@ -80,7 +86,8 @@ var i2pbutton_abouti2p_message_handler = {
     let dataObj = {
       mobile: i2pbutton_is_mobile(),
       updateChannel: AppConstants.MOZ_UPDATE_CHANNEL,
-      i2pOn: i2pbutton_i2p_check_ok()
+      i2pOn: i2pbutton_i2p_check_ok(),
+      i2pConsoleOn: i2pbutton_i2p_console_check_ok()
     };
 
     if (aIsRespondingToPageLoad) {
