@@ -1,11 +1,13 @@
 // debug prefs
-pref("extensions.i2pbutton.loglevel",4);
+pref("extensions.i2pbutton.loglevel", 3); // Loglevel = info would be nice for the beta period.
 pref("extensions.i2pbutton.logmethod",1); // 0=stdout, 1=errorconsole, 2=debuglog
 
 pref("extensions.i2pbutton@geti2p.net.description", "chrome://i2pbutton/locale/i2pbutton.properties");
 pref("extensions.i2pbutton.updateNeeded", false);
 
-// Tor check and proxy prefs
+pref("app.update.url.details", "https://geti2p.net/en/download/lab")
+
+// I2P check and proxy prefs
 pref("extensions.i2pbutton.test_enabled",true);
 pref("extensions.i2pbutton.test_url","http://4mucxjk5rxn2pmlgnjdbfdflhjmqqile5zxrltzl5o77mutl7jiq.b32.i2p/index.json?I2PButton=true");
 pref("extensions.i2pbutton.local_i2p_check",true);

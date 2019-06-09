@@ -182,7 +182,7 @@ function i2pbutton_check_protections()
     document.getElementById("i2pbutton-checkForUpdate").hidden = false;
   }
 
-  var cookie_pref = m_tb_prefs.getBoolPref("extensions.i2pbutton.cookie_protections");
+  var cookie_pref = m_tb_prefs.getBoolPref("extensions.i2pbutton.cookie_protections", true);
   document.getElementById("i2pbutton-cookie-protector").disabled = !cookie_pref;
 
   // XXX: Bug 14632: The cookie dialog is useless in private browsing mode in FF31ESR
