@@ -35,16 +35,16 @@ function StartupObserver() {
     var env = Cc["@mozilla.org/process/environment;1"]
                 .getService(Ci.nsIEnvironment);
     var prefName = "browser.startup.homepage";
-    if (env.exists("TOR_DEFAULT_HOMEPAGE")) {
+    if (env.exists("I2P_DEFAULT_HOMEPAGE")) {
       // if the user has set this value in a previous installation, don't override it
       if (!this._prefs.prefHasUserValue(prefName)) {
-        this._prefs.setCharPref(prefName, env.get("TOR_DEFAULT_HOMEPAGE"));
+        this._prefs.setCharPref(prefName, env.get("I2P_DEFAULT_HOMEPAGE"));
       }
     }
 
     try {
       var test = this._prefs.getCharPref("i2pbrowser.version");
-      this.is_tbb = true;
+      this.is_iibb = true;
       this.logger.log(3, "This is a I2P Browser's XPCOM");
     } catch(e) {
       this.logger.log(3, "This is not a I2P Browser's XPCOM");
@@ -72,75 +72,21 @@ StartupObserver.prototype = {
     // some weird proxy caching code that showed up in FF15.
     // Otherwise, homepage domain loads fail forever.
     setProxySettings: function() {
-      if (!this.is_tbb)
+      if (!this.is_iibb)
         return;
 
-      // Bug 1506: Still want to get these env vars
-      let environ = Cc["@mozilla.org/process/environment;1"]
-                      .getService(Ci.nsIEnvironment);
-      if (environ.exists("TOR_TRANSPROXY")) {
-        /*
-        this.logger.log(3, "Resetting Tor settings to transproxy");
-        this._prefs.setBoolPref("network.proxy.socks_remote_dns", false);
-        this._prefs.setIntPref("network.proxy.type", 0);
-        this._prefs.setIntPref("network.proxy.socks_port", 0);
-        this._prefs.setCharPref("network.proxy.socks", "");
-        */
-      } else {
-
-        // Try to retrieve SOCKS proxy settings from Tor Launcher.
-        let socksPortInfo;
-        try {
-          //let tlps = Cc["@torproject.org/torlauncher-protocol-service;1"]
-          //           .getService(Ci.nsISupports).wrappedJSObject;
-          //socksPortInfo = tlps.TorGetSOCKSPortInfo();
-        } catch(e) {
-          this.logger.log(3, "i2p launcher failed " + e);
-        }
-
-        // If Tor Launcher is not available, check environment variables.
-        if (!socksPortInfo) {
-          socksPortInfo = { ipcFile: undefined, host: undefined, port: 0 };
-
-          let isWindows = Services.appinfo.OS === "WINNT";
-          if (!isWindows && environ.exists("TOR_SOCKS_IPC_PATH")) {
-            socksPortInfo.ipcFile = new FileUtils.File(
-                                           environ.get("TOR_SOCKS_IPC_PATH"));
-          }
-          else
-          {
-            if (environ.exists("TOR_SOCKS_HOST"))
-              socksPortInfo.host = environ.get("TOR_SOCKS_HOST");
-            if (environ.exists("TOR_SOCKS_PORT"))
-              socksPortInfo.port = parseInt(environ.get("TOR_SOCKS_PORT"));
-          }
-        }
-
-        // Adjust network.proxy prefs.
-        if (socksPortInfo.ipcFile) {
-          let fph = Services.io.getProtocolHandler("file")
-                               .QueryInterface(Ci.nsIFileProtocolHandler);
-          let fileURI = fph.newFileURI(socksPortInfo.ipcFile);
-          this.logger.log(3, "Reset socks to "+fileURI.spec);
-          //this._prefs.setCharPref("network.proxy.socks", fileURI.spec);
-          //this._prefs.setIntPref("network.proxy.socks_port", 0);
-        } else {
-          if (socksPortInfo.host) {
-            //this._prefs.setCharPref("network.proxy.socks", socksPortInfo.host);
-            this.logger.log(3, "Reset socks host to "+socksPortInfo.host);
-          }
-          if (socksPortInfo.port) {
-            //this._prefs.setIntPref("network.proxy.socks_port",
-            //                       socksPortInfo.port);
-            this.logger.log(3, "Reset socks port to "+socksPortInfo.port);
-          }
-        }
-
-        if (socksPortInfo.ipcFile || socksPortInfo.host || socksPortInfo.port) {
-          //this._prefs.setBoolPref("network.proxy.socks_remote_dns", true);
-          //this._prefs.setIntPref("network.proxy.type", 1);
-        }
-      }
+      this.logger.log(3, "Resetting I2P settings to standard");
+      this._prefs.setBoolPref("network.proxy.socks_remote_dns", false);
+      this._prefs.setIntPref("network.proxy.type", 1);
+      this._prefs.setIntPref("network.proxy.socks_port", 0);
+      this._prefs.setCharPref("network.proxy.socks", "");
+      this._prefs.setCharPref("network.proxy.http", "127.0.0.1");
+      this._prefs.setIntPref("network.proxy.http_port", 4444);
+      this._prefs.setCharPref("network.proxy.ssl", "127.0.0.1");
+      this._prefs.setIntPref("network.proxy.ssl_port", 4445);
+      this._prefs.setCharPref("network.proxy.ftp", "127.0.0.1");
+      this._prefs.setIntPref("network.proxy.ftp_port", 4444);
+      this._prefs.setCharPref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");
 
       // Force prefs to be synced to disk
       Services.prefs.savePrefFile(null);
