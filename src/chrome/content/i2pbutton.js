@@ -1,7 +1,8 @@
 let { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 const {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm")
 
-var m_ib_prefs = Services.prefs
+const m_ib_prefs = Services.prefs
+const m_ib_domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils)
 
 function checkI2P(callback,proxyCallback) {
   let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
@@ -468,13 +469,13 @@ function i2pbutton_do_new_identity() {
   window.addEventListener("unload", function (event) {
     i2pbutton_log(3, "Initiating New Identity GC pass");
     // Clear out potential pending sInterSliceGCTimer:
-    m_tb_domWindowUtils.runNextCollectorTimer();
+    m_ib_domWindowUtils.runNextCollectorTimer();
 
     // Clear out potential pending sICCTimer:
-    m_tb_domWindowUtils.runNextCollectorTimer();
+    m_ib_domWindowUtils.runNextCollectorTimer();
 
     // Schedule a garbage collection in 4000-1000ms...
-    m_tb_domWindowUtils.garbageCollect();
+    m_ib_domWindowUtils.garbageCollect();
 
     // To ensure the GC runs immediately instead of 4-10s from now, we need
     // to poke it at least 11 times.
@@ -483,14 +484,14 @@ function i2pbutton_do_new_identity() {
     // https://mxr.mozilla.org/mozilla-central/source/dom/base/nsJSEnvironment.cpp#1970.
     // XXX: We might want to make our own method for immediate full GC...
     for (let poke = 0; poke < 11; poke++) {
-       m_tb_domWindowUtils.runNextCollectorTimer();
+       m_ib_domWindowUtils.runNextCollectorTimer();
     }
 
     // And now, since the GC probably actually ran *after* the CC last time,
     // run the whole thing again.
-    m_tb_domWindowUtils.garbageCollect();
+    m_ib_domWindowUtils.garbageCollect();
     for (let poke = 0; poke < 11; poke++) {
-       m_tb_domWindowUtils.runNextCollectorTimer();
+       m_ib_domWindowUtils.runNextCollectorTimer();
     }
 
     i2pbutton_log(3, "Completed New Identity GC pass");

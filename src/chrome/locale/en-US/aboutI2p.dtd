@@ -3,6 +3,21 @@
 
 <!ENTITY aboutI2p.viewChangelog.label "View Changelog">
 
+<!ENTITY aboutI2p.browser_name "The Invisible Internet Browser">
+<!ENTITY aboutI2p.browser_short_name "I2P Browser">
+<!ENTITY aboutI2p.browser_description "is preconfigured to search for content on the I2P network. In this release, I2P Browser does not launch its own router and is dependent on having the I2P router pre installed and running. The I2P Browser is preconfigured with default router settings.">
+
+<!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :(">
+<!ENTITY aboutI2p.all_checks_ok "Super! The browser detected I2P running in background! :)">
+<!ENTITY aboutI2p.warn_experimental "This is a experimental sub-project of I2P.">
+<!ENTITY aboutI2p.console_visit_msg "It seems like your console is up, click the to visit:">
+<!ENTITY aboutI2p.console "Console">
+<!ENTITY aboutI2p.i2pbutton_source "I2P Button source">
+<!ENTITY aboutI2p.build_scripts "Build scripts">
+<!ENTITY aboutI2p.source "Source">
+<!ENTITY aboutI2p.bug_tracker "Bugtracker">
+<!ENTITY aboutI2p.links "Links">
+
 <!ENTITY aboutI2p.getInvolved.label "Get Involved »">
 <!ENTITY aboutI2p.getInvolved.link "https://geti2p.net/en/get-involved">
 
