@@ -28,6 +28,9 @@ style chrome://global/content/customizeToolbar.xul chrome://i2pbutton/skin/i2pbu
 component {f605ec27-d867-44b5-ad97-2a29276642c3} components/dragDropFilter.js
 contract @geti2p.net/i2pbutton-dragDropFilter;1 {f605ec27-d867-44b5-ad97-2a29276642c3}
 
+component {3da0269f-fc29-4e9e-a678-c3b1cafcf13f} components/external-app-blocker.js
+contract @geti2p.net/i2pbutton-extAppBlocker;1 {3da0269f-fc29-4e9e-a678-c3b1cafcf13f}
+
 component {06322def-6fde-4c06-aef6-47ae8e799629} components/startup-observer.js
 contract @geti2p.net/startup-observer;1 {06322def-6fde-4c06-aef6-47ae8e799629}
 
@@ -39,6 +42,8 @@ contract @geti2p.net/i2pbutton-i2pCheckService;1 {5d57312b-5d8c-4169-b4af-e80d6a
 
 component {f36d72c9-9718-4134-b550-e109638331d7} components/i2pbutton-logger.js
 contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
+
+category profile-after-change CookieJarSelector @geti2p.net/cookie-jar-selector;1
 
 category profile-after-change StartupObserver @geti2p.net/startup-observer;1
 category profile-after-change DragDropFilter @geti2p.net/i2pbutton-dragDropFilter;1
