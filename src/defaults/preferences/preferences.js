@@ -14,8 +14,12 @@ pref("extensions.i2pbutton.local_i2p_check",true);
 // https://developer.mozilla.org/en/Addons/Working_with_AMO
 pref("extensions.i2pbutton@geti2p.net.getAddons.cache.enabled", false);
 
+pref("extensions.i2pbutton.clear_http_auth", true);
+
 pref("extensions.i2pbutton.prompt_i2pbrowser", true);
 pref("extensions.i2pbutton.confirm_plugins", true);
 pref("extensions.i2pbutton.confirm_newnym", true);
+
+pref("extensions.i2pbutton.close_newnym", true);
 // Browser home page:
 pref("browser.startup.homepage", "chrome://i2pbutton/content/locale/non-localized.properties");

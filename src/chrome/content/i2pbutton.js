@@ -115,7 +115,7 @@ let i2pbutton_abouti2p_message_handler = {
 // This function closes all XUL browser windows except this one. For this
 // window, it closes all existing tabs and creates one about:blank tab.
 function i2pbutton_close_tabs_on_new_identity() {
-  if (!m_ib_prefs.getBoolPref("extensions.i2pbutton.close_newnym")) {
+  if (!m_ib_prefs.getBoolPref("extensions.i2pbutton.close_newnym", true)) {
     i2pbutton_log(3, "Not closing tabs");
     return;
   }
@@ -170,17 +170,10 @@ function i2pbutton_check_protections()
   var env = Cc["@mozilla.org/process/environment;1"]
               .getService(Ci.nsIEnvironment);
 
-  // Bug 14100: check for the existence of an environment variable
-  // in order to toggle the visibility of networksettings menuitem
-  if (env.exists("TOR_NO_DISPLAY_NETWORK_SETTINGS"))
-    document.getElementById("i2pbutton-networksettings").hidden = true;
-  else
-    document.getElementById("i2pbutton-networksettings").hidden = false;
-
   // Bug 21091: check for the existence of an environment variable
   // in order to toggle the visibility of the i2pbutton-checkForUpdate
   // menuitem and its separator.
-  if (env.exists("TOR_HIDE_UPDATE_CHECK_UI")) {
+  if (env.exists("I2P_HIDE_UPDATE_CHECK_UI")) {
     document.getElementById("i2pbutton-checkForUpdateSeparator").hidden = true;
     document.getElementById("i2pbutton-checkForUpdate").hidden = true;
   } else {
@@ -263,28 +256,27 @@ function i2pbutton_new_identity() {
 
 function i2pbutton_do_new_identity() {
   var obsSvc = Components.classes["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
-  i2pbutton_log(3, "New Identity: Disabling JS");
-  i2pbutton_disable_all_js();
+  // This is todo.
+  //i2pbutton_log(3, "New Identity: Disabling JS");
+  //i2pbutton_disable_all_js();
 
-  m_ib_prefs.setBoolPref("browser.zoom.siteSpecific",
-                         !m_ib_prefs.getBoolPref("browser.zoom.siteSpecific"));
-  m_ib_prefs.setBoolPref("browser.zoom.siteSpecific",
-                         !m_ib_prefs.getBoolPref("browser.zoom.siteSpecific"));
+  m_ib_prefs.setBoolPref("browser.zoom.siteSpecific", !m_ib_prefs.getBoolPref("browser.zoom.siteSpecific", true));
+  m_ib_prefs.setBoolPref("browser.zoom.siteSpecific", !m_ib_prefs.getBoolPref("browser.zoom.siteSpecific", true));
 
   try {
-      if(m_ib_prefs.prefHasUserValue("geo.wifi.access_token")) {
-          m_ib_prefs.clearUserPref("geo.wifi.access_token");
-      }
+    if(m_ib_prefs.prefHasUserValue("geo.wifi.access_token")) {
+      m_ib_prefs.clearUserPref("geo.wifi.access_token");
+    }
   } catch(e) {
-      i2pbutton_log(3, "Exception on wifi token clear: "+e);
+    i2pbutton_log(3, "Exception on wifi token clear: "+e);
   }
 
   try {
-      if(m_ib_prefs.prefHasUserValue("general.open_location.last_url")) {
-          m_ib_prefs.clearUserPref("general.open_location.last_url");
-      }
+    if(m_ib_prefs.prefHasUserValue("general.open_location.last_url")) {
+      m_ib_prefs.clearUserPref("general.open_location.last_url");
+    }
   } catch(e) {
-      i2pbutton_log(3, "Exception on clearing last opened location: "+e);
+    i2pbutton_log(3, "Exception on clearing last opened location: "+e);
   }
 
   i2pbutton_log(3, "New Identity: Closing tabs and clearing searchbox");
@@ -296,16 +288,16 @@ function i2pbutton_do_new_identity() {
   try {
     var searchBar = window.document.getElementById("searchbar");
     if (searchBar)
-        searchBar.textbox.reset();
+      searchBar.textbox.reset();
   } catch(e) {
     i2pbutton_log(5, "New Identity: Exception on clearing search box: "+e);
   }
 
   try {
     if (gFindBarInitialized) {
-        var findbox = gFindBar.getElement("findbar-textbox");
-        findbox.reset();
-        gFindBar.close();
+      var findbox = gFindBar.getElement("findbar-textbox");
+      findbox.reset();
+      gFindBar.close();
     }
   } catch(e) {
     i2pbutton_log(5, "New Identity: Exception on clearing find bar: "+e);
@@ -316,10 +308,9 @@ function i2pbutton_do_new_identity() {
 
   i2pbutton_log(3, "New Identity: Clearing HTTP Auth");
 
-  if(m_ib_prefs.getBoolPref('extensions.i2pbutton.clear_http_auth')) {
-      var auth = Components.classes["@mozilla.org/network/http-auth-manager;1"].
-          getService(Components.interfaces.nsIHttpAuthManager);
-      auth.clearAll();
+  if(m_ib_prefs.getBoolPref('extensions.i2pbutton.clear_http_auth', true)) {
+    var auth = Components.classes["@mozilla.org/network/http-auth-manager;1"].getService(Components.interfaces.nsIHttpAuthManager);
+    auth.clearAll();
   }
 
   i2pbutton_log(3, "New Identity: Clearing Crypto Tokens");
@@ -327,8 +318,7 @@ function i2pbutton_do_new_identity() {
   // Clear all crypto auth tokens. This includes calls to PK11_LogoutAll(),
   // nsNSSComponent::LogoutAuthenticatedPK11() and clearing the SSL session
   // cache.
-  let sdr = Components.classes["@mozilla.org/security/sdr;1"].
-                       getService(Components.interfaces.nsISecretDecoderRing);
+  let sdr = Components.classes["@mozilla.org/security/sdr;1"].getService(Components.interfaces.nsISecretDecoderRing);
   sdr.logoutAndTeardown();
 
   // This clears the OCSP cache.
@@ -345,16 +335,15 @@ function i2pbutton_do_new_identity() {
   // This clears the site permissions on I2P Browser
   // XXX: Tie to some kind of disk-ok pref?
   try {
-      Services.perms.removeAll();
+    Services.perms.removeAll();
   } catch(e) {
-      // Actually, this catch does not appear to be needed. Leaving it in for
-      // safety though.
-      i2pbutton_log(3, "Can't clear permissions: Not I2P Browser: "+e);
+    // Actually, this catch does not appear to be needed. Leaving it in for
+    // safety though.
+    i2pbutton_log(3, "Can't clear permissions: Not I2P Browser: "+e);
   }
 
    // Clear site security settings
-   let sss = Cc["@mozilla.org/ssservice;1"].
-     getService(Ci.nsISiteSecurityService);
+   let sss = Cc["@mozilla.org/ssservice;1"].getService(Ci.nsISiteSecurityService);
    sss.clearAll();
 
   // This clears the undo tab history.
@@ -368,8 +357,7 @@ function i2pbutton_do_new_identity() {
   i2pbutton_log(3, "New Identity: Clearing Offline Cache");
 
   try {
-    const LoadContextInfo = Cc["@mozilla.org/load-context-info-factory;1"]
-      .getService(Ci.nsILoadContextInfoFactory);
+    const LoadContextInfo = Cc["@mozilla.org/load-context-info-factory;1"].getService(Ci.nsILoadContextInfoFactory);
 
     for (let contextInfo of [LoadContextInfo.default, LoadContextInfo.private]) {
       let appCacheStorage = Services.cache2.appCacheStorage(contextInfo, null);
@@ -390,37 +378,36 @@ function i2pbutton_do_new_identity() {
       }
     }
   } catch(e) {
-      i2pbutton_log(5, "Exception on cache clearing: "+e);
-      window.alert("i2pbutton: Unexpected error during offline cache clearing: "+e);
+    i2pbutton_log(5, "Exception on cache clearing: "+e);
+    window.alert("i2pbutton: Unexpected error during offline cache clearing: "+e);
   }
 
   i2pbutton_log(3, "New Identity: Clearing Disk and Memory Caches");
 
   try {
-      Services.cache2.clear();
+    Services.cache2.clear();
   } catch(e) {
-      i2pbutton_log(5, "Exception on cache clearing: "+e);
-      window.alert("i2pbutton: Unexpected error during cache clearing: "+e);
+    i2pbutton_log(5, "Exception on cache clearing: "+e);
+    window.alert("i2pbutton: Unexpected error during cache clearing: "+e);
   }
 
   i2pbutton_log(3, "New Identity: Clearing storage");
 
-  let orig_quota_test = m_ib_prefs.getBoolPref("dom.quotaManager.testing");
+  let orig_quota_test = m_ib_prefs.getBoolPref("dom.quotaManager.testing", true);
   try {
-      // This works only by setting the pref to `true` otherwise we get an
-      // exception and nothing is happening.
-      m_ib_prefs.setBoolPref("dom.quotaManager.testing", true);
-      Cc["@mozilla.org/dom/quota-manager-service;1"]
-          .getService(Ci.nsIQuotaManagerService).clear();
+    // This works only by setting the pref to `true` otherwise we get an
+    // exception and nothing is happening.
+    m_ib_prefs.setBoolPref("dom.quotaManager.testing", true);
+    Cc["@mozilla.org/dom/quota-manager-service;1"].getService(Ci.nsIQuotaManagerService).clear();
   } catch(e) {
-      i2pbutton_log(5, "Exception on storage clearing: "+e);
+    i2pbutton_log(5, "Exception on storage clearing: "+e);
   } finally {
-      m_ib_prefs.setBoolPref("dom.quotaManager.testing", orig_quota_test);
+    m_ib_prefs.setBoolPref("dom.quotaManager.testing", orig_quota_test);
   }
 
   i2pbutton_log(3, "New Identity: Clearing Cookies and DOM Storage");
 
-  if (m_ib_prefs.getBoolPref('extensions.i2pbutton.cookie_protections')) {
+  if (m_ib_prefs.getBoolPref('extensions.i2pbutton.cookie_protections', true)) {
     var selector = Components.classes["@geti2p.net/cookie-jar-selector;1"]
                     .getService(Components.interfaces.nsISupports)
                     .wrappedJSObject;
@@ -463,21 +450,6 @@ function i2pbutton_do_new_identity() {
   let pm = Cc["@mozilla.org/permissionmanager;1"].
            getService(Ci.nsIPermissionManager);
   pm.removeAll();
-
-  i2pbutton_log(3, "New Identity: Sending NEWNYM");
-
-  // We only support TBB for newnym.
-  if (!m_tb_control_pass || (!m_tb_control_ipc_file && !m_tb_control_port)) {
-    var warning = i2pbutton_get_property_string("i2pbutton.popup.no_newnym");
-    i2pbutton_log(5, "i2pbutton cannot safely newnym. It does not have access to the I2P Control Port.");
-    window.alert(warning);
-  } else {
-    if (!i2pbutton_send_ctrl_cmd("SIGNAL NEWNYM\r\n")) {
-      var warning = i2pbutton_get_property_string("i2pbutton.popup.no_newnym");
-      i2pbutton_log(5, "i2pbutton was unable to request a new tunnel from I2P");
-      window.alert(warning);
-    }
-  }
 
   i2pbutton_log(3, "Ending any remaining private browsing sessions.");
   obsSvc.notifyObservers(null, "last-pb-context-exited", "");
