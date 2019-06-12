@@ -13,10 +13,9 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "FileUtils",
-                                  "resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm")
+Cu.import("resource://gre/modules/XPCOMUtils.jsm")
+XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
 
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
 //let NoScriptControl = Cu.import("resource://torbutton/modules/noscript-control.js", {});
@@ -27,13 +26,11 @@ const kMODULE_CONTRACTID = "@geti2p.net/startup-observer;1";
 const kMODULE_CID = Components.ID("06322def-6fde-4c06-aef6-47ae8e799629");
 
 function StartupObserver() {
-    this.logger = Cc["@geti2p.net/i2pbutton-logger;1"]
-                    .getService(Ci.nsISupports).wrappedJSObject;
+    this.logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject;
     this._prefs = Services.prefs;
     this.logger.log(3, "Startup Observer created");
 
-    var env = Cc["@mozilla.org/process/environment;1"]
-                .getService(Ci.nsIEnvironment);
+    var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
     var prefName = "browser.startup.homepage";
     if (env.exists("I2P_DEFAULT_HOMEPAGE")) {
       // if the user has set this value in a previous installation, don't override it

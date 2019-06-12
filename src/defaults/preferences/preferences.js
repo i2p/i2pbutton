@@ -25,3 +25,21 @@ pref("extensions.i2pbutton.confirm_newnym", true);
 pref("extensions.i2pbutton.close_newnym", true);
 // Browser home page:
 pref("browser.startup.homepage", "chrome://i2pbutton/content/locale/non-localized.properties");
+
+
+// I2P Startup etc
+pref("extensions.i2pbutton.start_i2p", true);
+pref("extensions.i2pbutton.console_host", "127.0.0.1");
+pref("extensions.i2pbutton.console_port", 7657);
+
+// The i2p_path is relative to the application directory. On Linux and
+// Windows this is the Browser/ directory that contains the firefox
+// executables, and on Mac OS it is the I2PBrowser.app directory.
+pref("extensions.i2pbutton.i2p_path", "");
+
+// The i2pdatadir_path are relative to the data directory,
+// which is I2PBrowser-Data/ if it exists as a sibling of the application
+// directory. If I2PBrowser-Data/ does not exist, these paths are relative
+// to the I2PBrowser/ directory within the application directory.
+pref("extensions.i2pbutton.i2pdatadir_path", "");
+

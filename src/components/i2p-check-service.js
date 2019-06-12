@@ -9,8 +9,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 function IBI2PCheckService() {
-  this._logger = Cc["@geti2p.net/i2pbutton-logger;1"]
-                   .getService(Ci.nsISupports).wrappedJSObject;
+  this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject;
   this._logger.log(3, "I2pbutton I2P Check Service initialized");
 
   this._statusOfI2PCheck = this.kCheckNotInitiated;

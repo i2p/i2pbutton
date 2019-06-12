@@ -168,8 +168,7 @@ function i2pbutton_close_tabs_on_new_identity() {
 
 function i2pbutton_check_protections()
 {
-  var env = Cc["@mozilla.org/process/environment;1"]
-              .getService(Ci.nsIEnvironment);
+  var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
   // Bug 21091: check for the existence of an environment variable
   // in order to toggle the visibility of the i2pbutton-checkForUpdate
