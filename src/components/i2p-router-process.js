@@ -89,7 +89,18 @@ I2PProcessService.prototype =
       this.mObsSvc.addObserver(this, kUserQuitTopic, false)
       this.mObsSvc.addObserver(this, kBootstrapStatusTopic, false)
 
-      this.I2PStartAndControlI2P(true)
+
+      const self = this
+      this._logger.log(3, 'Checking if a console is already up (an router already running)s')
+      this._isConsoleRunning(function(res) {
+        if (res!=4) {
+          // Yes, 4 is success
+          self._logger.log(3, 'Starting the router')
+          self.I2PStartAndControlI2P(true)
+        } else {
+          self._logger.log(3, 'Already found a router, won\'t launch.')
+        }
+      })
       /*if (LauncherUtil.shouldOnlyConfigureI2P)
       {
         this._controlI2P(true, false);
@@ -166,22 +177,7 @@ I2PProcessService.prototype =
     {
       if (aSubject == this.mControlConnTimer)
       {
-        this.mObsSvc.notifyObservers(null, "I2PProcessIsReady", null);
-        /*/else if ((Date.now() - this.mI2PProcessStartTime) > this.kControlConnTimeoutMS)
-        {
-          let s = LauncherUtil.getLocalizedString("i2p_controlconn_failed");
-          this._notifyUserOfError(s, null, this.kI2PProcessDidNotStartTopic);
-          this._logger.log(4, s);
-        }
-        else
-        {
-          this.mControlConnDelayMS *= 2;
-          if (this.mControlConnDelayMS > this.kMaxControlConnRetryMS)
-            this.mControlConnDelayMS = this.kMaxControlConnRetryMS;
-          this.mControlConnTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-          this.mControlConnTimer.init(this, this.mControlConnDelayMS, this.mControlConnTimer .TYPE_ONE_SHOT);
-        }
-        */
+        this.mObsSvc.notifyObservers(null, "I2PProcessIsReady", null)
       }
     } else if (kBootstrapStatusTopic == aTopic) {
       //this._processBootstrapStatus(aSubject.wrappedJSObject);
@@ -307,24 +303,27 @@ I2PProcessService.prototype =
         return;
       }
 
-      var args = []
+      let args = []
       args.push(`-Di2p.dir.config=${dataDir.path}`)
       args.push(`-Di2p.dir.base=${dataDir.path}`)
       args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
       args.push(`-Dwrapper.logfile=${dataDir.path}/wrapper.log`)
       args.push(`-Djetty.home=${dataDir.path}`)
+      args.push('-Dwrapper.name=i2pbrowser')
+      args.push('-Dwrapper.displayname=I2PBrowser')
       args.push('-cp')
       args.push(`${dataDir.path}:${dataDir.path}/lib`)
       args.push("-Djava.awt.headless=true")
       args.push("-Dwrapper.console.loglevel=DEBUG")
-      args.push("net.i2p.router.Router")
 
-      var pid = this._getpid();
+      let pid = this._getpid()
       if (0 != pid)
       {
-        //args.push("__OwningControllerProcess");
-        //args.push("" + pid);
+        args.push(`-Dwrapper.pid=${pid}`)
       }
+
+      // Main class to execute
+      args.push("net.i2p.router.Router")
 
       // Set an environment variable that points to the I2P data directory.
       // This is used by meek-client-torbrowser to find the location for
@@ -365,18 +364,21 @@ I2PProcessService.prototype =
     }
   }, // _startI2P()
 
+  _isConsoleRunning: function(callback) {
+    let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
+    let req = checkSvc.createCheckConsoleRequest(true);
+    req.onreadystatechange = function(event) {
+      if (req.readyState === 4) {
+        // Done
+        let result = checkSvc.parseCheckConsoleResponse(req)
+        callback(result)
+      }
+    }
+    req.send(null)
+  },
+
   _controlI2P: function(aIsRunningI2P)
   {
-    // Optionally prompt for locale.  Blocks until dialog is closed.
-    /*if (LauncherUtil.shouldPromptForLocale)
-    {
-      this._openLocalePicker();
-      if (this.mQuitSoon)
-      {
-        this._quitApp();
-        return;
-      }
-    }*/
 
     try
     {
@@ -462,25 +464,17 @@ I2PProcessService.prototype =
     if (!pid) try
     {
       var getpid;
-      if (LauncherUtil.isMac)
-      {
+      if (LauncherUtil.isMac) {
         var libc = ctypes.open("libc.dylib")
         getpid = libc.declare("getpid", ctypes.default_abi, ctypes.uint32_t)
-      }
-      else if (LauncherUtil.isWindows)
-      {
+      } else if (LauncherUtil.isWindows) {
         var libc = ctypes.open("Kernel32.dll")
         getpid = libc.declare("GetCurrentProcessId", ctypes.default_abi, ctypes.uint32_t)
-      }
-      else // Linux and others.
-      {
+      } else {// Linux and others.
         var libc;
-        try
-        {
+        try {
           libc = ctypes.open("libc.so.6")
-        }
-        catch(e)
-        {
+        } catch(e) {
           libc = ctypes.open("libc.so")
         }
 
@@ -488,9 +482,7 @@ I2PProcessService.prototype =
       }
 
       pid = getpid()
-    }
-    catch(e)
-    {
+    } catch(e) {
       this._logger.log(4, "unable to get process ID: ", e)
     }
 

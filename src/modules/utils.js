@@ -10,6 +10,43 @@ Cu.importGlobalProperties(["URL"])
 
 const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService)
 
+String.prototype.trim = function () {
+  return this.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
+Array.prototype.contains = function(obj) {
+  var i = this.length;
+  while (i--) {
+    if (this[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function loadScript(name, context) {
+  // Create the Sandbox
+  let sandbox = Components.utils.Sandbox(context, {
+      sandboxPrototype: context,
+      wantXrays: false
+  });
+  // Get the caller's filename
+  let file = Components.caller.stack.filename;
+  // Strip off any prefixes added by the sub-script loader
+  // and the trailing filename
+  let directory = file.replace(/.* -> |[^\/]+$/g, "");
+  Services.scriptloader.loadSubScript(directory + name,
+                                      sandbox, "UTF-8");
+}
+
+function module(uri) {
+  if (!/^[a-z-]+:/.exec(uri))
+      uri = /([^ ]+\/)[^\/]+$/.exec(Components.stack.caller.filename)[1] + uri + ".jsm";
+  let obj = {};
+  Components.utils.import(uri, obj);
+  return obj;
+}
+
 /**
  *
  *
