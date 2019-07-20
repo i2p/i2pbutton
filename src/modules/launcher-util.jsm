@@ -22,7 +22,7 @@ let logger = {
 const LauncherUtil = {
   get isMac()
   {
-    return LauncherUtilInternal._isMac
+    return ("Darwin" == LauncherUtilInternal._OS)
   },
 
   get isWindows()
@@ -296,11 +296,6 @@ let LauncherUtilInternal = {
 
     return this.mOS
   },
-
-  get _isMac()
-  {
-    return ("Darwin" == this._OS)
-  },
   get _stringBundle()
   {
     if (!this.mStringBundle)
@@ -339,7 +334,7 @@ let LauncherUtilInternal = {
       // On Mac OS, we want to return the I2PBrowser.app/ directory.
       // Because topDir points to Contents/Resources/browser on Mac OS,
       // we need to go up 3 levels.
-      let i2bbBrowserDepth = (this._isMac) ? 3 : 1;
+      let i2bbBrowserDepth = (this._OS == "Darwin") ? 3 : 1;
       if ((appInfo.ID == this.kThunderbirdID) ||
           (appInfo.ID == this.kInstantbirdID)) {
         // On Thunderbird/Instantbird, the topDir is the root dir and not

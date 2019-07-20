@@ -41,6 +41,9 @@ I2PProcessService.prototype =
   kStatusRunning: 2,
   kStatusExited: 3,  // Exited or failed to start.
 
+  kI2PImplJava: "i2pj",
+  kI2PImplCpp: "i2pd",
+
   kI2PProcessDidNotStartTopic: "I2PProcessDidNotStart",
   kI2PBootstrapErrorTopic: "I2PBootstrapError",
 
@@ -262,6 +265,7 @@ I2PProcessService.prototype =
   mIsQuitting: false,
   mObsSvc: null,
   mProtocolSvc: null,
+  mI2PUseImpl: null,
   mI2PProcess: null,    // nsIProcess
   mI2PProcessStartTime: null, // JS Date.now()
   mControlConnTimer: null,
