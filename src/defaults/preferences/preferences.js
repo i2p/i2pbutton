@@ -30,7 +30,11 @@ pref("browser.startup.homepage", "chrome://i2pbutton/content/locale/non-localize
 // I2P Startup etc
 pref("extensions.i2pbutton.start_i2p", true);
 pref("extensions.i2pbutton.console_host", "127.0.0.1");
-pref("extensions.i2pbutton.console_port", 7657);
+pref("extensions.i2pbutton.console_port_i2pj", 7657);
+pref("extensions.i2pbutton.console_port_i2pd", 7070);
+
+// I2P Implementation
+pref("extensions.i2pbutton.i2pimpl_driver", "i2pj");
 
 // The i2p_path is relative to the application directory. On Linux and
 // Windows this is the Browser/ directory that contains the firefox
