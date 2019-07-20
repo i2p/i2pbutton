@@ -1,0 +1,10 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>Seeker</ShortName>
+<Description>Seeker Search Engine</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">
+<!-- Insert data:image/x-icon;base64,blablabla here -->
+</Image>
+<Url type="text/html" method="GET" template="http://seeker.i2p/index.php?query={searchTerms}"/>
+<SearchForm>http://seeker.i2p/</SearchForm>
+</SearchPlugin>
