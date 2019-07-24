@@ -1,0 +1,83 @@
+<!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/i2pbutton.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <head>
+    <title>&i2pbutton.prefs.security_settings;</title>
+    <link type="text/css" rel="stylesheet" charset="UTF-8" href="chrome://i2pbutton/skin/preferences.css"/>
+    <script type="text/javascript" src="i2pbutton_util.js"></script>
+    <style>
+    </style>
+  </head>
+  <body onload="i2pbutton_init_security_ui()">
+    <div class="wrapper outer-wrapper">
+      <div class="title">
+        &i2pbutton.prefs.sec_caption;
+      </div>
+      <div class="wrapper inner-wrapper">
+	      <input id="i2pbutton_sec_slider" type="range" min="1" max="3" list="datalist" onchange="i2pbutton_set_slider(parseInt(this.value, 10))"/>
+	      <datalist id="datalist">
+          <option onclick="i2pbutton_set_slider(1)">
+            &i2pbutton.prefs.sec_standard_label;
+          </option>
+          <option onclick="i2pbutton_set_slider(2)">
+            &i2pbutton.prefs.sec_safer_label;
+          </option>
+          <option onclick="i2pbutton_set_slider(3)">
+            &i2pbutton.prefs.sec_safest_label;
+          </option>
+	      </datalist>
+        <div class="description-wrapper">
+          <div id="desc_safest" class="description">
+            <p class="slider-text-size slider-text-weight">
+              &i2pbutton.prefs.sec_safest_description;
+            </p>
+            <p class="slider-text-size slider-text-weight">
+              &i2pbutton.prefs.sec_safest_list_label;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_js_disabled;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_limit_graphics_and_typography;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_click_to_play_media;
+            </p>
+            <a id="link_safest" class="text-link">
+              &i2pbutton.prefs.sec_learn_more_label;
+            </a>
+          </div>
+          <div id="desc_safer" class="description">
+            <p class="slider-text-size slider-text-weight">
+              &i2pbutton.prefs.sec_safer_description;
+            </p>
+            <p class="slider-text-size slider-text-weight">
+              &i2pbutton.prefs.sec_safer_list_label;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_js_on_https_sites_only;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_limit_typography;
+            </p>
+            <p class="slider-text-size">
+              &i2pbutton.prefs.sec_click_to_play_media;
+            </p>
+            <a id="link_safer" class="text-link">
+              &i2pbutton.prefs.sec_learn_more_label;
+            </a>
+          </div>
+          <div id="desc_standard" class="description">
+            <p class="slider-text-size slider-text-weight">
+              &i2pbutton.prefs.sec_standard_description;
+            </p>
+            <a id="link_standard" class="text-link">
+              &i2pbutton.prefs.sec_learn_more_label;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
