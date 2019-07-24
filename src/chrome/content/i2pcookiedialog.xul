@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://i2pbutton/skin/i2pbutton.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/i2pbutton.dtd">
+
+<dialog id="TorCookieDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&i2pbutton.cookiedialog.title;"
+        buttons="accept,cancel"
+        style="width: 30em;"
+        onload="initDialog();"
+        ondialogaccept="acceptDialog();"
+        persist="screenX screenY width height">
+  <script src="chrome://i2pbutton/content/i2pbutton.js" type="application/x-javascript"/>
+  <script src="chrome://i2pbutton/content/i2pcookie.js" type="application/x-javascript"/>
+  <stringbundleset id="i2pbutton-stringbundleset">
+      <stringbundle id="i2pbutton-bundle" src="chrome://i2pbutton/locale/i2pbutton.properties"/>
+  </stringbundleset>
+
+  <label value=""/>
+  <separator class="thin"/>
+  <vbox flex="1">
+        <tree id="cookiesTree" flex="1" style="height: 10em;"
+                onkeypress="return;//do this later"
+                onselect="itemSelected();"
+                hidecolumnpicker="true">
+        <treecols>
+          <treecol id="lockCol" label="&i2pbutton.cookiedialog.lockCol;" flex="1"
+                       onclick="CookieColumnSort('isProtected', true);" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="domainCol" label="&i2pbutton.cookiedialog.domainCol;" flex="2"
+                       onclick="CookieColumnSort('rawHost', true);" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="nameCol" label="&i2pbutton.cookiedialog.nameCol;" flex="1"
+                       onclick="CookieColumnSort('name', true);" persist="width"/>
+          <treecol id="pathCol" label="&i2pbutton.cookiedialog.pathCol;" flex="1"
+                       onclick="CookieColumnSort('path', true);" persist="width"/>
+
+        </treecols>
+        <treechildren/>
+      </tree>
+  </vbox>
+  <groupbox>
+    <hbox>
+        <vbox>
+          <button id="protectCookie" disabled="true"
+                      label="&i2pbutton.cookiedialog.protectCookie;"
+                      oncommand="protectCookie();"/>
+          <button id="removeCookie" disabled="true"
+                      label="&i2pbutton.cookiedialog.removeCookie;"
+                      oncommand="DeleteCookie();"/>
+        </vbox>
+        <vbox>
+          <button id="unprotectCookie" disabled="true"
+                      label="&i2pbutton.cookiedialog.unprotectCookie;"
+                      oncommand="unprotectCookie();"/>
+          <button id="removeAllCookies"
+                      label="&i2pbutton.cookiedialog.removeAllBut;"
+                      oncommand="DeleteAllCookies();"/>
+        </vbox>
+      </hbox>
+      <hbox>
+        <radiogroup id="defaultCookieGroup">
+          <radio id="saveAllCookies" label="&i2pbutton.cookiedialog.saveAllCookies;" />
+          <radio id="donnotsaveCookies" label="&i2pbutton.cookiedialog.doNotSaveAllCookies;" />
+        </radiogroup>
+      </hbox>
+  </groupbox>
+
+</dialog>
