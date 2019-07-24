@@ -16,7 +16,28 @@ pref("extensions.i2pbutton.local_i2p_check",true);
 // https://developer.mozilla.org/en/Addons/Working_with_AMO
 pref("extensions.i2pbutton@geti2p.net.getAddons.cache.enabled", false);
 
-pref("extensions.i2pbutton.clear_http_auth", true);
+// State prefs:
+pref("extensions.i2pbutton.startup",false);
+pref("extensions.i2pbutton.inserted_button",false);
+pref("extensions.i2pbutton.inserted_security_level",false);
+
+// Security prefs:
+pref("extensions.i2pbutton.cookie_protections",true);
+pref("extensions.i2pbutton.cookie_auto_protect",false);
+pref("extensions.i2pbutton.clear_http_auth",true);
+pref("extensions.i2pbutton.close_newnym",true);
+pref("extensions.i2pbutton.resize_new_windows",true);
+pref("extensions.i2pbutton.startup_state", 2); // 0=non-tor, 1=tor, 2=last
+pref("extensions.i2pbutton.i2p_memory_jar",false);
+pref("extensions.i2pbutton.nontor_memory_jar",false);
+pref("extensions.i2pbutton.launch_warning",true);
+
+// Security Slider
+pref("extensions.i2pbutton.security_slider", 4);
+pref("extensions.i2pbutton.security_custom", false);
+
+pref("extensions.i2pbutton.noscript_inited", false);
+pref("extensions.i2pbutton.noscript_persist", false);
 
 pref("extensions.i2pbutton.prompt_i2pbrowser", true);
 pref("extensions.i2pbutton.confirm_plugins", true);
