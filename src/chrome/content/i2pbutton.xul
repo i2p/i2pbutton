@@ -30,7 +30,7 @@
             class="toolbarbutton-1 chromeclass-toolbar-additional"
             type="menu"
             orient="horizontal"
-            label="I2pbutton"
+            label="I2Pbutton"
             tooltiptext="&i2pbutton.button.tooltip;"
             menu="i2pbutton-context-menu"
             context="i2pbutton-context-menu"/>

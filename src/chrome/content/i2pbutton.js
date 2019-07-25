@@ -1,8 +1,25 @@
-let { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
+let { Services } = Cu.import("resource://gre/modules/Services.jsm", {})
 const {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm")
 
-const m_ib_prefs = Services.prefs
-const m_ib_domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils)
+//let SecurityPrefs  = Cu.import("resource://i2pbutton/modules/security-prefs.js", {})
+
+var m_ib_prefs = Services.prefs
+var m_ib_domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils)
+
+const k_ib_last_browser_version_pref = "extensions.i2pbutton.lastBrowserVersion";
+const k_ib_browser_update_needed_pref = "extensions.i2pbutton.updateNeeded";
+const k_ib_last_update_check_pref = "extensions.i2pbutton.lastUpdateCheck";
+
+var m_ib_is_initialized = false
+var m_ib_is_router_running = false
+var m_ib_browser_router = false
+var m_ib_ibb = false
+var m_ib_is_main_window = false
+var m_ib_confirming_plugins = false
+
+var m_ib_window_height = window.outerHeight
+var m_ib_window_width = window.outerWidth
+
 
 function checkI2P(callback,proxyCallback) {
   let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
@@ -28,26 +45,6 @@ function checkI2P(callback,proxyCallback) {
   proxyReq.send(null)
 }
 
-function i2pbutton_init() {
-  checkI2P(function (res) {
-    i2pbutton_log(3, `Check: ${res}`)
-  },function (res) {
-    i2pbutton_log(3, `Check: ${res}`)
-  })
-
-  // Add about:i2p IPC message listener.
-  window.messageManager.addMessageListener("AboutI2p:Loaded", i2pbutton_abouti2p_message_handler);
-
-  // Arrange for our about:i2p content script to be loaded in each frame.
-  window.messageManager.loadFrameScript("chrome://i2pbutton/content/aboutI2p/aboutI2p-content.js", true);
-
-  i2pbutton_log(3, 'init completed');
-}
-
-function i2pbutton_is_mobile() {
-  return false;
-}
-
 function i2pbutton_i2p_check_ok()
 {
   let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
@@ -61,7 +58,91 @@ function i2pbutton_i2p_console_check_ok()
   return (checkSvc.isConsoleWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
 }
 
-let i2pbutton_abouti2p_message_handler = {
+var i2pbutton_unique_pref_observer =
+{
+  register: function()
+  {
+    this.forced_ua = false;
+    m_ib_prefs.addObserver("extensions.i2pbutton", this, false);
+    m_ib_prefs.addObserver("network.cookie", this, false);
+    m_ib_prefs.addObserver("browser.privatebrowsing.autostart", this, false);
+    m_ib_prefs.addObserver("javascript", this, false);
+    m_ib_prefs.addObserver("plugin.disable", this, false);
+    m_ib_prefs.addObserver("privacy.firstparty.isolate", this, false);
+    m_ib_prefs.addObserver("privacy.resistFingerprinting", this, false);
+
+    // We observe xpcom-category-entry-added for plugins w/ Gecko-Content-Viewers
+    var observerService = Cc["@mozilla.org/observer-service;1"].
+        getService(Ci.nsIObserverService);
+    observerService.addObserver(this, "xpcom-category-entry-added", false);
+  },
+
+  unregister: function()
+  {
+    m_ib_prefs.removeObserver("extensions.i2pbutton", this);
+    m_ib_prefs.removeObserver("network.cookie", this);
+    m_ib_prefs.removeObserver("browser.privatebrowsing.autostart", this);
+    m_ib_prefs.removeObserver("javascript", this);
+    m_ib_prefs.removeObserver("plugin.disable", this);
+    m_ib_prefs.removeObserver("privacy.firstparty.isolate", this);
+    m_ib_prefs.removeObserver("privacy.resistFingerprinting", this);
+
+    var observerService = Cc["@mozilla.org/observer-service;1"].
+        getService(Ci.nsIObserverService);
+    observerService.removeObserver(this, "xpcom-category-entry-added");
+  },
+
+  // topic:   what event occurred
+  // subject: what nsIPrefBranch we're observing
+  // data:    which pref has been changed (relative to subject)
+  observe: function(subject, topic, data)
+  {
+    if (topic == "xpcom-category-entry-added") {
+      // Hrmm. should we inspect subject too? it's just mime type..
+      subject.QueryInterface(Ci.nsISupportsCString);
+      if (data == "Gecko-Content-Viewers" &&
+        !m_ib_prefs.getBoolPref("extensions.i2pbutton.startup") &&
+        m_ib_prefs.getBoolPref("extensions.i2pbutton.confirm_plugins")) {
+        i2pbutton_log(3, "Got plugin enabled notification: "+subject);
+
+        /* We need to protect this call with a flag becuase we can
+        * get multiple observer events for each mime type a plugin
+        * registers. Thankfully, these notifications arrive only on
+        * the main thread, *however*, our confirmation dialog suspends
+        * execution and allows more events to arrive until it is answered
+        */
+        if (!m_ib_confirming_plugins) {
+          m_ib_confirming_plugins = true;
+          i2pbutton_confirm_plugins();
+          m_ib_confirming_plugins = false;
+        } else {
+          i2pbutton_log(3, "Skipping notification for mime type: "+subject);
+        }
+      }
+      return;
+    }
+
+    if (topic != "nsPref:changed") return;
+
+    switch (data) {
+      case "plugin.disable":
+        i2pbutton_toggle_plugins(m_ib_prefs.getBoolPref("plugin.disable"));
+        break;
+      case "browser.privatebrowsing.autostart":
+        i2pbutton_update_disk_prefs();
+        break;
+      case "extensions.i2pbutton.use_noni2p_proxy":
+        i2pbutton_use_noni2p_proxy();
+        break;
+      case "privacy.resistFingerprinting":
+        i2pbutton_update_fingerprinting_prefs();
+        break;
+    }
+  }
+}
+
+// For some odd reason, this fails if it's defined with let/const and must be var.
+var i2pbutton_abouti2p_message_handler = {
   // Receive IPC messages from the about:i2p content script.
   receiveMessage: function(aMessage) {
     switch(aMessage.name) {
@@ -85,7 +166,6 @@ let i2pbutton_abouti2p_message_handler = {
   // not working.
   getChromeData: function(aIsRespondingToPageLoad) {
     let dataObj = {
-      mobile: i2pbutton_is_mobile(),
       updateChannel: AppConstants.MOZ_UPDATE_CHANNEL,
       i2pOn: i2pbutton_i2p_check_ok(),
       i2pConsoleOn: i2pbutton_i2p_console_check_ok()
@@ -112,6 +192,12 @@ let i2pbutton_abouti2p_message_handler = {
     return Services.urlFormatter.formatURLPref("startup.homepage_override_url");
   }
 };
+
+function i2pbutton_is_mobile() {
+  return false;
+}
+
+
 
 // This function closes all XUL browser windows except this one. For this
 // window, it closes all existing tabs and creates one about:blank tab.
@@ -166,6 +252,93 @@ function i2pbutton_close_tabs_on_new_identity() {
   i2pbutton_log(3, "Closed all tabs");
 }
 
+function i2pbutton_confirm_plugins() {
+  var any_plugins_enabled = false;
+  var PH=Cc["@mozilla.org/plugin/host;1"].getService(Ci.nsIPluginHost);
+  var P=PH.getPluginTags({});
+  for(var i=0; i<P.length; i++) {
+      if (!P[i].disabled)
+        any_plugins_enabled = true;
+  }
+
+  if (!any_plugins_enabled) {
+    i2pbutton_log(3, "False positive on plugin notification. Ignoring");
+    return;
+  }
+
+  i2pbutton_log(3, "Confirming plugin usage.");
+
+  var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Components.interfaces.nsIPromptService);
+
+  // Display two buttons, both with string titles.
+  var flags = prompts.STD_YES_NO_BUTTONS + prompts.BUTTON_DELAY_ENABLE;
+
+  var message = i2pbutton_get_property_string("i2pbutton.popup.confirm_plugins");
+  var askAgainText = i2pbutton_get_property_string("i2pbutton.popup.never_ask_again");
+  var askAgain = {value: false};
+
+  var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+             .getService(Components.interfaces.nsIWindowMediator);
+  var win = wm.getMostRecentWindow("navigator:browser");
+  var no_plugins = (prompts.confirmEx(win, "", message, flags, null, null, null,
+      askAgainText, askAgain) == 1);
+
+  m_ib_prefs.setBoolPref("extensions.i2pbutton.confirm_plugins", !askAgain.value);
+
+  // The pref observer for "plugin.disable" will set the appropriate plugin state.
+  // So, we only touch the pref if it has changed.
+  if (no_plugins !=
+      m_ib_prefs.getBoolPref("plugin.disable"))
+    m_ib_prefs.setBoolPref("plugin.disable", no_plugins);
+  else
+  i2pbutton_toggle_plugins(no_plugins);
+
+  // Now, if any tabs were open to about:addons, reload them. Our popup
+  // messed up that page.
+  var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(Components.interfaces.nsIWindowMediator);
+  var browserEnumerator = wm.getEnumerator("navigator:browser");
+
+  // Check each browser instance for our URL
+  while (browserEnumerator.hasMoreElements()) {
+    var browserWin = browserEnumerator.getNext();
+    var tabbrowser = browserWin.gBrowser;
+
+    // Check each tab of this browser instance
+    var numTabs = tabbrowser.browsers.length;
+    for (var index = 0; index < numTabs; index++) {
+      var currentBrowser = tabbrowser.getBrowserAtIndex(index);
+      if ("about:addons" == currentBrowser.currentURI.spec) {
+        i2pbutton_log(3, "Got browser: "+currentBrowser.currentURI.spec);
+        currentBrowser.reload();
+      }
+    }
+  }
+}
+
+
+function i2pbutton_inform_about_ibb() {
+  var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Components.interfaces.nsIPromptService);
+
+  var message = i2pbutton_get_property_string("i2pbutton.popup.prompt_i2pbrowser");
+  var title = i2pbutton_get_property_string("i2pbutton.title.prompt_i2pbrowser");
+  var checkbox = {value: false};
+
+  var sb = Components.classes["@mozilla.org/intl/stringbundle;1"]
+      .getService(Components.interfaces.nsIStringBundleService);
+  var browserstrings = sb.createBundle("chrome://browser/locale/browser.properties");
+
+  var askagain = browserstrings.GetStringFromName("privateBrowsingNeverAsk");
+
+  var response = prompts.alertCheck(null, title, message, askagain, checkbox);
+
+  // Update preferences to reflect their response and to prevent the prompt from
+  // being displayed again.
+  m_ib_prefs.setBoolPref("extensions.i2pbutton.prompt_i2pbrowser", !checkbox.value);
+}
+
 function i2pbutton_check_protections()
 {
   var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
@@ -181,25 +354,50 @@ function i2pbutton_check_protections()
     document.getElementById("i2pbutton-checkForUpdate").hidden = false;
   }
 
-  var cookie_pref = m_tb_prefs.getBoolPref("extensions.i2pbutton.cookie_protections", true);
+  var cookie_pref = m_ib_prefs.getBoolPref("extensions.i2pbutton.cookie_protections", true);
   document.getElementById("i2pbutton-cookie-protector").disabled = !cookie_pref;
 
   // XXX: Bug 14632: The cookie dialog is useless in private browsing mode in FF31ESR
   // See https://trac.torproject.org/projects/tor/ticket/10353 for more info.
-  document.getElementById("i2pbutton-cookie-protector").hidden = m_tb_prefs.getBoolPref("browser.privatebrowsing.autostart");
+  document.getElementById("i2pbutton-cookie-protector").hidden = m_ib_prefs.getBoolPref("browser.privatebrowsing.autostart");
 
-  if (!m_tb_control_pass || (!m_tb_control_ipc_file && !m_tb_control_port)) {
-    // TODO: Remove the Torbutton menu entry again once we have done our
-    // security control redesign.
-    document.getElementById("i2pbutton-new-identity").disabled = true;
-    document.getElementById("menu_newIdentity").disabled = true;
-    document.getElementById("appMenuNewIdentity").disabled = true;
-  }
-
-  if (!m_tb_tbb && m_tb_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
-      i2pbutton_inform_about_tbb();
+  if (/*!m_ib_ibb &&*/ m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
+      i2pbutton_inform_about_ibb();
   }
 }
+
+function i2pbutton_check_for_update() {
+  // Open the update prompt in the correct mode.  The update state
+  // checks used here were adapted from isPending() and isApplied() in
+  // Mozilla's browser/base/content/aboutDialog.js code.
+  let updateMgr = Cc["@mozilla.org/updates/update-manager;1"].getService(Ci.nsIUpdateManager);
+  let update = updateMgr.activeUpdate;
+  let updateState = (update) ? update.state : undefined;
+  let pendingStates = [ "pending", "pending-service", "applied", "applied-service" ];
+  let isPending = (updateState && (pendingStates.indexOf(updateState) >= 0));
+
+  let prompter = Cc["@mozilla.org/updates/update-prompt;1"].createInstance(Ci.nsIUpdatePrompt);
+  if (isPending)
+    prompter.showUpdateDownloaded(update, false);
+  else
+    prompter.checkForUpdates();
+}
+
+function i2pbutton_open_cookie_dialog() {
+  showDialog(window, 'chrome://i2pbutton/content/i2pcookiedialog.xul',
+             'Cookie Protections', 'centerscreen,chrome,dialog,modal,resizable');
+}
+
+// -------------- HISTORY & COOKIES ---------------------
+
+// Bug 1506 P4: Used by New Identity if cookie protections are
+// not in use.
+function i2pbutton_clear_cookies() {
+    i2pbutton_log(2, 'called i2pbutton_clear_cookies');
+    var cm = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager);
+    cm.removeAll();
+}
+
 
 function i2pbutton_new_identity() {
   try {
@@ -431,8 +629,7 @@ function i2pbutton_do_new_identity() {
     XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils",
                             "resource://gre/modules/PrivateBrowsingUtils.jsm");
     var pbCtxt = PrivateBrowsingUtils.privacyContextFromWindow(window);
-    var cps = Cc["@mozilla.org/content-pref/service;1"]
-                .getService(Ci.nsIContentPrefService2);
+    var cps = Cc["@mozilla.org/content-pref/service;1"].getService(Ci.nsIContentPrefService2);
     cps.removeAllDomains(pbCtxt);
   } else {                           // Firefox < 20
     var cps = Cc["@mozilla.org/content-pref/service;1"].
@@ -447,8 +644,7 @@ function i2pbutton_do_new_identity() {
 
   i2pbutton_log(3, "New Identity: Clearing permissions");
 
-  let pm = Cc["@mozilla.org/permissionmanager;1"].
-           getService(Ci.nsIPermissionManager);
+  let pm = Cc["@mozilla.org/permissionmanager;1"].getService(Ci.nsIPermissionManager);
   pm.removeAll();
 
   i2pbutton_log(3, "Ending any remaining private browsing sessions.");
@@ -520,8 +716,7 @@ function i2pbutton_clear_image_caches()
       // Try to clear the private browsing cache.  To do so, we must locate
       // a content document that is contained within a private browsing window.
       let didClearPBCache = false;
-      let wm = Cc["@mozilla.org/appshell/window-mediator;1"]
-                 .getService(Ci.nsIWindowMediator);
+      let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
       let enumerator = wm.getEnumerator("navigator:browser");
       while (!didClearPBCache && enumerator.hasMoreElements()) {
         let win = enumerator.getNext();
@@ -555,7 +750,7 @@ function i2pbutton_clear_image_caches()
 }
 
 function i2pbutton_toggle_plugins(disable_plugins) {
-  if (m_tb_tbb) {
+  if (m_ib_ibb) {
     var PH=Cc["@mozilla.org/plugin/host;1"].getService(Ci.nsIPluginHost);
     var P=PH.getPluginTags({});
     for(var i=0; i<P.length; i++) {
@@ -584,7 +779,7 @@ function i2pbutton_update_disk_prefs() {
     // No way to clear this beast during New Identity. Leave it off.
     //m_ib_prefs.setBoolPref("dom.indexedDB.enabled", !mode);
 
-    if (m_tb_tbb) m_ib_prefs.setBoolPref("permissions.memory_only", mode);
+    if (m_ib_ibb) m_ib_prefs.setBoolPref("permissions.memory_only", mode);
 
     // Third party abuse. Leave it off for now.
     //m_ib_prefs.setBoolPref("browser.cache.offline.enable", !mode);
@@ -618,42 +813,42 @@ function i2pbutton_update_fingerprinting_prefs() {
 
 function i2pbutton_do_startup()
 {
-    if(m_ib_prefs.getBoolPref("extensions.i2pbutton.startup")) {
-        // Bug 1506: Still want to do this
-        i2pbutton_toggle_plugins(
-                m_ib_prefs.getBoolPref("plugin.disable"));
+  if(m_ib_prefs.getBoolPref("extensions.i2pbutton.startup")) {
+    // Bug 1506: Still want to do this
+    i2pbutton_toggle_plugins(
+            m_ib_prefs.getBoolPref("plugin.disable"));
 
-        // Bug 1506: Should probably be moved to an XPCOM component
-        i2pbutton_do_main_window_startup();
+    // Bug 1506: Should probably be moved to an XPCOM component
+    i2pbutton_do_main_window_startup();
 
-        // For charsets
-        i2pbutton_update_fingerprinting_prefs();
+    // For charsets
+    i2pbutton_update_fingerprinting_prefs();
 
-        // Bug 30565: sync browser.privatebrowsing.autostart with security.nocertdb
-        i2pbutton_update_disk_prefs();
+    // Bug 30565: sync browser.privatebrowsing.autostart with security.nocertdb
+    i2pbutton_update_disk_prefs();
 
-        // #5758: Last ditch effort to keep Vanilla i2pbutton users from totally
-        // being pwnt.  This is a pretty darn ugly hack, too. But because of #5863,
-        // we really don't care about preserving the user's values for this.
-        if (!m_tb_tbb) {
-            // Bug 1506 P5: You have to set these two for non-TBB Firefoxen
-            m_ib_prefs.setBoolPref("network.websocket.enabled", false);
-            m_ib_prefs.setBoolPref("dom.indexedDB.enabled", false);
-        }
-
-        // Still need this in case people shove this thing back into FF
-        if (!m_tb_tbb && m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
-          var warning = i2pbutton_get_property_string("i2pbutton.popup.short_i2pbrowser");
-          var title = i2pbutton_get_property_string("i2pbutton.title.prompt_i2pbrowser");
-          var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-          prompts.alert(null, title, warning);
-        }
-
-        // For general pref fixups to handle pref damage in older versions
-        i2pbutton_fixup_old_prefs();
-
-        m_ib_prefs.setBoolPref("extensions.i2pbutton.startup", false);
+    // #5758: Last ditch effort to keep Vanilla i2pbutton users from totally
+    // being pwnt.  This is a pretty darn ugly hack, too. But because of #5863,
+    // we really don't care about preserving the user's values for this.
+    if (!m_ib_ibb) {
+        // Bug 1506 P5: You have to set these two for non-TBB Firefoxen
+        m_ib_prefs.setBoolPref("network.websocket.enabled", false);
+        m_ib_prefs.setBoolPref("dom.indexedDB.enabled", false);
     }
+
+    // Still need this in case people shove this thing back into FF
+    if (!m_ib_ibb && m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
+      var warning = i2pbutton_get_property_string("i2pbutton.popup.short_i2pbrowser");
+      var title = i2pbutton_get_property_string("i2pbutton.title.prompt_i2pbrowser");
+      var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+      prompts.alert(null, title, warning);
+    }
+
+    // For general pref fixups to handle pref damage in older versions
+    i2pbutton_fixup_old_prefs();
+
+    m_ib_prefs.setBoolPref("extensions.i2pbutton.startup", false);
+  }
 }
 
 // Bug 1506 P3: This is needed pretty much only for the version check
@@ -661,38 +856,147 @@ function i2pbutton_do_startup()
 // details
 function i2pbutton_new_window(event)
 {
-    i2pbutton_log(3, "New window");
-    var browser = window.gBrowser;
+  i2pbutton_log(3, "New window");
+  var browser = window.gBrowser;
 
-    if(!browser) {
-      i2pbutton_log(5, "No browser for new window.");
-      return;
-    }
+  if(!browser) {
+    i2pbutton_log(5, "No browser for new window.");
+    return;
+  }
 
-    m_tb_window_height = window.outerHeight;
-    m_tb_window_width = window.outerWidth;
+  m_tb_window_height = window.outerHeight;
+  m_tb_window_width = window.outerWidth;
 
-    if (!m_tb_wasinited) {
-        i2pbutton_init();
-    }
-    // Add tab open listener..
-    browser.tabContainer.addEventListener("TabOpen", i2pbutton_new_tab, false);
+  if (!m_tb_wasinited) {
+      i2pbutton_init();
+  }
+  // Add tab open listener..
+  browser.tabContainer.addEventListener("TabOpen", i2pbutton_new_tab, false);
 
-    i2pbutton_do_startup();
+  i2pbutton_do_startup();
 
-    let progress = Cc["@mozilla.org/docloaderservice;1"]
-                     .getService(Ci.nsIWebProgress);
+  let progress = Cc["@mozilla.org/docloaderservice;1"]
+                    .getService(Ci.nsIWebProgress);
 
-    if (m_ib_prefs.getBoolPref("extensions.i2pbutton.resize_new_windows")
-            && i2pbutton_is_windowed(window)) {
-      progress.addProgressListener(i2pbutton_resizelistener,
-                                   Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
-    }
+  if (m_ib_prefs.getBoolPref("extensions.i2pbutton.resize_new_windows")
+          && i2pbutton_is_windowed(window)) {
+    progress.addProgressListener(i2pbutton_resizelistener,
+                                  Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+  }
 
-    // Check the version on every new window. We're already pinging check in these cases.
-    i2pbutton_do_async_versioncheck();
+  // Check the version on every new window. We're already pinging check in these cases.
+  //i2pbutton_do_async_versioncheck();
 
 }
+
+// Bug 1506 P1/P3: Setting a fixed window size is important, but
+// probably not for android.
+var i2pbutton_resizelistener =
+{
+  QueryInterface: function(aIID)
+  {
+   if (aIID.equals(Ci.nsIWebProgressListener) ||
+       aIID.equals(Ci.nsISupportsWeakReference) ||
+       aIID.equals(Ci.nsISupports))
+     return this;
+   throw Cr.NS_NOINTERFACE;
+  },
+
+  onLocationChange: function(aProgress, aRequest, aURI) {},
+  onStateChange: function(aProgress, aRequest, aFlag, aStatus) {
+    if (aFlag & Ci.nsIWebProgressListener.STATE_STOP) {
+      m_ib_resize_handler = async function() {
+        // Wait for end of execution queue to ensure we have correct windowState.
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (window.windowState === window.STATE_MAXIMIZED ||
+            window.windowState === window.STATE_FULLSCREEN) {
+          if (m_tb_prefs.
+              getIntPref("extensions.i2pbutton.maximize_warnings_remaining") > 0) {
+
+            // Do not add another notification if one is already showing.
+            const kNotificationName = "i2pbutton-maximize-notification";
+            let box = gBrowser.getNotificationBox();
+            if (box.getNotificationWithValue(kNotificationName))
+              return;
+
+            // Rate-limit showing our notification if needed.
+            if (m_ib_resize_date === null) {
+              m_ib_resize_date = Date.now();
+            } else {
+              // We wait at least another second before we show a new
+              // notification. Should be enough to rule out OSes that call our
+              // handler rapidly due to internal workings.
+              if (Date.now() - m_ib_resize_date < 1000) {
+                return;
+              }
+              // Resizing but we need to reset |m_tb_resize_date| now.
+              m_ib_resize_date = Date.now();
+            }
+
+            let sb = i2pbutton_get_stringbundle();
+            // No need to get "OK" translated again.
+            let sbSvc = Cc["@mozilla.org/intl/stringbundle;1"].
+              getService(Ci.nsIStringBundleService);
+            let bundle = sbSvc.
+              createBundle("chrome://global/locale/commonDialogs.properties");
+            let button_label = bundle.GetStringFromName("OK");
+
+            let buttons = [{
+              label: button_label,
+              accessKey: 'O',
+              popup: null,
+              callback:
+                function() {
+                  m_ib_prefs.setIntPref("extensions.i2pbutton.maximize_warnings_remaining",
+                  m_ib_prefs.getIntPref("extensions.i2pbutton.maximize_warnings_remaining") - 1);
+                }
+            }];
+
+            let priority = box.PRIORITY_WARNING_LOW;
+            let message =
+              i2pbutton_get_property_string("i2pbutton.maximize_warning");
+
+            box.appendNotification(message, kNotificationName, null,
+                                   priority, buttons);
+            return;
+          }
+        }
+      }; // m_ib_resize_handler
+
+      // We need to handle OSes that auto-maximize windows depending on user
+      // settings and/or screen resolution in the start-up phase and users that
+      // try to shoot themselves in the foot by maximizing the window manually.
+      // We add a listener which is triggerred as soon as the window gets
+      // maximized (windowState = 1). We are resizing during start-up but not
+      // later as the user should see only a warning there as a stopgap before
+      // #14229 lands.
+      // Alas, the Firefox window code is handling the event not itself:
+      // "// Note the current implementation of SetSizeMode just stores
+      //  // the new state; it doesn't actually resize. So here we store
+      //  // the state and pass the event on to the OS."
+      // (See: https://mxr.mozilla.org/mozilla-esr31/source/xpfe/appshell/src/
+      // nsWebShellWindow.cpp#348)
+      // This means we have to cope with race conditions and resizing in the
+      // sizemodechange listener is likely to fail. Thus, we add a specific
+      // resize listener that is doing the work for us. It seems (at least on
+      // Ubuntu) to be the case that maximizing (and then again normalizing) of
+      // the window triggers more than one resize event the first being not the
+      // one we need. Thus we can't remove the listener after the first resize
+      // event got fired. Thus, we have the rather klunky setTimeout() call.
+      window.addEventListener("sizemodechange", m_ib_resize_handler, false);
+
+      let progress = Cc["@mozilla.org/docloaderservice;1"]
+                       .getService(Ci.nsIWebProgress);
+      progress.removeProgressListener(this);
+    }
+  }, // onStateChange
+
+  onProgressChange: function(aProgress, aRequest, curSelfProgress,
+                             maxSelfProgress, curTotalProgress,
+                             maxTotalProgress) {},
+  onStatusChange: function(aProgress, aRequest, stat, message) {},
+  onSecurityChange: function() {}
+};
 
 // Bug 1506 P2: This is only needed because we have observers
 // in XUL that should be in an XPCOM component
@@ -700,7 +1004,7 @@ function i2pbutton_close_window(event) {
     i2pbutton_window_pref_observer.unregister();
     i2pbutton_tor_check_observer.unregister();
 
-    window.removeEventListener("sizemodechange", m_tb_resize_handler,
+    window.removeEventListener("sizemodechange", m_ib_resize_handler,
         false);
 
     // TODO: This is a real ghetto hack.. When the original window
@@ -739,3 +1043,347 @@ function i2pbutton_close_window(event) {
         }
     }
 }
+
+function showSecurityPreferencesPanel(chromeWindow) {
+  const tabBrowser = chromeWindow.BrowserApp;
+  let settingsTab = null;
+
+  const SECURITY_PREFERENCES_URI = 'chrome://i2pbutton/content/preferences.xhtml';
+
+  tabBrowser.tabs.some(function (tab) {
+      // If the security prefs tab is opened, send the user to it
+      if (tab.browser.currentURI.spec === SECURITY_PREFERENCES_URI) {
+          settingsTab = tab;
+          return true;
+      }
+      return false;
+  });
+
+  if (settingsTab === null) {
+      // Open up the settings panel in a new tab.
+      tabBrowser.addTab(SECURITY_PREFERENCES_URI, {
+          'selected': true,
+          'parentId': tabBrowser.selectedTab.id
+      });
+  } else {
+      // Activate an existing settings panel tab.
+      tabBrowser.selectTab(settingsTab);
+  }
+}
+
+function i2pbutton_do_main_window_startup()
+{
+  i2pbutton_log(3, "I2pbutton main window startup");
+  m_ib_is_main_window = true;
+  i2pbutton_unique_pref_observer.register();
+}
+
+// Bug 1506 P4: Most of this function is now useless, save
+// for the very important SOCKS environment vars at the end.
+// Those could probably be rolled into a function with the
+// control port vars, though. See 1506 comments inside.
+function i2pbutton_do_startup()
+{
+  if(m_ib_prefs.getBoolPref("extensions.i2pbutton.startup")) {
+    // Bug 1506: Still want to do this
+    i2pbutton_toggle_plugins(
+            m_ib_prefs.getBoolPref("plugin.disable"));
+
+    // Bug 1506: Should probably be moved to an XPCOM component
+    i2pbutton_do_main_window_startup();
+
+    // For charsets
+    i2pbutton_update_fingerprinting_prefs();
+
+    // Bug 30565: sync browser.privatebrowsing.autostart with security.nocertdb
+    i2pbutton_update_disk_prefs();
+
+    // #5758: Last ditch effort to keep Vanilla Torbutton users from totally
+    // being pwnt.  This is a pretty darn ugly hack, too. But because of #5863,
+    // we really don't care about preserving the user's values for this.
+    if (!m_ib_ibb) {
+      // Bug 1506 P5: You have to set these two for non-TBB Firefoxen
+      m_ib_prefs.setBoolPref("network.websocket.enabled", false);
+      m_ib_prefs.setBoolPref("dom.indexedDB.enabled", false);
+    }
+
+    // Still need this in case people shove this thing back into FF
+    if (!m_ib_ibb && m_ib_prefs.getBoolPref("extensions.i2pbutton.prompt_i2pbrowser")) {
+      var warning = i2pbutton_get_property_string("i2pbutton.popup.short_i2pbrowser");
+      var title = i2pbutton_get_property_string("i2pbutton.title.prompt_i2pbrowser");
+      var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+      prompts.alert(null, title, warning);
+    }
+
+    m_ib_prefs.setBoolPref("extensions.i2pbutton.startup", false);
+  }
+}
+
+// Perform version check when a new tab is opened.
+function i2pbutton_new_tab(event)
+{
+    // listening for new tabs
+    i2pbutton_log(3, "New tab");
+
+    /* Perform the version check on new tab, module timer */
+    //i2pbutton_do_async_versioncheck();
+}
+
+// Returns true if the window wind is neither maximized, full screen,
+// ratpoisioned/evilwmed, nor minimized.
+function i2pbutton_is_windowed(wind) {
+  i2pbutton_log(3, "Window: (" + wind.outerWidth + "," + wind.outerHeight + ") ?= ("
+                   + wind.screen.availWidth + "," + wind.screen.availHeight + ")");
+  if(wind.windowState == Components.interfaces.nsIDOMChromeWindow.STATE_MINIMIZED
+    || wind.windowState == Components.interfaces.nsIDOMChromeWindow.STATE_MAXIMIZED) {
+      i2pbutton_log(2, "Window is minimized/maximized");
+      return false;
+  }
+  if ("fullScreen" in wind && wind.fullScreen) {
+    i2pbutton_log(2, "Window is fullScreen");
+    return false;
+  }
+  if(wind.outerHeight == wind.screen.availHeight
+      && wind.outerWidth == wind.screen.availWidth) {
+    i2pbutton_log(3, "Window is ratpoisoned/evilwm'ed");
+    return false;
+  }
+
+  i2pbutton_log(2, "Window is normal");
+  return true;
+}
+
+// Bug 1506 P3: This is needed pretty much only for the version check
+// and the window resizing. See comments for individual functions for
+// details
+function i2pbutton_new_window(event)
+{
+    i2pbutton_log(3, "New window");
+    var browser = window.gBrowser;
+
+    if(!browser) {
+      i2pbutton_log(5, "No browser for new window.");
+      return;
+    }
+
+    m_ib_window_height = window.outerHeight;
+    m_ib_window_width = window.outerWidth;
+
+    if (!m_ib_is_initialized) {
+        i2pbutton_init();
+    }
+    // Add tab open listener..
+    browser.tabContainer.addEventListener("TabOpen", i2pbutton_new_tab, false);
+
+    i2pbutton_do_startup();
+
+    let progress = Cc["@mozilla.org/docloaderservice;1"]
+                     .getService(Ci.nsIWebProgress);
+
+    if (m_ib_prefs.getBoolPref("extensions.i2pbutton.resize_new_windows")
+            && i2pbutton_is_windowed(window)) {
+      progress.addProgressListener(i2pbutton_resizelistener,
+                                   Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+    }
+
+    // Check the version on every new window. We're already pinging check in these cases.
+    //i2pbutton_do_async_versioncheck();
+
+    //i2pbutton_do_i2p_check();
+}
+
+// Bug 1506 P2: This is only needed because we have observers
+// in XUL that should be in an XPCOM component
+function i2pbutton_close_window(event) {
+    i2pbutton_window_pref_observer.unregister();
+    i2pbutton_i2p_check_observer.unregister();
+
+    window.removeEventListener("sizemodechange", m_ib_resize_handler,
+        false);
+
+    // TODO: This is a real ghetto hack.. When the original window
+    // closes, we need to find another window to handle observing
+    // unique events... The right way to do this is to move the
+    // majority of i2pbutton functionality into a XPCOM component..
+    // But that is a major overhaul..
+    if (m_ib_is_main_window) {
+        i2pbutton_log(3, "Original window closed. Searching for another");
+        var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+            .getService(Components.interfaces.nsIWindowMediator);
+        var enumerator = wm.getEnumerator("navigator:browser");
+        while(enumerator.hasMoreElements()) {
+          var win = enumerator.getNext();
+          // For some reason, when New Identity is called from a pref
+          // observer (ex: i2pbutton_use_nontor_proxy) on an ASAN build,
+          // we sometimes don't have this symbol set in the new window yet.
+          // However, the new window will run this init later in that case,
+          // as it does in the OSX case.
+          if(win != window && "i2pbutton_do_main_window_startup" in win) {
+            i2pbutton_log(3, "Found another window");
+            win.i2pbutton_do_main_window_startup();
+            m_ib_is_main_window = false;
+            break;
+          }
+        }
+
+        i2pbutton_unique_pref_observer.unregister();
+
+        if(m_ib_is_main_window) { // main window not reset above
+          // This happens on Mac OS because they allow firefox
+          // to still persist without a navigator window
+          i2pbutton_log(3, "Last window closed. None remain.");
+          m_ib_prefs.setBoolPref("extensions.i2pbutton.startup", true);
+          m_ib_is_main_window = false;
+        }
+    }
+}
+
+window.addEventListener('load', i2pbutton_new_window, false);
+window.addEventListener('unload', i2pbutton_close_window, false);
+
+
+// -------------- JS/PLUGIN HANDLING CODE ---------------------
+// Bug 1506 P3: Defense in depth. Disables JS and events for New Identity.
+function i2pbutton_disable_browser_js(browser) {
+  var eventSuppressor = null;
+
+  /* Solution from: https://bugzilla.mozilla.org/show_bug.cgi?id=409737 */
+  // XXX: This kills the entire window. We need to redirect
+  // focus and inform the user via a lightbox.
+  try {
+    if (!browser.contentWindow)
+      i2pbutton_log(3, "No content window to disable JS events.");
+    else
+      eventSuppressor = browser.contentWindow.
+        QueryInterface(Components.interfaces.nsIInterfaceRequestor).
+          getInterface(Ci.nsIDOMWindowUtils);
+  } catch(e) {
+    i2pbutton_log(4, "Failed to disable JS events: "+e)
+  }
+
+  if (browser.docShell)
+    browser.docShell.allowJavascript = false;
+
+  try {
+    // My estimation is that this does not get the inner iframe windows,
+    // but that does not matter, because iframes should be destroyed
+    // on the next load.
+    browser.contentWindow.name = null;
+    browser.contentWindow.window.name = null;
+  } catch(e) {
+    i2pbutton_log(4, "Failed to reset window.name: "+e)
+  }
+
+  if (eventSuppressor)
+    eventSuppressor.suppressEventHandling(true);
+}
+
+// Bug 1506 P3: The JS-killing bits of this are used by
+// New Identity as a defense-in-depth measure.
+function i2pbutton_disable_window_js(win) {
+  var browser = win.getBrowser();
+  if(!browser) {
+    i2pbutton_log(5, "No browser for plugin window...");
+    return;
+  }
+  var browsers = browser.browsers;
+  i2pbutton_log(1, "Toggle window plugins");
+
+  for (var i = 0; i < browsers.length; ++i) {
+    var b = browser.browsers[i];
+    if (b && !b.docShell) {
+        try {
+          if (b.currentURI)
+            i2pbutton_log(5, "DocShell is null for: "+b.currentURI.spec);
+          else
+            i2pbutton_log(5, "DocShell is null for unknown URL");
+        } catch(e) {
+          i2pbutton_log(5, "DocShell is null for unparsable URL: "+e);
+        }
+    }
+    if (b && b.docShell) {
+      i2pbutton_disable_browser_js(b);
+
+      // kill meta-refresh and existing page loading
+      // XXX: Despite having JUST checked b.docShell, it can
+      // actually end up NULL here in some cases?
+      try {
+        if (b.docShell && b.webNavigation)
+          b.webNavigation.stop(b.webNavigation.STOP_ALL);
+      } catch(e) {
+        i2pbutton_log(4, "DocShell error: "+e);
+      }
+    }
+  }
+}
+
+// Bug 1506 P3: The JS-killing bits of this are used by
+// New Identity as a defense-in-depth measure.
+//
+// This is an ugly beast.. But unfortunately it has to be so..
+// Looping over all tabs twice is not somethign we wanna do..
+function i2pbutton_disable_all_js() {
+  var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(Components.interfaces.nsIWindowMediator);
+  var enumerator = wm.getEnumerator("navigator:browser");
+  while(enumerator.hasMoreElements()) {
+      var win = enumerator.getNext();
+      i2pbutton_disable_window_js(win);
+  }
+}
+
+
+
+function i2pbutton_init() {
+  //SecurityPrefs.initialize()
+
+  checkI2P(function (res) {
+    i2pbutton_log(3, `Check: ${res}`)
+  },function (res) {
+    i2pbutton_log(3, `Check: ${res}`)
+  })
+
+  if (m_ib_is_initialized) {
+    return
+  }
+  m_ib_is_initialized = true
+
+  // Determine if we are running inside I2P Browser.
+  var cur_version;
+  try {
+    cur_version = m_ib_prefs.getCharPref("i2pbrowser.version")
+    m_ib_ibb = true
+    i2pbutton_log(3, "This is a I2P Browser")
+  } catch(e) {
+    i2pbutton_log(3, "This is not a I2P Browser: "+e)
+  }
+
+  // If the I2P Browser version has changed since the last time I2pbutton
+  // was loaded, reset the version check preferences in order to avoid
+  // incorrectly reporting that the browser needs to be updated.
+  var last_version
+  try {
+    last_version = m_ib_prefs.getCharPref(k_ib_last_browser_version_pref)
+  } catch (e) {}
+  if (cur_version != last_version) {
+    m_ib_prefs.setBoolPref(k_ib_browser_update_needed_pref, false)
+    if (m_ib_prefs.prefHasUserValue(k_ib_last_update_check_pref)) {
+      m_ib_prefs.clearUserPref(k_ib_last_update_check_pref)
+    }
+
+    if (cur_version) {
+      m_ib_prefs.setCharPref(k_ib_last_browser_version_pref, cur_version)
+    }
+  }
+
+  var environ = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment)
+
+  // Add about:i2p IPC message listener.
+  window.messageManager.addMessageListener("AboutI2p:Loaded", i2pbutton_abouti2p_message_handler)
+
+  // Arrange for our about:i2p content script to be loaded in each frame.
+  window.messageManager.loadFrameScript("chrome://i2pbutton/content/aboutI2p/aboutI2p-content.js", true)
+
+  i2pbutton_log(3, 'init completed')
+}
+
