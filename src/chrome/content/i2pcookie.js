@@ -132,7 +132,7 @@ function acceptDialog() {
   }
   selector.protectCookies(protcookies);
   //output protected cookies
-  prefs.setBoolPref("extensions.torbutton.cookie_auto_protect",document.getElementById('saveAllCookies').selected);
+  prefs.setBoolPref("extensions.i2pbutton.cookie_auto_protect",document.getElementById('saveAllCookies').selected);
 }
 function CookieColumnSort(column) {
   lastCookieSortAscending =
