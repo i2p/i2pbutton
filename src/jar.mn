@@ -11,6 +11,7 @@ i2pbutton.jar:
  skin/          (chrome/skin/*)
 
 % overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/i2pbutton.xul
+% overlay chrome://browser/content/preferences/connection.xul chrome://i2pbutton/content/pref-connection.xul
 % overlay chrome://messenger/content/messenger.xul chrome://i2pbutton/content/i2pbutton_tb.xul
 % overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://i2pbutton/content/i2pbutton_tb.xul
 % overlay about:addons chrome://i2pbutton/content/i2pbutton-extensions.xul
@@ -26,7 +27,7 @@ i2pbutton.jar:
 
 # UI customization
 % overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-items-overlay.xul
-
+% overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-overlay.xul
 
 # Strings for the about:ibupdate page
 % override chrome://browser/locale/aboutIBUpdate.dtd chrome://i2pbutton/locale/aboutIBUpdate.dtd

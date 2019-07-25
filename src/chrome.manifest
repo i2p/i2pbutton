@@ -15,6 +15,7 @@ overlay chrome://browser/content/aboutDialog.xul chrome://i2pbutton/content/abou
 
 # UI customization
 overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-items-overlay.xul
+overlay chrome://browser/content/browser.xul chrome://i2pbutton/content/menu-overlay.xul
 
 # Strings for the about:ibupdate page
 override chrome://browser/locale/aboutIBUpdate.dtd chrome://i2pbutton/locale/aboutIBUpdate.dtd
