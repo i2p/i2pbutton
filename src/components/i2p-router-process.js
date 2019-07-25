@@ -280,6 +280,11 @@ I2PProcessService.prototype =
   {
     this.mI2PProcessStatus = this.kStatusUnknown;
 
+    // Avoid starting the router if extensions.i2pbutton.start_i2p is set to false.
+    let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
+    let shouldStart = prefs.getBoolPref("extensions.i2pbutton.start_i2p")
+    if (!shouldStart) return
+
     try
     {
       // Ideally, we would cd to the Firefox application directory before
