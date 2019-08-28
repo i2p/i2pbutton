@@ -72,3 +72,6 @@ body:not([i2pconsoleon]) .hideIfI2PConsoleOff {
   display: none;
 }
 
+ul {
+  margin-left: 2rem;
+}
