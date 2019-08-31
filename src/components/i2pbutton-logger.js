@@ -55,7 +55,7 @@ const nsIClassInfo = Components.interfaces.nsIClassInfo;
 const nsIComponentRegistrar = Components.interfaces.nsIComponentRegistrar;
 const nsIObserverService = Components.interfaces.nsIObserverService;
 
-const logString = { 1:"VERB", 2:"DBUG", 3: "INFO", 4:"NOTE", 5:"WARN" };
+const logString = { 1:"VERB", 2:"DBUG", 3: "INFO", 4:"NOTE", 5:"WARN", 6:"ERRO" };
 
 function padInt(i)
 {
@@ -121,6 +121,13 @@ I2pbuttonLogger.prototype =
           this.eclog(level, str+" [scrubbed]");
       }
   },
+
+  error: str => { this.log(6, str) },
+  warn: str => { this.log(5, str) },
+  note: str => { this.log(4, str) },
+  info: str => { this.log(3, str) },
+  debug: str => { this.log(2, str) },
+  verbose: str => { this.log(1, str) },
 
   log: function(level, str) {
       switch(this.logmethod) {
