@@ -23,25 +23,25 @@ Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPref
 Cu.import("resource://gre/modules/Services.jsm");
 
 function I2pbuttonLogger() {
-    // Register observer
-    Services.prefs.addObserver("extensions.i2pbutton", this, false);
+  // Register observer
+  Services.prefs.addObserver("extensions.i2pbutton", this, false);
 
-    this.loglevel = Services.prefs.getIntPref("extensions.i2pbutton.loglevel");
-    this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
+  this.loglevel = Services.prefs.getIntPref("extensions.i2pbutton.loglevel");
+  this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
 
-    try {
-        var logMngr = Components.classes["@mozmonkey.com/debuglogger/manager;1"]
-            .getService(Components.interfaces.nsIDebugLoggerManager);
-        this._debuglog = logMngr.registerLogger("i2pbutton");
-    } catch (exErr) {
-        this._debuglog = false;
-    }
-    this._console = Components.classes["@mozilla.org/consoleservice;1"]
-        .getService(Components.interfaces.nsIConsoleService);
+  try {
+    var logMngr = Components.classes["@mozmonkey.com/debuglogger/manager;1"]
+        .getService(Components.interfaces.nsIDebugLoggerManager);
+    this._debuglog = logMngr.registerLogger("i2pbutton");
+  } catch (exErr) {
+    this._debuglog = false;
+  }
+  this._console = Components.classes["@mozilla.org/consoleservice;1"]
+      .getService(Components.interfaces.nsIConsoleService);
 
-    // This JSObject is exported directly to chrome
-    this.wrappedJSObject = this;
-    this.log(3, "I2pbutton debug output ready");
+  // This JSObject is exported directly to chrome
+  this.wrappedJSObject = this;
+  this.log(3, "I2pbutton debug output ready");
 }
 
 /**
@@ -59,7 +59,7 @@ const logString = { 1:"VERB", 2:"DBUG", 3: "INFO", 4:"NOTE", 5:"WARN", 6:"ERRO" 
 
 function padInt(i)
 {
-    return (i < 10) ? '0' + i : i;
+  return (i < 10) ? '0' + i : i;
 }
 
 I2pbuttonLogger.prototype =
@@ -95,23 +95,23 @@ I2pbuttonLogger.prototype =
   getHelperForLanguage: function(count) { return null; },
 
   formatLog: function(str, level) {
-      var d = new Date();
-      var now = padInt(d.getUTCMonth()+1)+"-"+padInt(d.getUTCDate())+" "+padInt(d.getUTCHours())+":"+padInt(d.getUTCMinutes())+":"+padInt(d.getUTCSeconds());
-      return "["+now+"] I2pbutton "+logString[level]+": "+str;
+    var d = new Date()
+    var now = padInt(d.getUTCMonth()+1)+"-"+padInt(d.getUTCDate())+" "+padInt(d.getUTCHours())+":"+padInt(d.getUTCMinutes())+":"+padInt(d.getUTCSeconds())
+    return "["+now+"] I2pbutton "+logString[level]+": "+str
   },
 
   // error console log
   eclog: function(level, str) {
-      switch(this.logmethod) {
-          case 0: // stderr
-              if(this.loglevel <= level)
-                  dump(this.formatLog(str, level)+"\n");
-              break;
-          default: // errorconsole
-              if(this.loglevel <= level)
-                  this._console.logStringMessage(this.formatLog(str,level));
-              break;
-      }
+    switch(this.logmethod) {
+      case 0: // stderr
+        if(this.loglevel <= level)
+          dump(this.formatLog(str, level)+"\n");
+        break;
+      default: // errorconsole
+        if(this.loglevel <= level)
+          this._console.logStringMessage(this.formatLog(str,level));
+        break;
+    }
   },
 
   safe_log: function(level, str, scrub) {
@@ -121,13 +121,6 @@ I2pbuttonLogger.prototype =
           this.eclog(level, str+" [scrubbed]");
       }
   },
-
-  error: str => { this.log(6, str) },
-  warn: str => { this.log(5, str) },
-  note: str => { this.log(4, str) },
-  info: str => { this.log(3, str) },
-  debug: str => { this.log(2, str) },
-  verbose: str => { this.log(1, str) },
 
   log: function(level, str) {
       switch(this.logmethod) {
@@ -149,6 +142,13 @@ I2pbuttonLogger.prototype =
               break;
       }
   },
+
+  error: function(str) { this.log(6, str) },
+  warn: function(str) { this.log(5, str) },
+  note: function(str) { this.log(4, str) },
+  info: function(str) { this.log(3, str) },
+  debug: function(str) { this.log(2, str) },
+  verbose: function(str) { this.log(1, str) },
 
   // Pref observer interface implementation
 
@@ -179,13 +179,5 @@ I2pbuttonLogger.prototype =
   }
 }
 
-/**
-* XPCOMUtils.generateNSGetFactory was introduced in Mozilla 2 (Firefox 4).
-* XPCOMUtils.generateNSGetModule is for Mozilla 1.9.2 (Firefox 3.6).
-*/
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-if (XPCOMUtils.generateNSGetFactory)
-    var NSGetFactory = XPCOMUtils.generateNSGetFactory([I2pbuttonLogger]);
-else
-    var NSGetModule = XPCOMUtils.generateNSGetModule([I2pbuttonLogger]);
-
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm")
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([I2pbuttonLogger])

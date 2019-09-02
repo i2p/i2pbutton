@@ -9,8 +9,8 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 function IBI2PCheckService() {
-  this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject;
-  this._logger.log(3, "I2pbutton I2P Check Service initialized");
+  this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
+  this._logger.info("I2pbutton I2P Check Service initialized")
 
   this._statusOfI2PCheck = this.kCheckNotInitiated;
   this.wrappedJSObject = this;
@@ -114,7 +114,7 @@ IBI2PCheckService.prototype =
     let ret = 0;
     if(aReq.status == 200) {
       if(!aReq.response) {
-        this._logger.log(5, "Check failed! Not text/html!");
+        this._logger.log(5, "Check failed! Not text/html!")
         this._statusOfI2PCheck = this.kCheckFailed
         ret = 1;
       } else {
@@ -140,7 +140,7 @@ IBI2PCheckService.prototype =
     if(aReq.status == 200) {
       console.log(aReq)
         if(!aReq.response) {
-            this._logger.log(5, "Check failed! Not text/html!");
+            this._logger.log(5, "Check failed! Not text/html!")
             this._statusOfI2PCheck = this.kCheckFailed
             ret = 1;
         } else {

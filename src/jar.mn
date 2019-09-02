@@ -55,8 +55,14 @@ i2pbutton.jar:
 % component {f36d72c9-9718-4134-b550-e109638331d7} %components/i2pbutton-logger.js
 % contract @geti2p.net/i2pbutton-logger;1 {f36d72c9-9718-4134-b550-e109638331d7}
 
+% component {E2AA62BB-AFD0-4D94-9408-90CE39784086} %components/router-config-manager.js
+% contract @geti2p.net/i2pbutton-router-config-mgr;1 {E2AA62BB-AFD0-4D94-9408-90CE39784086}
+
 % component {f77babef-dead-b00b-beff-babe6c9afda7} %components/i2p-router-process.js
 % contract @geti2p.net/i2pbutton-process-service;1 {f77babef-dead-b00b-beff-babe6c9afda7}
+
+% component {aa132730-beef-dead-babe-0800200c9a66} %components/about-outproxies.js
+% contract @geti2p.net/i2pbutton-about-outproxies;1 {aa132730-beef-dead-babe-0800200c9a66}
 
 % category profile-after-change I2PProcessService @geti2p.net/i2pbutton-process-service;1
 

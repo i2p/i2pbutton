@@ -9,6 +9,7 @@ const kPropBundleURI = "chrome://i2pbutton/locale/i2pbutton.properties"
 const kPropNamePrefix = "i2pbutton."
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
+Cu.import("resource://gre/modules/Services.jsm")
 //const logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
 let console = (Cu.import("resource://gre/modules/Console.jsm", {})).console
 
@@ -62,6 +63,55 @@ const LauncherUtil = {
       alert(aMsg);
     }
   },
+  _createOpenWindowArgsArray: function(aArg1, aArg2)
+  {
+    var argsArray = Cc["@mozilla.org/array;1"]
+                      .createInstance(Ci.nsIMutableArray);
+    var variant = Cc["@mozilla.org/variant;1"]
+                    .createInstance(Ci.nsIWritableVariant);
+    variant.setFromVariant(aArg1);
+    argsArray.appendElement(variant, false);
+
+    if (aArg2)
+    {
+      variant = Cc["@mozilla.org/variant;1"]
+                    .createInstance(Ci.nsIWritableVariant);
+      variant.setFromVariant(aArg2);
+      argsArray.appendElement(variant, false);
+    }
+
+    return argsArray;
+  },
+
+  get _networkSettingsWindow()
+  {
+    var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+               .getService(Ci.nsIWindowMediator);
+    return wm.getMostRecentWindow("I2PLauncher:NetworkSettings");
+  },
+  _openNetworkSettings: function(aIsInitialBootstrap, aStartAtWizardPanel)
+  {
+    var win = this._networkSettingsWindow;
+    if (win)
+    {
+      // Return to "Starting i2p" panel if being asked to open & dlog already exists.
+      //win.showStartingTorPanel();
+      win.focus();
+      return;
+    }
+
+    const kSettingsURL = "chrome://i2pbutton/content/network-settings.xul";
+    const kWizardURL = "chrome://i2pbutton/content/network-settings-wizard.xul";
+
+    var wwSvc = Cc["@mozilla.org/embedcomp/window-watcher;1"]
+                  .getService(Ci.nsIWindowWatcher);
+    var winFeatures = "chrome,dialog=yes,modal,all";
+    var argsArray = this._createOpenWindowArgsArray(aIsInitialBootstrap,
+                                                    aStartAtWizardPanel);
+    let isProgress = (this.kWizardProgressPageID == aStartAtWizardPanel);
+    let url = (aIsInitialBootstrap || isProgress) ? kWizardURL : kSettingsURL;
+    wwSvc.openWindow(null, url, "_blank", winFeatures, argsArray);
+  },
 
   // Returns true if user confirms; false if not.
   // Note that no prompt is shown (and false is returned) if the Network Settings
@@ -104,13 +154,98 @@ const LauncherUtil = {
         let f = Cc['@mozilla.org/file/local;1'].createInstance(Ci.nsIFile);
         f.initWithPath(dirPath);
         if (f.exists())
-          f.remove(false); // Remove directory if it is empty
+          f.remove(false) // Remove directory if it is empty
       }
     } catch(e) {}
   },
 
+  restartBrowser: function() {
+    let asSvc = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup)
+    asSvc.quit(0x12) // eAttemptQuit (0x02) + eRestart (0x10)
+  },
+
+  getRouterDefaultArgs: function() {
+      let dataDir = this.getI2PConfigPath(true)
+      let exeFile = this.getI2PBinary()
+      let libDir = exeFile.parent.parent.clone()
+      let i2pDir = libDir.clone()
+      libDir.append('lib')
+      let args = []
+      // NOTE: Don't mind spaces as nsIProcess escapes them.
+      args.push(`-Di2p.dir.base=${i2pDir.path}`)
+      logger.log(2, `Path for base is => ${i2pDir.path}`)
+      args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
+      args.push(`-Dwrapper.logfile=${dataDir.path}/wrapper.log`)
+      args.push(`-Djetty.home=${i2pDir.path}`)
+      args.push(`-Di2p.dir.config=${dataDir.path}`)
+      args.push(`-Di2p.dir.router=${dataDir.path}`)
+      args.push(`-Di2p.dir.app=${dataDir.path}`)
+      args.push(`-Drouter.clientConfigFile=${dataDir.path}/clients.config`)
+      args.push(`-Drouter.configLocation=${dataDir.path}/router.config`)
+      args.push('-Di2p.dir.portableMode=false')
+      args.push('-Dwrapper.name=i2pbrowser')
+      args.push('-Dwrapper.displayname=I2PBrowser')
+      args.push('-cp')
+      args.push(`${i2pDir.path}:${libDir.path}:${dataDir.path}/lib`)
+      args.push("-Djava.awt.headless=true")
+      args.push("-Dwrapper.console.loglevel=DEBUG")
+      // Main class to execute
+      args.push("net.i2p.router.Router")
+      return args
+  },
+
+  writeFileWithData: (file,data,onComplete,onErrorFunc) => {
+    let converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream)
+    try {
+      // file is nsIFile, data is a string
+      let foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream)
+
+      // use 0x02 | 0x10 to open file for appending.
+      foStream.init(file, 0x02 | 0x08 | 0x20, 0o666, 0)
+      // write, create, truncate
+      // In a c file operation, we have no need to set file mode with or operation,
+      // directly using "r" or "w" usually.
+      converter.init(foStream, 'UTF-8', 0, 0)
+      converter.writeString(data)
+    } catch (err) {
+      if (typeof onErrorFunc === 'function') {
+        onErrorFunc(err)
+      }
+    } finally {
+      converter.close() // this closes foStream
+      if (typeof onComplete === 'function') {
+        onComplete(file)
+      }
+    }
+  },
+/*
+  spawnRouterWorker: function(handleMessageFunc) {
+    if (this._currentWorker === undefined) {
+      let workerFactory = Components.classes['@mozilla.org/threads/workerfactory;1'].createInstance(Components.interfaces.nsIWorkerFactory)
+
+      let worker = workerFactory.newChromeWorker('resource://i2pbutton/modules/router-worker.js')
+      worker.addEventListener('message', handleMessageFunc)
+      this._currentWorker = worker
+    }
+    return this._currentWorker
+  },
+*/
   getI2PBinary: function() {
-    return this.getI2PFile('i2p')
+    return this.getI2PFile('i2p').clone()
+  },
+
+  getI2PPath: (aI2PFileType, aCreate) => {
+    return this.getI2PFile(aI2PFileType, aCreate)
+  },
+
+  getI2PConfigPath: (create) => {
+    let profDir = Services.dirsvc.get("ProfD", Ci.nsIFile)
+    let dataDir = profDir.parent.parent.clone()
+    dataDir.append('I2P')
+    if (!dataDir.exists() && create) {
+      dataDir.create(dataDir.DIRECTORY_TYPE, 0o775)
+    }
+    return dataDir.clone()
   },
 
   getI2PFile: function(aI2PFileType, aCreate) {
@@ -123,42 +258,32 @@ const LauncherUtil = {
     let isRelativePath = true
     let isUserData = (aI2PFileType != 'i2p')
 
-    if (LauncherUtilInternal._isUserDataOutsideOfAppDir) {
-      if (this.isWindows) {
-        //
-        if ("i2p" == aI2PFileType) {
-          path = "I2PBrowser\\I2P\\bin\\java"
-          useAppDir = true
-        } else if ("i2pdatadir" == aI2PFileType) {
-          path = "I2P"
-        }
-      } else if (this.isMac) {
-        //
-        if ("i2p" == aI2PFileType) {
-          path = "Contents/Resources/I2PBrowser/I2P/bin/java"
-        } else if ("i2pdatadir" == aI2PFileType) {
-          path = "I2P"
-        }
-      } else {
-        if ("i2p" == aI2PFileType) {
-          path = "I2PBrowser/I2P/bin/java"
-        } else if ("i2pdatadir" == aI2PFileType) {
-          path = "I2P"
-        }
-      }
-    } else if (this.isWindows) { // if (LauncherUtilInternal._isUserDataOutsideOfAppDir)
+    if (this.isWindows) {
+      //
       if ("i2p" == aI2PFileType) {
-        path = "I2P\\bin\\java"
+        path = "I2PBrowser\\I2P\\bin\\java"
         useAppDir = true
       } else if ("i2pdatadir" == aI2PFileType) {
-        path = "Data\\I2P"
+        path = "I2P"
+      } else if ("certszip" == aI2PFileType) {
+        path = "I2PBrowser\\I2P\\certs.zip"
+      }
+    } else if (this.isMac) {
+      //
+      if ("i2p" == aI2PFileType) {
+        path = "Contents/Resources/I2PBrowser/I2P/bin/java"
+      } else if ("i2pdatadir" == aI2PFileType) {
+        path = "I2P"
+      } else if ("certszip" == aI2PFileType) {
+        path = "Contents/Resources/I2PBrowser/I2P/certs.zip"
       }
     } else {
       if ("i2p" == aI2PFileType) {
-        path = "I2P/bin/java"
-        useAppDir = true
+        path = "I2PBrowser/I2P/bin/java"
       } else if ("i2pdatadir" == aI2PFileType) {
-        path = "Data/I2P"
+        path = "I2P"
+      } else if ("certszip" == aI2PFileType) {
+        path = "I2PBrowser/I2P/certs.zip"
       }
     }
 
@@ -240,8 +365,7 @@ const LauncherUtil = {
     try
     {
       var key = kPropNamePrefix + aStringName;
-      return TLUtilInternal._stringBundle.formatStringFromName(key,
-                                                               aArray, aLen);
+      return TLUtilInternal._stringBundle.formatStringFromName(key, aArray, aLen)
     } catch(e) {}
 
     return aStringName;
@@ -362,9 +486,9 @@ let LauncherUtilInternal = {
     if (!this.mDataDir) {
       let ds = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties)
       let profDir = ds.get("ProfD", Ci.nsIFile)
-      this.mDataDir = profDir.parent.parent
+      this.mDataDir = profDir.parent.parent.clone()
     }
-    return this.mDataDir
+    return this.mDataDir.clone()
   }, // get _dataDir
 
   _isWindowVisible: function(aWindow) {

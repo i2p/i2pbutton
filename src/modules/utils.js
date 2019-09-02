@@ -3,17 +3,18 @@ const { Cu: utils, Cr: results } = Components
 
 // ### Import Mozilla Services
 Cu.import("resource://gre/modules/Services.jsm")
-Cu.import("resource://gre/modules/FileUtils.jsm")
+//Cu.import("resource://gre/modules/FileUtils.jsm")
 
 // ### Import global URL
 Cu.importGlobalProperties(["URL"])
 
-const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService)
+//const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService)
 
 String.prototype.trim = function () {
   return this.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
+/*
 Array.prototype.contains = function(obj) {
   var i = this.length;
   while (i--) {
@@ -23,22 +24,24 @@ Array.prototype.contains = function(obj) {
   }
   return false;
 }
+*/
 
 function loadScript(name, context) {
   // Create the Sandbox
   let sandbox = Components.utils.Sandbox(context, {
-      sandboxPrototype: context,
-      wantXrays: false
+    sandboxPrototype: context,
+    wantXrays: false
   });
   // Get the caller's filename
   let file = Components.caller.stack.filename;
   // Strip off any prefixes added by the sub-script loader
   // and the trailing filename
   let directory = file.replace(/.* -> |[^\/]+$/g, "");
-  Services.scriptloader.loadSubScript(directory + name,
-                                      sandbox, "UTF-8");
+  Services.scriptloader.loadSubScript(directory + name, sandbox, "UTF-8");
 }
-
+// The following function will import an arbitrary module into a singleton object,
+// which it returns. If the argument is not an absolute path, the module is
+// imported relative to the caller's filename.
 function module(uri) {
   if (!/^[a-z-]+:/.exec(uri))
       uri = /([^ ]+\/)[^\/]+$/.exec(Components.stack.caller.filename)[1] + uri + ".jsm";
@@ -75,6 +78,38 @@ const getProfileDir = function() {
   // this is a reference to the profile dir (ProfD) now.
   let localDir = directoryService.get("ProfD", Ci.nsIFile)
   return localDir.path
+}
+
+function openFile(path, mode) {
+  let file = Cc["@mozilla.org/file/local;1"].
+             createInstance(Ci.nsILocalFile);
+  file.initWithPath(path);
+  let stream = Cc["@mozilla.org/network/file-output-stream;1"].
+               createInstance(Ci.nsIFileOutputStream);
+  stream.init(file, mode, -1, 0);
+  return stream
+}
+
+function readfile(path) {
+  var file = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsIFile);
+  file.initWithPath(path);
+  var fileStream = Components.classes['@mozilla.org/network/file-input-stream;1']
+                   .createInstance(Components.interfaces.nsIFileInputStream);
+  fileStream.init(file, 1, 0, false);
+  var binaryStream = Components.classes['@mozilla.org/binaryinputstream;1']
+                     .createInstance(Components.interfaces.nsIBinaryInputStream);
+  binaryStream.setInputStream(fileStream);
+  var array = binaryStream.readByteArray(fileStream.available());
+  binaryStream.close();
+  fileStream.close();
+  return array_to_hexdigits(array);
+}
+
+// Bug 1506 P4: Control port interaction. Needed for New Identity.
+function array_to_hexdigits(array) {
+  return array.map(function(c) {
+                     return String("0" + c.toString(16)).slice(-2)
+                   }).join('');
 }
 
 //window.open("chrome://browser/content/browser.xul", "bmarks", "chrome,width=600,height=300")
@@ -170,8 +205,7 @@ var showDialog = function (parent, url, name, features) {
     existingDialog.focus();
     return existingDialog;
   } else {
-    let newDialog = parent.openDialog.apply(parent,
-                                            Array.slice(arguments, 1));
+    let newDialog = parent.openDialog.apply(parent, Array.slice(arguments, 1));
     dialogsByName[name] = newDialog;
     return newDialog;
   }
@@ -180,3 +214,9 @@ var showDialog = function (parent, url, name, features) {
 var openTabWithFocus = function (url) {
   gBrowser.selectedTab = gBrowser.addTab(url)
 }
+
+
+// Export utility functions for external use.
+let EXPORTED_SYMBOLS = ['bindPref', 'bindPrefAndInit', 'getEnv', 'getLocale',
+                        'loadScript', 'module', 'readfile', 'getProfileDir',
+                        'getPrefValue', 'observe', 'showDialog'];
