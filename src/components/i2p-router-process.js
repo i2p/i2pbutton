@@ -244,7 +244,7 @@ I2PProcessService.prototype =
   mBootstrapErrorOccurred: false,
   mIsQuitting: false,
   mObsSvc: null,
-  mI2PUseImpl: null,
+  mI2PUseImpl: this.kI2PImplJava,
   mI2PProcess: null,    // nsIProcess
   mI2PProcessStartTime: null, // JS Date.now()
   mControlConnTimer: null,
