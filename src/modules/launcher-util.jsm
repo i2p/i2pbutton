@@ -167,7 +167,7 @@ const LauncherUtil = {
   getRouterDefaultArgs: function() {
       let dataDir = this.getI2PConfigPath(true)
       let exeFile = this.getI2PBinary()
-      let libDir = exeFile.parent.parent.clone()
+      let libDir = dataDir.clone()
       let i2pDir = libDir.clone()
       libDir.append('lib')
       let args = []
@@ -175,18 +175,24 @@ const LauncherUtil = {
       args.push(`-Di2p.dir.base=${i2pDir.path}`)
       logger.log(2, `Path for base is => ${i2pDir.path}`)
       args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
-      args.push(`-Dwrapper.logfile=${dataDir.path}/wrapper.log`)
+      let logfile = dataDir.clone()
+      logfile.append('wrapper.log')
+      args.push(`-Dwrapper.logfile=${logfile.path}`)
       args.push(`-Djetty.home=${i2pDir.path}`)
       args.push(`-Di2p.dir.config=${dataDir.path}`)
       args.push(`-Di2p.dir.router=${dataDir.path}`)
       args.push(`-Di2p.dir.app=${dataDir.path}`)
-      args.push(`-Drouter.clientConfigFile=${dataDir.path}/clients.config`)
-      args.push(`-Drouter.configLocation=${dataDir.path}/router.config`)
+      let clientConfigFile = dataDir.clone()
+      clientConfigFile.append('clients.config')
+      let routerCofigFile = dataDir.clone()
+      routerCofigFile.append('router.config')
+      args.push(`-Drouter.clientConfigFile=${clientConfigFile.path}`)
+      args.push(`-Drouter.configLocation=${routerCofigFile.path}`)
       args.push('-Di2p.dir.portableMode=false')
       args.push('-Dwrapper.name=i2pbrowser')
       args.push('-Dwrapper.displayname=I2PBrowser')
       args.push('-cp')
-      args.push(`${i2pDir.path}:${libDir.path}:${dataDir.path}/lib`)
+      args.push(`${i2pDir.path}:${libDir.path}:${dataDir.path}`)
       args.push("-Djava.awt.headless=true")
       args.push("-Dwrapper.console.loglevel=DEBUG")
       // Main class to execute
@@ -235,17 +241,19 @@ const LauncherUtil = {
   },
 
   getI2PPath: (aI2PFileType, aCreate) => {
-    return this.getI2PFile(aI2PFileType, aCreate)
+    return this.getI2PFile(aI2PFileType, aCreate).clone()
   },
 
   getI2PConfigPath: (create) => {
+    // Going backwards from profile works on all OS.
     let profDir = Services.dirsvc.get("ProfD", Ci.nsIFile)
     let dataDir = profDir.parent.parent.clone()
     dataDir.append('I2P')
     if (!dataDir.exists() && create) {
       dataDir.create(dataDir.DIRECTORY_TYPE, 0o775)
     }
-    return dataDir.clone()
+
+    return dataDir
   },
 
   getI2PFile: function(aI2PFileType, aCreate) {
@@ -257,16 +265,18 @@ const LauncherUtil = {
     let useAppDir = false
     let isRelativePath = true
     let isUserData = (aI2PFileType != 'i2p')
+    let appBaseDir = this.appDirectoryObject.clone()
+
+    logger.log(2, `appBaseDir => ${appBaseDir.path}`)
 
     if (this.isWindows) {
       //
       if ("i2p" == aI2PFileType) {
-        path = "I2PBrowser\\I2P\\bin\\java"
-        useAppDir = true
+        appBaseDir.append('bin')
+        appBaseDir.append('java.exe')
+        return appBaseDir
       } else if ("i2pdatadir" == aI2PFileType) {
         path = "I2P"
-      } else if ("certszip" == aI2PFileType) {
-        path = "I2PBrowser\\I2P\\certs.zip"
       }
     } else if (this.isMac) {
       //
@@ -274,16 +284,14 @@ const LauncherUtil = {
         path = "Contents/Resources/I2PBrowser/I2P/bin/java"
       } else if ("i2pdatadir" == aI2PFileType) {
         path = "I2P"
-      } else if ("certszip" == aI2PFileType) {
-        path = "Contents/Resources/I2PBrowser/I2P/certs.zip"
       }
     } else {
       if ("i2p" == aI2PFileType) {
-        path = "I2PBrowser/I2P/bin/java"
+        appBaseDir.append('bin')
+        appBaseDir.append('java')
+        return appBaseDir
       } else if ("i2pdatadir" == aI2PFileType) {
         path = "I2P"
-      } else if ("certszip" == aI2PFileType) {
-        path = "I2PBrowser/I2P/certs.zip"
       }
     }
 
@@ -304,7 +312,13 @@ const LauncherUtil = {
         i2pFile = baseDir.clone()
       } else {
         i2pFile = LauncherUtilInternal._appDir.clone()
-        i2pFile.append("I2PBrowser")
+        if (this.isMac) {
+          i2pFile.append("I2PBrowser")
+        } else {
+          let lnxpath = i2pFile.clone()
+          lnxpath.append(path)
+          return lnxpath
+        }
       }
       i2pFile.appendRelativePath(path)
 
@@ -332,10 +346,21 @@ const LauncherUtil = {
     return LauncherUtilInternal
   },
   get dataDirectoryObject() {
-    return LauncherUtilInternal._dataDir
+    let dataDir = LauncherUtilInternal._dataDir
+    if (!this.isMac) {
+      if (!this.isWindows)
+      {
+        dataDir.append('I2PBrowser/Data/I2P')
+      } else {
+        dataDir.append('I2PBrowser\\Data\\I2P')
+      }
+    }
+    try { dataDir.normalize() } catch(e) {}
+    logger.log(3, `Decided to use file ${dataDir.path}`)
+    return dataDir.clone()
   },
   get appDirectoryObject() {
-    return LauncherUtilInternal._appDir
+    return LauncherUtilInternal._appDir.clone()
   },
   flushLocalizedStringCache: function()
   {
