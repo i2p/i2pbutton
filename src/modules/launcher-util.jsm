@@ -175,9 +175,9 @@ const LauncherUtil = {
       args.push(`-Di2p.dir.base=${i2pDir.path}`)
       logger.log(2, `Path for base is => ${i2pDir.path}`)
       args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
-      let logfile = dataDir.clone()
-      logfile.append('wrapper.log')
-      args.push(`-Dwrapper.logfile=${logfile.path}`)
+      let logFile = dataDir.clone()
+      logFile.append('wrapper.log')
+      args.push(`-Dwrapper.logfile=${logFile.path}`)
       args.push(`-Djetty.home=${i2pDir.path}`)
       args.push(`-Di2p.dir.config=${dataDir.path}`)
       args.push(`-Di2p.dir.router=${dataDir.path}`)
@@ -347,14 +347,6 @@ const LauncherUtil = {
   },
   get dataDirectoryObject() {
     let dataDir = LauncherUtilInternal._dataDir
-    if (!this.isMac) {
-      if (!this.isWindows)
-      {
-        dataDir.append('I2PBrowser/Data/I2P')
-      } else {
-        dataDir.append('I2PBrowser\\Data\\I2P')
-      }
-    }
     try { dataDir.normalize() } catch(e) {}
     logger.log(3, `Decided to use file ${dataDir.path}`)
     return dataDir.clone()
