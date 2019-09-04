@@ -5,7 +5,7 @@
 
 <!ENTITY aboutI2p.browser_name "The Invisible Internet Browser">
 <!ENTITY aboutI2p.browser_short_name "I2P Browser">
-<!ENTITY aboutI2p.browser_description "is preconfigured to search for content on the I2P network. In this release, I2P Browser bundles it's own I2P Router, which it starts and stops itself when you open and close the browser application.">
+<!ENTITY aboutI2p.browser_description "is preconfigured to search for content on the I2P network. In this release, I2P Browser bundles it's own I2P Router, which starts and stops when you open and close the browser application. It does not require an existing I2P router installed.">
 
 <!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :(">
 <!ENTITY aboutI2p.reccommend_not_running "If you just started the router, it may take up to 2 minutes for the router to start the proxy.">
