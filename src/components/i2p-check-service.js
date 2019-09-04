@@ -12,8 +12,8 @@ function IBI2PCheckService() {
   this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
   this._logger.info("I2pbutton I2P Check Service initialized")
 
-  this._statusOfI2PCheck = this.kCheckNotInitiated;
-  this.wrappedJSObject = this;
+  this._statusOfI2PCheck = this.kCheckNotInitiated
+  this.wrappedJSObject = this
 }
 
 IBI2PCheckService.prototype =
@@ -88,25 +88,27 @@ IBI2PCheckService.prototype =
   },
 
   _createRequest: function(url, aAsync, mimetype) {
-    Cu.importGlobalProperties(["XMLHttpRequest"]);
-    let req = new XMLHttpRequest();
-    req.open('GET', url, aAsync);
-    req.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
-    req.overrideMimeType(mimetype);
-    req.timeout = 120000;  // Wait at most two minutes for a response.
-    return req;
+    Cu.importGlobalProperties(["XMLHttpRequest"])
+    let req = new XMLHttpRequest()
+    req.open('GET', url, aAsync)
+    req.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE
+    req.overrideMimeType(mimetype)
+    req.timeout = 120000 // Wait at most two minutes for a response.
+    return req
   },
 
   createCheckConsoleRequest: function(aAsync)
   {
-    let url = 'http://localhost:7657/netdb?r=.';
-    return this._createRequest(url, aAsync, "text/html");
+    let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
+    let port = prefs.getCharPref("network.i2p.console_port", 7657)
+    let url = `http://localhost:${port}/netdb?r=.`
+    return this._createRequest(url, aAsync, "text/html")
   },
 
   createCheckProxyRequest: function(aAsync) {
-    let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-    let url = prefs.getCharPref("extensions.i2pbutton.test_url");
-    return this._createRequest(url, aAsync, "application/json");
+    let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
+    let url = prefs.getCharPref("extensions.i2pbutton.test_url")
+    return this._createRequest(url, aAsync, "application/json")
   },
 
   parseCheckConsoleResponse: function(aReq)

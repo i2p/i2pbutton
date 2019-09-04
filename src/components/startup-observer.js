@@ -18,7 +18,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
 
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
-//let NoScriptControl = Cu.import("resource://torbutton/modules/noscript-control.js", {});
+let NoScriptControl = Cu.import("resource://i2pbutton/modules/noscript-control.js", {});
 
 // Module specific constants
 const kMODULE_NAME = "Startup";
@@ -48,9 +48,6 @@ function StartupObserver() {
     }
 
     try {
-      // XXX: We're in a race with HTTPS-Everywhere to update our proxy settings
-      // before the initial SSL-Observatory test... If we lose the race, Firefox
-      // caches the old proxy settings for check.tp.o somehwere, and it never loads :(
       this.setProxySettings();
     } catch(e) {
       this.logger.log(4, "Early proxy change failed. Will try again at profile load. Error: "+e);
@@ -77,6 +74,7 @@ StartupObserver.prototype = {
       this._prefs.setIntPref("network.proxy.type", 1);
       this._prefs.setIntPref("network.proxy.socks_port", 0);
       this._prefs.setCharPref("network.proxy.socks", "");
+      this._prefs.setIntPref("network.i2p.console_port", 7657);
       this._prefs.setCharPref("network.proxy.http", "127.0.0.1");
       this._prefs.setIntPref("network.proxy.http_port", 4444);
       this._prefs.setCharPref("network.proxy.ssl", "127.0.0.1");
@@ -97,8 +95,8 @@ StartupObserver.prototype = {
         // but only for hackish reasons.
         this._prefs.setBoolPref("extensions.i2pbutton.startup", true);
 
-	// We need to listen for NoScript before it starts.
-        //NoScriptControl.initialize();
+	      // We need to listen for NoScript before it starts.
+        NoScriptControl.initialize();
 
         this.setProxySettings();
       }
