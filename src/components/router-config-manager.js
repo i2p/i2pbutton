@@ -17,14 +17,10 @@ const nsFile = Components.Constructor(
 )
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 Cu.import("resource://gre/modules/Services.jsm")
-
-//XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
-Cu.import("resource://i2pbutton/modules/launcher-util.jsm")
-//ChromeUtils.defineModuleGetter(this, "ZipUtils", "resource://gre/modules/ZipUtils.jsm")
-
 Cu.import('resource://gre/modules/osfile.jsm')
 Cu.import('resource://gre/modules/FileUtils.jsm')
 
+XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
 
 let consolePort = Services.prefs.getIntPref("extensions.i2pbutton.console_port_i2pj", 17657)
 let httpProxyPort = Services.prefs.getIntPref("network.proxy.http_port", 14444)
@@ -134,7 +130,6 @@ router.sharePercentage=50
 
 function RouterConfigManager() {
   this.version = '0.1'
-  this.routerCertsZipFile = LauncherUtil.getI2PFile("certszip", false)
   this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
   this._logger.log(3, "I2pbutton I2P RouterConfigManager Service initialized")
   this.wrappedJSObject = this

@@ -1,26 +1,18 @@
-// Bug 1506 P1: This is just a handy logger. If you have a better one, toss
-// this in the trash.
-
-/*************************************************************************
- * TBLogger (JavaScript XPCOM component)
- *
- * Allows loglevel-based logging to different logging mechanisms.
- *
- *************************************************************************/
-
+// TODO: Slowly migrate to firefox's Log module "resource://gre/modules/Log.jsm"
 // Module specific constants
-const kMODULE_NAME = "I2pbutton Logger";
-const kMODULE_CONTRACTID = "@geti2p.net/i2pbutton-logger;1";
-const kMODULE_CID = Components.ID("f36d72c9-9718-4134-b550-e109638331d7");
+const kMODULE_NAME = "I2pbutton Logger"
+const kMODULE_CONTRACTID = "@geti2p.net/i2pbutton-logger;1"
+const kMODULE_CID = Components.ID("f36d72c9-9718-4134-b550-e109638331d7")
 
-const Cr = Components.results;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+const Cr = Components.results
+const Cc = Components.classes
+const Ci = Components.interfaces
+const Cu = Components.utils
 
-Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
+Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
+Cu.import("resource://gre/modules/Services.jsm")
 
-Cu.import("resource://gre/modules/Services.jsm");
+let console = (Cu.import("resource://gre/modules/Console.jsm", {})).console
 
 function I2pbuttonLogger() {
   // Register observer

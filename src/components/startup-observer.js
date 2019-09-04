@@ -8,34 +8,34 @@
  *
  *************************************************************************/
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cr = Components.results;
-const Cu = Components.utils;
+const Cc = Components.classes
+const Ci = Components.interfaces
+const Cr = Components.results
+const Cu = Components.utils
 
 Cu.import("resource://gre/modules/Services.jsm")
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
-XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm")
 
-Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
-let NoScriptControl = Cu.import("resource://i2pbutton/modules/noscript-control.js", {});
+Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
+let NoScriptControl = Cu.import("resource://i2pbutton/modules/noscript-control.js", {})
 
 // Module specific constants
-const kMODULE_NAME = "Startup";
-const kMODULE_CONTRACTID = "@geti2p.net/startup-observer;1";
-const kMODULE_CID = Components.ID("06322def-6fde-4c06-aef6-47ae8e799629");
+const kMODULE_NAME = "Startup"
+const kMODULE_CONTRACTID = "@geti2p.net/startup-observer;1"
+const kMODULE_CID = Components.ID("06322def-6fde-4c06-aef6-47ae8e799629")
 
 function StartupObserver() {
-    this.logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject;
-    this._prefs = Services.prefs;
-    this.logger.log(3, "Startup Observer created");
+    this.logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
+    this._prefs = Services.prefs
+    this.logger.log(3, "Startup Observer created")
 
-    var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-    var prefName = "browser.startup.homepage";
+    var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment)
+    var prefName = "browser.startup.homepage"
     if (env.exists("I2P_DEFAULT_HOMEPAGE")) {
       // if the user has set this value in a previous installation, don't override it
       if (!this._prefs.prefHasUserValue(prefName)) {
-        this._prefs.setCharPref(prefName, env.get("I2P_DEFAULT_HOMEPAGE"));
+        this._prefs.setCharPref(prefName, env.get("I2P_DEFAULT_HOMEPAGE"))
       }
     }
 
