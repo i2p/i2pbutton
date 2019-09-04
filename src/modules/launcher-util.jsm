@@ -272,6 +272,7 @@ const LauncherUtil = {
     if (this.isWindows) {
       //
       if ("i2p" == aI2PFileType) {
+        appBaseDir.append('I2P')
         appBaseDir.append('bin')
         appBaseDir.append('java.exe')
         return appBaseDir
@@ -287,6 +288,7 @@ const LauncherUtil = {
       }
     } else {
       if ("i2p" == aI2PFileType) {
+        appBaseDir.append('I2P')
         appBaseDir.append('bin')
         appBaseDir.append('java')
         return appBaseDir

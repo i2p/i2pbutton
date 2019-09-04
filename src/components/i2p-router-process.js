@@ -94,7 +94,7 @@ I2PProcessService.prototype =
 
 
       const self = this
-      this._logger.log(3, 'Checking if a console is already up (an router already running)s')
+      this._logger.log(3, 'Checking if a console is already up (an router already running)')
       this._isConsoleRunning(function(res) {
         if (res!=4) {
           // Yes, 4 is success
@@ -274,7 +274,7 @@ I2PProcessService.prototype =
       // construct paths to files that will be inside it.
       let dataDir = LauncherUtil.getI2PConfigPath(true)
       let exeFile = LauncherUtil.getI2PFile("i2p", false)
-      this._logger.log(3, `Datadir: ${dataDir.path} ,,, ExeFile: ${exeFile.path}`)
+      this._logger.log(3, `Datadir => ${dataDir.path}\nExeFile => ${exeFile.path}`)
 
       var detailsKey;
       if (!exeFile)
@@ -314,10 +314,10 @@ I2PProcessService.prototype =
 
       this._logger.log(3, `Trying to start with ${args}`)
 
+      this._logger.log(2, "Starting " + exeFile.path)
       var p = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess)
       p.init(exeFile)
 
-      this._logger.log(2, "Starting " + exeFile.path)
       for (var i = 0; i < args.length; ++i)
         this._logger.log(2, "  " + args[i])
 
