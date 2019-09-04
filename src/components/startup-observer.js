@@ -53,12 +53,11 @@ function StartupObserver() {
       this.logger.log(4, "Early proxy change failed. Will try again at profile load. Error: "+e);
     }
 
-    // Arrange for our about:tor handler to be loaded in the default (chrome)
+    // Arrange for our about:i2p handler to be loaded in the default (chrome)
     // process as well as in each content process.
     let ppmm = Cc["@mozilla.org/parentprocessmessagemanager;1"]
                  .getService(Ci.nsIProcessScriptLoader);
-    ppmm.loadProcessScript("resource://i2pbutton/components/aboutI2p.js",
-                            true);
+    ppmm.loadProcessScript("resource://i2pbutton/components/aboutI2p.js", true)
 }
 
 StartupObserver.prototype = {
@@ -74,13 +73,13 @@ StartupObserver.prototype = {
       this._prefs.setIntPref("network.proxy.type", 1);
       this._prefs.setIntPref("network.proxy.socks_port", 0);
       this._prefs.setCharPref("network.proxy.socks", "");
-      this._prefs.setIntPref("extensions.i2pbutton.console_port_i2pj", 7657);
+      this._prefs.setIntPref("extensions.i2pbutton.console_port_i2pj", 17657);
       this._prefs.setCharPref("network.proxy.http", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.http_port", 4444);
+      this._prefs.setIntPref("network.proxy.http_port", 14444);
       this._prefs.setCharPref("network.proxy.ssl", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.ssl_port", 4445);
+      this._prefs.setIntPref("network.proxy.ssl_port", 14444);
       this._prefs.setCharPref("network.proxy.ftp", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.ftp_port", 4444);
+      this._prefs.setIntPref("network.proxy.ftp_port", 14444);
       this._prefs.setCharPref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");
 
       // Force prefs to be synced to disk

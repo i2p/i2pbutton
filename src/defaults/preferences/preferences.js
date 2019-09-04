@@ -16,6 +16,10 @@ pref("extensions.i2pbutton.local_i2p_check",true);
 // https://developer.mozilla.org/en/Addons/Working_with_AMO
 pref("extensions.i2pbutton@geti2p.net.getAddons.cache.enabled", false);
 
+// I2P router control prefs:
+pref("extensions.i2pbutton.start_i2p", true);
+pref("extensions.i2pbutton.kill_router_on_exit", true);
+
 // State prefs:
 pref("extensions.i2pbutton.startup",false);
 pref("extensions.i2pbutton.inserted_button",false);
@@ -27,9 +31,9 @@ pref("extensions.i2pbutton.cookie_auto_protect",false);
 pref("extensions.i2pbutton.clear_http_auth",true);
 pref("extensions.i2pbutton.close_newnym",true);
 pref("extensions.i2pbutton.resize_new_windows",true);
-pref("extensions.i2pbutton.startup_state", 2); // 0=non-tor, 1=tor, 2=last
+pref("extensions.i2pbutton.startup_state", 2); // 0=non-i2p, 1=i2p, 2=last
 pref("extensions.i2pbutton.i2p_memory_jar",false);
-pref("extensions.i2pbutton.nontor_memory_jar",false);
+pref("extensions.i2pbutton.noni2p_memory_jar",false);
 pref("extensions.i2pbutton.launch_warning",true);
 
 // Security Slider
@@ -52,20 +56,9 @@ pref("browser.startup.homepage", "chrome://i2pbutton/content/locale/non-localize
 pref("extensions.i2pbutton.start_i2p", true);
 pref("extensions.i2pbutton.kill_router_on_exit", true);
 pref("extensions.i2pbutton.console_host", "127.0.0.1");
-pref("extensions.i2pbutton.console_port_i2pj", 7657);
-pref("extensions.i2pbutton.console_port_i2pd", 7070);
+pref("extensions.i2pbutton.console_port_i2pj", 17657);
+pref("extensions.i2pbutton.console_port_i2pd", 17070);
 
 // I2P Implementation
 pref("extensions.i2pbutton.i2pimpl_driver", "i2pj");
-
-// The i2p_path is relative to the application directory. On Linux and
-// Windows this is the Browser/ directory that contains the firefox
-// executables, and on Mac OS it is the I2PBrowser.app directory.
-pref("extensions.i2pbutton.i2p_path", "");
-
-// The i2pdatadir_path are relative to the data directory,
-// which is I2PBrowser-Data/ if it exists as a sibling of the application
-// directory. If I2PBrowser-Data/ does not exist, these paths are relative
-// to the I2PBrowser/ directory within the application directory.
-pref("extensions.i2pbutton.i2pdatadir_path", "");
 

@@ -100,7 +100,7 @@ IBI2PCheckService.prototype =
   createCheckConsoleRequest: function(aAsync)
   {
     let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
-    let port = prefs.getCharPref("extensions.i2pbutton.console_port_i2pj", 7657)
+    let port = prefs.getIntPref("extensions.i2pbutton.console_port_i2pj", 17657)
     let url = `http://localhost:${port}/netdb?r=.`
     return this._createRequest(url, aAsync, "text/html")
   },
