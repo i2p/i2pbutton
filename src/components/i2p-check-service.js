@@ -181,5 +181,5 @@ IBI2PCheckService.prototype =
   }
 };
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([IBI2PCheckService]);
+Cu.import("resource://gre/modules/XPCOMUtils.jsm")
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([IBI2PCheckService])

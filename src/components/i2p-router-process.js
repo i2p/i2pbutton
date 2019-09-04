@@ -321,21 +321,25 @@ I2PProcessService.prototype =
       for (var i = 0; i < args.length; ++i)
         this._logger.log(2, "  " + args[i])
 
+      // Possible fix for Windows and cmd.exe window spawn.
+      p.startHidden = true
+      p.noShell = true
+
       p.runwAsync(args, args.length, this, false)
       this.mI2PProcess = p
       this.mI2PProcessStartTime = Date.now()
     }
     catch (e)
     {
-      this.mI2PProcessStatus = this.kStatusExited;
+      this.mI2PProcessStatus = this.kStatusExited
       //var s = LauncherUtil.getLocalizedString("i2p_failed_to_start");
       //this._notifyUserOfError(s, null, this.kI2PProcessDidNotStartTopic);
-      this._logger.log(4, "_startI2P error: ", e);
+      this._logger.log(4, "_startI2P error: ", e)
     }
   }, // _startI2P()
 
   _isConsoleRunning: function(callback) {
-    let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
+    let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
     let req = checkSvc.createCheckConsoleRequest(true);
     req.onreadystatechange = function(event) {
       if (req.readyState === 4) {
