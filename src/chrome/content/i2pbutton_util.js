@@ -1,5 +1,4 @@
-var m_ib_i2plog = Components.classes["@geti2p.net/i2pbutton-logger;1"]
-.getService(Components.interfaces.nsISupports).wrappedJSObject;
+let m_ib_i2plog = Components.classes["@geti2p.net/i2pbutton-logger;1"].getService(Components.interfaces.nsISupports).wrappedJSObject;
 
 var m_ib_string_bundle = i2pbutton_get_stringbundle();
 

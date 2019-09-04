@@ -9,8 +9,8 @@ const Cu = Components.utils
 try { Cu.import("resource://gre/modules/ctypes.jsm") } catch(e) {}
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 
-XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm");
-//XPCOMUtils.defineLazyModuleGetter(this, "I2PLauncherLogger", "resource://i2pbutton/modules/tl-logger.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
+//XPCOMUtils.defineLazyModuleGetter(this, "I2PLauncherLogger", "resource://i2pbutton/modules/tl-logger.jsm")
 
 //let observerService = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService)
 
@@ -94,7 +94,7 @@ I2PProcessService.prototype =
 
 
       const self = this
-      this._logger.log(3, 'Checking if a console is already up (an router already running)s')
+      this._logger.log(3, 'Checking if a console is already up (an router already running)')
       this._isConsoleRunning(function(res) {
         if (res!=4) {
           // Yes, 4 is success
@@ -104,14 +104,6 @@ I2PProcessService.prototype =
           self._logger.log(3, 'Already found a router, won\'t launch.')
         }
       })
-      /*if (LauncherUtil.shouldOnlyConfigureI2P)
-      {
-        this._controlI2P(true, false);
-      }
-      else if (LauncherUtil.shouldStartAndOwnI2P)
-      {
-        this.I2PStartAndControlI2P(false);
-      }*/
     }
     else if ("quit-application-granted" == aTopic)
     {
@@ -121,6 +113,9 @@ I2PProcessService.prototype =
       this.mObsSvc.removeObserver(this, kBootstrapStatusTopic);
       if (this.mI2PProcess)
       {
+        let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
+        let shouldKillRouter = prefs.getBoolPref("extensions.i2pbutton.kill_router_on_exit", true)
+        if (shouldKillRouter) this.mI2PProcess.kill()
         this._logger.log(4, "Disconnecting from i2p process (pid " + this.mI2PProcess.pid + ")");
         this.mI2PProcess = null;
       }
@@ -145,22 +140,6 @@ I2PProcessService.prototype =
       }
       else
       {
-        this.mProtocolSvc.I2PCleanupConnection();
-
-        let s;
-        if (!this.mDidConnectToI2PControlPort)
-        {
-          let key = "i2p_exited_during_startup";
-          s = LauncherUtil.getLocalizedString(key)
-          if (s == key)  // No string found for key.
-            s = undefined;
-        }
-
-        if (!s)
-        {
-          s = LauncherUtil.getLocalizedString("i2p_exited") + "\n\n" + LauncherUtil.getLocalizedString("i2p_exited2");
-        }
-        this._logger.log(4, s);
         var defaultBtnLabel = LauncherUtil.getLocalizedString("restart_i2p");
         var cancelBtnLabel = "OK";
         try
@@ -170,10 +149,12 @@ I2PProcessService.prototype =
           cancelBtnLabel = sysBundle.GetStringFromName(cancelBtnLabel);
         } catch(e) {}
 
-        if (LauncherUtil.showConfirm(null, s, defaultBtnLabel, cancelBtnLabel) && !this.mIsQuitting)
+        this._logger.log(3, 'The router stopped..')
+
+        /*if (LauncherUtil.showConfirm(null, s, defaultBtnLabel, cancelBtnLabel) && !this.mIsQuitting)
         {
           this.I2PStartAndControlI2P(false);
-        }
+        }*/
       }
     }
     else if ("timer-callback" == aTopic)
@@ -259,13 +240,11 @@ I2PProcessService.prototype =
 
   // Private Member Variables ////////////////////////////////////////////////
   mI2PProcessStatus: 0,  // kStatusUnknown
-  mDidConnectToI2PConsolePort: false,  // Have we ever made a connection?
   mIsBootstrapDone: false,
   mBootstrapErrorOccurred: false,
   mIsQuitting: false,
   mObsSvc: null,
-  mProtocolSvc: null,
-  mI2PUseImpl: null,
+  mI2PUseImpl: this.kI2PImplJava,
   mI2PProcess: null,    // nsIProcess
   mI2PProcessStartTime: null, // JS Date.now()
   mControlConnTimer: null,
@@ -293,9 +272,9 @@ I2PProcessService.prototype =
 
       // Get the I2P data directory first so it is created before we try to
       // construct paths to files that will be inside it.
-      var dataDir = LauncherUtil.getI2PFile("i2pdatadir", true)
-      var exeFile = LauncherUtil.getI2PFile("i2p", false)
-      this._logger.log(3, `Datadir: ${dataDir} ,,, ExeFile: ${exeFile}`)
+      let dataDir = LauncherUtil.getI2PConfigPath(true)
+      let exeFile = LauncherUtil.getI2PFile("i2p", false)
+      this._logger.log(3, `Datadir => ${dataDir.path}\nExeFile => ${exeFile.path}`)
 
       var detailsKey;
       if (!exeFile)
@@ -312,27 +291,7 @@ I2PProcessService.prototype =
         return;
       }
 
-      let args = []
-      args.push(`-Di2p.dir.config=${dataDir.path}`)
-      args.push(`-Di2p.dir.base=${dataDir.path}`)
-      args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
-      args.push(`-Dwrapper.logfile=${dataDir.path}/wrapper.log`)
-      args.push(`-Djetty.home=${dataDir.path}`)
-      args.push('-Dwrapper.name=i2pbrowser')
-      args.push('-Dwrapper.displayname=I2PBrowser')
-      args.push('-cp')
-      args.push(`${dataDir.path}:${dataDir.path}/lib`)
-      args.push("-Djava.awt.headless=true")
-      args.push("-Dwrapper.console.loglevel=DEBUG")
-
-      let pid = this._getpid()
-      if (0 != pid)
-      {
-        args.push(`-Dwrapper.pid=${pid}`)
-      }
-
-      // Main class to execute
-      args.push("net.i2p.router.Router")
+      let args = LauncherUtil.getRouterDefaultArgs()
 
       // Set an environment variable that points to the I2P data directory.
       // This is used by meek-client-torbrowser to find the location for
@@ -353,10 +312,12 @@ I2PProcessService.prototype =
 
       this.mI2PProcessStatus = this.kStatusStarting
 
+      this._logger.log(3, `Trying to start with ${args}`)
+
+      this._logger.log(2, "Starting " + exeFile.path)
       var p = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess)
       p.init(exeFile)
 
-      this._logger.log(2, "Starting " + exeFile.path)
       for (var i = 0; i < args.length; ++i)
         this._logger.log(2, "  " + args[i])
 
@@ -412,6 +373,9 @@ I2PProcessService.prototype =
     try
     {
       this.mQuitSoon = false;
+      if (this.mI2PProcess != null) {
+        this.mI2PProcess.kill()
+      }
 
       var asSvc = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
       var flags = asSvc.eAttemptQuit;
