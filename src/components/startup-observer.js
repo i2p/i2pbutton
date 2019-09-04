@@ -74,7 +74,7 @@ StartupObserver.prototype = {
       this._prefs.setIntPref("network.proxy.type", 1);
       this._prefs.setIntPref("network.proxy.socks_port", 0);
       this._prefs.setCharPref("network.proxy.socks", "");
-      this._prefs.setIntPref("network.i2p.console_port", 7657);
+      this._prefs.setIntPref("extensions.i2pbutton.console_port_i2pj", 7657);
       this._prefs.setCharPref("network.proxy.http", "127.0.0.1");
       this._prefs.setIntPref("network.proxy.http_port", 4444);
       this._prefs.setCharPref("network.proxy.ssl", "127.0.0.1");
