@@ -145,9 +145,20 @@ RouterConfigManager.prototype = {
   _logger:          null,
   state:            {},
 
+  // State
+  mDoesRouterConfigExists: false,
+  mDoesClientsConfigExists: false,
+  mDoesTunnelConfigExists: false,
+  mHasChecksStarted: false,
+  mIsChecksDone: false,
+
+
   // nsISupports implementation.
   QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsISupports]),
 
+  canRouterStart: function() {
+    return (this.mDoesRouterConfigExists && this.mDoesClientsConfigExists && this.mDoesTunnelConfigExists)
+  },
 
 
   _write_router_config: function(configfile,onComplete) {
@@ -170,31 +181,78 @@ RouterConfigManager.prototype = {
   },
 
 
-  ensure_config: function(onCompleteCallback) {
+  ensure_config: async function(onCompleteCallback) {
+    this.mHasChecksStarted = true
+
     let configDirectory = LauncherUtil.getI2PConfigPath(true)
     let routerConfigFile = configDirectory.clone()
     routerConfigFile.append('router.config')
-    let tunnelConfigFIle = configDirectory.clone()
-    tunnelConfigFIle.append('i2ptunnel.config')
-    let clientsConfigFIle = configDirectory.clone()
-    clientsConfigFIle.append('clients.config')
+    let tunnelConfigFile = configDirectory.clone()
+    tunnelConfigFile.append('i2ptunnel.config')
+    let clientsConfigFile = configDirectory.clone()
+    clientsConfigFile.append('clients.config')
 
     // Ensure they exists
-    if (!routerConfigFile.exists) {
-      this._write_router_config(routerConfigFile, file => {
-        if (typeof onCompleteCallback === 'function') onCompleteCallback(file)
+    const self = this
+
+    this.ensureRouterConfigPromise = () => {
+      return new Promise(resolve => {
+        if (!routerConfigFile.exists()) {
+          self._write_router_config(routerConfigFile, file => {
+            self.mDoesRouterConfigExists = true
+            self._logger.log(3, 'Wrote router.config')
+            if (typeof onCompleteCallback === 'function') onCompleteCallback(file)
+            resolve(routerConfigFile)
+          })
+        } else {
+          self._logger.log(3, 'Found router.config from earlier')
+          self.mDoesRouterConfigExists = true
+          resolve(null)
+        }
       })
     }
-    if (!tunnelConfigFIle.exits) {
-      this._write_tunnel_config(tunnelConfigFIle, tfile => {
-        if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
+
+    this.ensureTunnelConfigPromise = () => {
+      return new Promise(resolve => {
+        if (!tunnelConfigFile.exists()) {
+          self._write_tunnel_config(tunnelConfigFile, tfile => {
+            self._logger.log(3, 'Wrote i2ptunnel.config')
+            self.mDoesTunnelConfigExists = true
+            if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
+            resolve(tunnelConfigFile)
+          })
+        } else {
+          self._logger.log(3, 'Found i2ptunnel.config from earlier')
+          self.mDoesTunnelConfigExists = true
+          resolve(null)
+        }
       })
     }
-    if (!clientsConfigFIle.exits) {
-      this._write_tunnel_config(tunnelConfigFIle, tfile => {
-        if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
+
+    this.ensureClientsConfigPromise = () => {
+      return new Promise(resolve => {
+        if (!clientsConfigFile.exists()) {
+          self._write_tunnel_config(tunnelConfigFile, tfile => {
+            self._logger.log(3, 'Wrote clients.config')
+            self.mDoesClientsConfigExists = true
+            if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
+            resolve(clientsConfigFile)
+          })
+        } else {
+          self._logger.log(3, 'Found clients.config from earlier')
+          self.mDoesClientsConfigExists = true
+          resolve(null)
+        }
       })
     }
+
+    // Promises are not done but at least done here.
+    this.mIsChecksDone = true
+    return Promise.all([
+      this.ensureRouterConfigPromise(),
+      this.ensureTunnelConfigPromise(),
+      this.ensureClientsConfigPromise(),
+    ])
   },
 }
 
