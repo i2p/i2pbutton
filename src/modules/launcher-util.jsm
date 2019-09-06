@@ -258,13 +258,13 @@ const LauncherUtil = {
 
   getI2PFile: function(aI2PFileType, aCreate) {
     if (!aI2PFileType) {
-      return false
+      aI2PFileType = 'i2p'
     }
     let i2pFile
     let path = ''
     let useAppDir = false
     let isRelativePath = true
-    let isUserData = (aI2PFileType != 'i2p')
+    let isUserData = false
     let appBaseDir = this.appDirectoryObject.clone()
 
     logger.log(2, `appBaseDir => ${appBaseDir.path}`)
@@ -276,15 +276,10 @@ const LauncherUtil = {
         appBaseDir.append('bin')
         appBaseDir.append('java.exe')
         return appBaseDir
-      } else if ("i2pdatadir" == aI2PFileType) {
-        path = "I2P"
       }
     } else if (this.isMac) {
-      //
       if ("i2p" == aI2PFileType) {
         path = "Contents/Resources/I2PBrowser/I2P/bin/java"
-      } else if ("i2pdatadir" == aI2PFileType) {
-        path = "I2P"
       }
     } else {
       if ("i2p" == aI2PFileType) {
@@ -292,42 +287,23 @@ const LauncherUtil = {
         appBaseDir.append('bin')
         appBaseDir.append('java')
         return appBaseDir
-      } else if ("i2pdatadir" == aI2PFileType) {
-        path = "I2P"
       }
     }
 
-    logger.log(2, `getI2PFile - Gonna try path ${path}`)
+    i2pFile = LauncherUtilInternal._appDir.clone()
     try {
-      if (path == '' && !useAppDir) {
-        throw Error('Fatal error: Can\'t resolve directories!')
-      }
-      if (useAppDir)
-      {
-        i2pFile = LauncherUtilInternal._appDir.clone()
-      }
 
       // Turn 'path' into an absolute path.
-      if (LauncherUtilInternal._isUserDataOutsideOfAppDir)
-      {
-        let baseDir = isUserData ? LauncherUtilInternal._dataDir : LauncherUtilInternal._appDir
-        i2pFile = baseDir.clone()
+      i2pFile = LauncherUtilInternal._appDir.clone()
+      if (this.isMac) {
+        i2pFile.append("I2PBrowser")
       } else {
-        i2pFile = LauncherUtilInternal._appDir.clone()
-        if (this.isMac) {
-          i2pFile.append("I2PBrowser")
-        } else {
-          let lnxpath = i2pFile.clone()
-          lnxpath.append(path)
-          return lnxpath
-        }
+        let lnxpath = i2pFile.clone()
+        lnxpath.append(path)
+        return lnxpath
       }
       i2pFile.appendRelativePath(path)
-
-      if (!i2pFile.exists() && aCreate === true) {
-        logger.log(3, `Requested datadir ${i2pFile.path}, but it wasn't created so we create it now.`)
-        i2pFile.create(i2pFile.DIRECTORY_TYPE, 0o700)
-      }
+      logger.log(2, `getI2PFile - Gonna try path ${i2pFile.path}`)
 
       if (i2pFile.exists()) {
         try { i2pFile.normalize() } catch(e) {}

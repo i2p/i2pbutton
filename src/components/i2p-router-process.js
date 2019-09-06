@@ -10,13 +10,13 @@ try { Cu.import("resource://gre/modules/ctypes.jsm") } catch(e) {}
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 
 XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
-//XPCOMUtils.defineLazyModuleGetter(this, "I2PLauncherLogger", "resource://i2pbutton/modules/tl-logger.jsm")
 
 //let observerService = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService)
 
 function I2PProcessService()
 {
   this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
+  this._config_checker = Cc["@geti2p.net/i2pbutton-router-config-mgr;1"].getService(Ci.nsISupports).wrappedJSObject
   this._logger.log(3, "I2pbutton I2P Router Process Service initialized")
   this.wrappedJSObject = this
 }
@@ -34,7 +34,7 @@ I2PProcessService.prototype =
 
   kInitialControlConnDelayMS: 25,
   kMaxControlConnRetryMS: 2000,     // Retry at least every 2 seconds.
-  kControlConnTimeoutMS: 5*60*1000, // Wait at most 5 minutes for tor to start.
+  kControlConnTimeoutMS: 5*60*1000, // Wait at most 5 minutes for i2p to start.
 
   kStatusUnknown: 0, // I2P process status.
   kStatusStarting: 1,
@@ -98,8 +98,11 @@ I2PProcessService.prototype =
       this._isConsoleRunning(function(res) {
         if (res!=4) {
           // Yes, 4 is success
-          self._logger.log(3, 'Starting the router')
-          self.I2PStartAndControlI2P(true)
+          let canStartPromise = this._config_checker.ensure_config()
+          canStartPromise.then(() => {
+            self._logger.log(3, 'Starting the router')
+            self.I2PStartAndControlI2P(true)
+          })
         } else {
           self._logger.log(3, 'Already found a router, won\'t launch.')
         }
@@ -321,21 +324,25 @@ I2PProcessService.prototype =
       for (var i = 0; i < args.length; ++i)
         this._logger.log(2, "  " + args[i])
 
+      // Possible fix for Windows and cmd.exe window spawn.
+      p.startHidden = true
+      p.noShell = true
+
       p.runwAsync(args, args.length, this, false)
       this.mI2PProcess = p
       this.mI2PProcessStartTime = Date.now()
     }
     catch (e)
     {
-      this.mI2PProcessStatus = this.kStatusExited;
+      this.mI2PProcessStatus = this.kStatusExited
       //var s = LauncherUtil.getLocalizedString("i2p_failed_to_start");
       //this._notifyUserOfError(s, null, this.kI2PProcessDidNotStartTopic);
-      this._logger.log(4, "_startI2P error: ", e);
+      this._logger.log(4, "_startI2P error: ", e)
     }
   }, // _startI2P()
 
   _isConsoleRunning: function(callback) {
-    let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
+    let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
     let req = checkSvc.createCheckConsoleRequest(true);
     req.onreadystatechange = function(event) {
       if (req.readyState === 4) {
