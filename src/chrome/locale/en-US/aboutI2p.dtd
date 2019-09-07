@@ -5,21 +5,32 @@
 
 <!ENTITY aboutI2p.browser_name "The Invisible Internet Browser">
 <!ENTITY aboutI2p.browser_short_name "I2P Browser">
-<!ENTITY aboutI2p.browser_description "is preconfigured to search for content on the I2P network. In this release, I2P Browser does not launch its own router and is dependent on having the I2P router pre installed and running. The I2P Browser is preconfigured with default router settings.">
+<!ENTITY aboutI2p.browser_description "is preconfigured to get your content using the anonymous and private I2P network. In this release, I2P Browser bundles it's own I2P Router, which starts and stops when you open and close the browser application. It does not require an existing I2P router installed.">
+<!ENTITY aboutI2p.donate "Donate">
+<!ENTITY aboutI2p.supportus "Support I2P development">
 
-<!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :( However, if you just started the router, please try again in two minutes cause it need time to start.">
+<!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :(">
+<!ENTITY aboutI2p.reccommend_not_running "If you just started the router, it may take up to 2 minutes for the router to start the proxy.">
 <!ENTITY aboutI2p.all_checks_ok "Super! The browser detected I2P running in background! :)">
-<!ENTITY aboutI2p.warn_experimental "This is a experimental sub-project of I2P.">
-<!ENTITY aboutI2p.console_visit_msg "It seems like your console is up, click the to visit:">
+<!ENTITY aboutI2p.warn_experimental "This is a experimental sub-project of I2P. It is currently Beta software.">
+<!ENTITY aboutI2p.console_visit_msg "It seems like your console is up, click to visit:">
+<!ENTITY aboutI2p.i2ptunnel_visit_msg "I2P has a web-based interface for configuring .i2p services like web sites, to set up your own web sites, go here:">
+<!ENTITY aboutI2p.email_visit_msg "I2P also bundles a webmail client which can be used to access in-I2P e-mail. To use it, go here:">
+<!ENTITY aboutI2p.torrent_visit_msg "I2P is capable of anonymous Peer-to-Peer file sharing, to use the built-in bittorrent client go here:">
 <!ENTITY aboutI2p.console "Console">
+<!ENTITY aboutI2p.torrent "Torrents">
+<!ENTITY aboutI2p.i2ptunnel "Tunnels">
+<!ENTITY aboutI2p.email "E-Mail">
 <!ENTITY aboutI2p.i2pbutton_source "I2P Button source">
-<!ENTITY aboutI2p.build_scripts "Build scripts">
-<!ENTITY aboutI2p.source "Source">
-<!ENTITY aboutI2p.bug_tracker "Bugtracker">
+<!ENTITY aboutI2p.build_scripts "Build scripts to compile from source">
+<!ENTITY aboutI2p.source "Browse the source code">
+<!ENTITY aboutI2p.bug_tracker "Submit a Bug Report">
 <!ENTITY aboutI2p.links "Links">
-<!ENTITY aboutI2p.refresh_text "Click the link to refresh the page (In case the router is starting up):">
+<!ENTITY aboutI2p.design "Design Document">
+<!ENTITY aboutI2p.refresh_text "Try refreshing the page.">
 <!ENTITY aboutI2p.refresh_link "Refresh">
 
-<!ENTITY aboutI2p.getInvolved.label "Get Involved »">
-<!ENTITY aboutI2p.getInvolved.link "https://geti2p.net/en/get-involved">
-
+<!ENTITY aboutI2p.site "http://i2p-projekt.i2p/en">
+<!ENTITY aboutI2p.routerconsole "http://localhost:7657">
+<!ENTITY aboutI2p.github "https://github.com/mikalv">
+<!ENTITY aboutI2p.trac "http://trac.i2p2.i2p">
