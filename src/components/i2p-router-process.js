@@ -98,7 +98,7 @@ I2PProcessService.prototype =
       this._isConsoleRunning(function(res) {
         if (res!=4) {
           // Yes, 4 is success
-          let canStartPromise = this._config_checker.ensure_config()
+          let canStartPromise = self._config_checker.ensure_config()
           canStartPromise.then(() => {
             self._logger.log(3, 'Starting the router')
             self.I2PStartAndControlI2P(true)
