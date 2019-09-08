@@ -290,18 +290,17 @@ const LauncherUtil = {
       }
     }
 
-    i2pFile = LauncherUtilInternal._appDir.clone()
     try {
 
       // Turn 'path' into an absolute path.
       i2pFile = LauncherUtilInternal._appDir.clone()
-      if (this.isMac) {
-        i2pFile.append("I2PBrowser")
-      } else {
+      if (!this.isMac) {
         let lnxpath = i2pFile.clone()
         lnxpath.append(path)
         return lnxpath
       }
+      //i2pFile.appendRelativePath(path)
+      logger.log(2, `getI2PFile - Path before append: ${i2pFile.path}`)
       i2pFile.appendRelativePath(path)
       logger.log(2, `getI2PFile - Gonna try path ${i2pFile.path}`)
 
