@@ -31,6 +31,10 @@
 <!ENTITY aboutI2p.refresh_link "Refresh">
 
 <!ENTITY aboutI2p.site "http://i2p-projekt.i2p/en">
-<!ENTITY aboutI2p.routerconsole "http://localhost:7657">
+<!ENTITY aboutI2p.routerconsole "http://localhost:17657">
 <!ENTITY aboutI2p.github "https://github.com/mikalv">
 <!ENTITY aboutI2p.trac "http://trac.i2p2.i2p">
+
+<!ENTITY aboutI2p.startup "Sometimes it takes a minute or two for I2P to get started for the first time. While you wait, visit the">
+<!ENTITY aboutI2p.startup_b "to get acquainted with all the capabilities of I2P.">
+<!ENTITY aboutI2p.rc "Router Console">
