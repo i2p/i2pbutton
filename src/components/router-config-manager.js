@@ -180,6 +180,55 @@ RouterConfigManager.prototype = {
     })
   },
 
+  copy_recursive: async function(sourceDir, destDir) {
+    let items = sourceDir.directoryEntries
+    while (items.hasMoreElements()) {
+      let item = items.getNext().QueryInterface(Components.interfaces.nsIFile)
+      if (item.isFile()) {
+        item.copyTo(destDir, "")
+        this._logger.log(3, `Copied ${item.path}`)
+      } else if (item.isDirectory()) {
+        let newDir = destDir.clone()
+        newDir.append(item.leafName)
+        newDir.create(newDir.DIRECTORY_TYPE, 0o775)
+        this._logger.log(3, `Recursively copying ${item.path}`)
+        this.copy_recursive(item, newDir)
+      }
+    }
+  },
+
+  ensure_docs: async function() {
+    let configDirectory = LauncherUtil.getI2PConfigPath(true)
+    let destDocsDir = configDirectory.clone()
+    let distDocsDir = LauncherUtil.getI2PBinary()
+    distDocsDir = distDocsDir.parent.parent
+    distDocsDir.append('docs')
+    destDocsDir.append('docs')
+    if (!destDocsDir.exists()) {
+      this.copy_recursive(distDocsDir, destDocsDir)
+    }
+  },
+
+  ensure_webapps: async function() {
+    let configDirectory = LauncherUtil.getI2PConfigPath(true)
+    let destWebappDir = configDirectory.clone()
+    let distWebppDir = LauncherUtil.getI2PBinary()
+    distWebppDir = distWebppDir.parent.parent
+    distWebppDir.append('webapps')
+    destWebappDir.append('webapps')
+    if (!destWebappDir.exists()) {
+      destWebappDir.create(destWebappDir.DIRECTORY_TYPE, 0o775)
+      let items = distWebppDir.directoryEntries
+      while (items.hasMoreElements()) {
+        let item = items.getNext().QueryInterface(Components.interfaces.nsIFile)
+        if (item.isFile()) {
+          item.copyTo(destWebappDir, "")
+          this._logger.log(3, `Copied ${item.path}`)
+        }
+      }
+    }
+  },
+
 
   ensure_config: async function(onCompleteCallback) {
     this.mHasChecksStarted = true
@@ -191,6 +240,19 @@ RouterConfigManager.prototype = {
     tunnelConfigFile.append('i2ptunnel.config')
     let clientsConfigFile = configDirectory.clone()
     clientsConfigFile.append('clients.config')
+
+    let hoststxtFile = configDirectory.clone()
+    hoststxtFile.append('hosts.txt')
+
+    if (!hoststxtFile.exists()) {
+      let distFile = LauncherUtil.getI2PBinary().parent.parent
+      distFile.append('hosts.txt')
+      distFile.copyTo(hoststxtFile.parent, "")
+      this._logger.log(3, `Copied hosts.txt file`)
+    }
+
+    this.ensure_docs()
+    this.ensure_webapps()
 
     // Ensure they exists
     const self = this
