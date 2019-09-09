@@ -190,7 +190,7 @@ RouterConfigManager.prototype = {
       } else if (item.isDirectory()) {
         let newDir = destDir.clone()
         newDir.append(item.leafName)
-        newDir.create(newDir.DIRECTORY_TYPE, 0o775)
+        newDir.create(newDir.DIRECTORY_TYPE, 0o700)
         this._logger.log(3, `Recursively copying ${item.path}`)
         this.copy_recursive(item, newDir)
       }
@@ -217,7 +217,7 @@ RouterConfigManager.prototype = {
     distWebppDir.append('webapps')
     destWebappDir.append('webapps')
     if (!destWebappDir.exists()) {
-      destWebappDir.create(destWebappDir.DIRECTORY_TYPE, 0o775)
+      destWebappDir.create(destWebappDir.DIRECTORY_TYPE, 0o700)
       let items = distWebppDir.directoryEntries
       while (items.hasMoreElements()) {
         let item = items.getNext().QueryInterface(Components.interfaces.nsIFile)
@@ -255,13 +255,13 @@ RouterConfigManager.prototype = {
     let orgDir = configDirectory.clone()
     orgDir.append('org')
     if (!orgDir.exists()) {
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o775)
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
       orgDir.append('eclipse')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o775)
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
       orgDir.append('jetty')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o775)
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
       orgDir.append('webapp')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o775)
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
       let distJettyFile = LauncherUtil.getI2PBinary().parent.parent
       distJettyFile.append('org')
       distJettyFile.append('eclipse')
