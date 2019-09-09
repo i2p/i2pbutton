@@ -20,9 +20,9 @@ var m_ib_confirming_plugins = false
 var m_ib_window_height = window.outerHeight
 var m_ib_window_width = window.outerWidth
 
+let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
 
 function checkI2P(callback,proxyCallback) {
-  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject;
   let req = checkSvc.createCheckConsoleRequest(true);
   req.onreadystatechange = function(event) {
     if (req.readyState === 4) {
@@ -47,13 +47,11 @@ function checkI2P(callback,proxyCallback) {
 
 function i2pbutton_i2p_check_ok()
 {
-  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
   // It's important to check both if failed and if it's initialised to not report wrong to the end user
   return (checkSvc.isConsoleWorking && checkSvc.isProxyWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
 }
 function i2pbutton_i2p_console_check_ok()
 {
-  let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
   // It's important to check both if failed and if it's initialised to not report wrong to the end user
   return (checkSvc.isConsoleWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
 }
