@@ -314,7 +314,7 @@ RouterConfigManager.prototype = {
     this.ensureClientsConfigPromise = () => {
       return new Promise(resolve => {
         if (!clientsConfigFile.exists()) {
-          self._write_clients_config(tunnelConfigFile, tfile => {
+          self._write_clients_config(clientsConfigFile, tfile => {
             self._logger.log(3, 'Wrote clients.config')
             self.mDoesClientsConfigExists = true
             if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
