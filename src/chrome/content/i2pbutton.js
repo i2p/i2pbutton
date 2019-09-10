@@ -21,6 +21,7 @@ var m_ib_window_height = window.outerHeight
 var m_ib_window_width = window.outerWidth
 
 let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
+let routerCtrl = Cc["@geti2p.net/i2pbutton-process-service;1"].getService(Ci.nsISupports).wrappedJSObject
 
 function checkI2P(callback,proxyCallback) {
   let req = checkSvc.createCheckConsoleRequest(true);
@@ -50,10 +51,14 @@ function i2pbutton_i2p_check_ok()
   // It's important to check both if failed and if it's initialised to not report wrong to the end user
   return (checkSvc.isConsoleWorking && checkSvc.isProxyWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
 }
-function i2pbutton_i2p_console_check_ok()
-{
-  // It's important to check both if failed and if it's initialised to not report wrong to the end user
-  return (checkSvc.isConsoleWorking && checkSvc.kCheckNotInitiated != checkSvc.statusOfI2PCheck)
+function i2pbutton_i2p_console_check_ok() {
+  // This check will now test if the router subprocess is running
+  if (routerCtrl.mI2PProcess != null) {
+    if (routerCtrl.mI2PProcess.isRunning) {
+      return true
+    }
+  }
+  return false
 }
 
 var i2pbutton_unique_pref_observer =
