@@ -227,6 +227,21 @@ I2PProcessService.prototype =
 
   },
 
+  getWrapperLog: function() {
+    let wrapperLogFile = LauncherUtil.dataDirectoryObject
+    wrapperLogFile.append('I2P')
+    wrapperLogFile.append('wrapper.log')
+    return this._getFileAsString(wrapperLogFile)
+  },
+
+  getLogsLogTxt: function() {
+    let logTxtFile = LauncherUtil.dataDirectoryObject
+    logTxtFile.append('I2P')
+    logTxtFile.append('logs')
+    logTxtFile.append('log-0.txt')
+    return this._getFileAsString(logTxtFile)
+  },
+
   I2PStartAndControlI2P: function()
   {
     this._startI2P()
@@ -258,6 +273,19 @@ I2PProcessService.prototype =
   mDefaultPreferencesAreLoaded: false,
 
   // Private Methods /////////////////////////////////////////////////////////
+
+  _resetLogFiles: function() {
+    let wrapperLogFile = LauncherUtil.dataDirectoryObject
+    wrapperLogFile.append('I2P')
+    wrapperLogFile.append('wrapper.log')
+    if (wrapperLogFile.exists()) wrapperLogFile.remove(false)
+    let logTxtFile = LauncherUtil.dataDirectoryObject
+    logTxtFile.append('I2P')
+    logTxtFile.append('logs')
+    logTxtFile.append('log-0.txt')
+    if (logTxtFile.exists()) logTxtFile.remove(false)
+  },
+
   _startI2P: function()
   {
     this.mI2PProcessStatus = this.kStatusUnknown;
@@ -293,6 +321,8 @@ I2PProcessService.prototype =
         this._notifyUserOfError(err, null, this.kI2PProcessDidNotStartTopic);
         return;
       }
+
+      this._resetLogFiles()
 
       let args = LauncherUtil.getRouterDefaultArgs()
 
@@ -334,7 +364,7 @@ I2PProcessService.prototype =
     {
       this.mI2PProcessStatus = this.kStatusExited
       //var s = LauncherUtil.getLocalizedString("i2p_failed_to_start");
-      //this._notifyUserOfError(s, null, this.kI2PProcessDidNotStartTopic);
+      this._notifyUserOfError('Failed to start the I2P router', null, this.kI2PProcessDidNotStartTopic);
       this._logger.log(4, "_startI2P error: ", e)
     }
   }, // _startI2P()
@@ -401,25 +431,25 @@ I2PProcessService.prototype =
 
   _notifyUserOfError: function(aMessage, aDetails, aNotifyTopic)
   {
-    let errorObj = { handled: false, message: aMessage };
+    let errorObj = { handled: false, message: aMessage }
     if (aDetails)
-      errorObj.details = aDetails;
+      errorObj.details = aDetails
 
     if (aNotifyTopic)
     {
       // Give other code an opportunity to handle this error, e.g., if the
       // network settings window is open, errors are displayed using an
       // overlaid XUL element.
-      errorObj.wrappedJSObject = errorObj;
-      this.mObsSvc.notifyObservers(errorObj, aNotifyTopic, null);
+      errorObj.wrappedJSObject = errorObj
+      this.mObsSvc.notifyObservers(errorObj, aNotifyTopic, null)
     }
 
     if (!errorObj.handled)
     {
-      let msg = aMessage;
+      let msg = aMessage
       if (aDetails)
-        msg += "\n\n" + aDetails;
-      I2PLauncherUtil.showAlert(null, msg);
+        msg += "\n\n" + aDetails
+      I2PLauncherUtil.showAlert(null, msg)
     }
   },
 
