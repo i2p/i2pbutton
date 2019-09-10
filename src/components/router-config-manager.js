@@ -127,6 +127,7 @@ router.inboundPool.quantity=7
 router.sharePercentage=50
 i2cp.hostname=127.0.0.1
 i2cp.port=17654
+router.startup.jetty9.migrated=true
 `
 
 
