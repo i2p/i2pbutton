@@ -242,6 +242,8 @@ I2PProcessService.prototype =
     return this._getFileAsString(logTxtFile)
   },
 
+  retrieveBootstrapStatus: function() {},
+
   I2PStartAndControlI2P: function()
   {
     this._startI2P()
@@ -371,11 +373,18 @@ I2PProcessService.prototype =
 
   _isConsoleRunning: function(callback) {
     let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
-    let req = checkSvc.createCheckConsoleRequest(true);
+    let obsSvc = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService)
+    let req = checkSvc.createCheckConsoleRequest(true)
+    const self = this
     req.onreadystatechange = function(event) {
       if (req.readyState === 4) {
         // Done
         let result = checkSvc.parseCheckConsoleResponse(req)
+        self.mIsBootstrapDone = true
+        self.mI2PProcessStatus = self.kStatusRunning
+        var statusObj = { bootstrap: 'done', success: true }
+        statusObj.wrappedJSObject = statusObj
+        obsSvc.notifyObservers(statusObj, "I2PBootstrapStatus", null)
         callback(result)
       }
     }

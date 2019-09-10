@@ -49,7 +49,7 @@ const LauncherUtil = {
       {
         var wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator)
         let browserWindow = wm.getMostRecentWindow("navigator:browser")
-        if (TLUtilInternal._isWindowVisible(browserWindow))
+        if (LauncherUtilInternal._isWindowVisible(browserWindow))
           aParentWindow = browserWindow;
       }
 
@@ -85,32 +85,31 @@ const LauncherUtil = {
 
   get _networkSettingsWindow()
   {
-    var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
-               .getService(Ci.nsIWindowMediator);
-    return wm.getMostRecentWindow("I2PLauncher:NetworkSettings");
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator)
+    return wm.getMostRecentWindow("I2PLauncher:NetworkSettings")
   },
+
   _openNetworkSettings: function(aIsInitialBootstrap, aStartAtWizardPanel)
   {
-    var win = this._networkSettingsWindow;
+    var win = this._networkSettingsWindow
     if (win)
     {
       // Return to "Starting i2p" panel if being asked to open & dlog already exists.
-      //win.showStartingTorPanel();
-      win.focus();
+      //win.showStartingI2PPanel()
+      win.focus()
       return;
     }
 
-    const kSettingsURL = "chrome://i2pbutton/chrome/content/network-settings.xul";
-    const kWizardURL = "chrome://i2pbutton/chrome/content/network-settings-wizard.xul";
+    const kSettingsURL = "chrome://i2pbutton/chrome/content/network-settings.xul"
+    const kWizardURL = "chrome://i2pbutton/chrome/content/network-settings-wizard.xul"
 
     var wwSvc = Cc["@mozilla.org/embedcomp/window-watcher;1"]
-                  .getService(Ci.nsIWindowWatcher);
-    var winFeatures = "chrome,dialog=yes,modal,all";
-    var argsArray = this._createOpenWindowArgsArray(aIsInitialBootstrap,
-                                                    aStartAtWizardPanel);
-    let isProgress = (this.kWizardProgressPageID == aStartAtWizardPanel);
-    //let url = (aIsInitialBootstrap || isProgress) ? kWizardURL : kSettingsURL;
-    wwSvc.openWindow(null, kWizardURL, "_blank", winFeatures, argsArray);
+                  .getService(Ci.nsIWindowWatcher)
+    var winFeatures = "chrome,dialog=no,modal,all"
+    var argsArray = this._createOpenWindowArgsArray(aIsInitialBootstrap,aStartAtWizardPanel)
+    let isProgress = (this.kWizardProgressPageID == aStartAtWizardPanel)
+    //let url = (aIsInitialBootstrap || isProgress) ? kWizardURL : kSettingsURL
+    wwSvc.openWindow(null, kWizardURL, "_blank", winFeatures, argsArray)
   },
 
   // Returns true if user confirms; false if not.
@@ -147,8 +146,8 @@ const LauncherUtil = {
   {
     try
     {
-      let dirPath = this.getCharPref(TLUtilInternal.kIPCDirPrefName);
-      this.clearUserPref(TLUtilInternal.kIPCDirPrefName);
+      let dirPath = this.getCharPref(LauncherUtilInternal.kIPCDirPrefName);
+      this.clearUserPref(LauncherUtilInternal.kIPCDirPrefName);
       if (dirPath)
       {
         let f = Cc['@mozilla.org/file/local;1'].createInstance(Ci.nsIFile);
@@ -171,22 +170,22 @@ const LauncherUtil = {
       let i2pDir = libDir.clone()
       libDir.append('lib')
       let args = []
-      // NOTE: Don't mind spaces as nsIProcess escapes them.
-      args.push(`-Di2p.dir.base=${i2pDir.path}`)
-      logger.log(2, `Path for base is => ${i2pDir.path}`)
-      args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
       let logFile = dataDir.clone()
       logFile.append('wrapper.log')
+      let clientConfigFile = dataDir.clone()
+      clientConfigFile.append('clients.config')
+      let routerCofigFile = dataDir.clone()
+      routerCofigFile.append('router.config')
+      logger.log(2, `Path for base is => ${i2pDir.path}`)
+      // NOTE: Don't mind spaces as nsIProcess escapes them.
+      args.push(`-Di2p.dir.base=${i2pDir.path}`)
+      args.push(`-Duser.dir=${dataDir.path}`) // make PWD equal dataDir
       args.push(`-Dwrapper.logfile=${logFile.path}`)
       args.push(`-Djetty.home=${i2pDir.path}`)
       args.push(`-Djava.library.path=${libDir.path}`)
       args.push(`-Di2p.dir.config=${dataDir.path}`)
       args.push(`-Di2p.dir.router=${dataDir.path}`)
       args.push(`-Di2p.dir.app=${dataDir.path}`)
-      let clientConfigFile = dataDir.clone()
-      clientConfigFile.append('clients.config')
-      let routerCofigFile = dataDir.clone()
-      routerCofigFile.append('router.config')
       args.push(`-Drouter.clientConfigFile=${clientConfigFile.path}`)
       args.push(`-Drouter.configLocation=${routerCofigFile.path}`)
       args.push('-Di2p.dir.portableMode=false')
@@ -311,7 +310,7 @@ const LauncherUtil = {
         return i2pFile
       } else {
         logger.log(4, aI2PFileType + " file not found: "+ i2pFile.path)
-        return ''
+        return null
       }
 
     } catch(e) {
@@ -320,22 +319,27 @@ const LauncherUtil = {
     }
 
   },
+
   get internal() {
     return LauncherUtilInternal
   },
+
   get dataDirectoryObject() {
     let dataDir = LauncherUtilInternal._dataDir
     try { dataDir.normalize() } catch(e) {}
     logger.log(3, `Decided to use file ${dataDir.path}`)
     return dataDir.clone()
   },
+
   get appDirectoryObject() {
     return LauncherUtilInternal._appDir.clone()
   },
+
   flushLocalizedStringCache: function()
   {
     LauncherUtilInternal.mStringBundle = undefined
   },
+
   // "i2pbutton." is prepended to aStringName.
   getLocalizedString: function(aStringName)
   {
@@ -345,7 +349,7 @@ const LauncherUtil = {
     try
     {
       var key = kPropNamePrefix + aStringName;
-      return TLUtilInternal._stringBundle.GetStringFromName(key);
+      return LauncherUtilInternal._stringBundle.GetStringFromName(key);
     } catch(e) {}
 
     return aStringName;
@@ -360,7 +364,7 @@ const LauncherUtil = {
     try
     {
       var key = kPropNamePrefix + aStringName;
-      return TLUtilInternal._stringBundle.formatStringFromName(key, aArray, aLen)
+      return LauncherUtilInternal._stringBundle.formatStringFromName(key, aArray, aLen)
     } catch(e) {}
 
     return aStringName;
@@ -415,6 +419,7 @@ let LauncherUtilInternal = {
 
     return this.mOS
   },
+
   get _stringBundle()
   {
     if (!this.mStringBundle)
