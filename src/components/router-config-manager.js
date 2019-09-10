@@ -125,6 +125,8 @@ i2p.reseedURL=https://download.xxlspeed.com/,https://i2p.mooo.com/netDb/,https:/
 router.outboundPool.quantity=7
 router.inboundPool.quantity=7
 router.sharePercentage=50
+i2cp.hostname=127.0.0.1
+i2cp.port=17654
 `
 
 
