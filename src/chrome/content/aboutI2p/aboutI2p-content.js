@@ -99,7 +99,7 @@ var AboutI2pListener = {
 
   onLocaleChange: function(aLocale) {
 
-    // Display the Tor Browser product name and version.
+    // Display the I2P Browser product name and version.
     try {
       const kBrandBundle = "chrome://branding/locale/brand.properties";
       let brandBundle = Cc["@mozilla.org/intl/stringbundle;1"]

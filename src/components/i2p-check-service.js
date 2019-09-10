@@ -35,13 +35,15 @@ IBI2PCheckService.prototype =
 
   isConsoleWorking: false,
   isProxyWorking: false,
+  isInProgressOfTestingConsole: false,
+  isInProgressOfTestingProxy: false,
 
   wrappedJSObject: null,
   _logger: null,
   _statusOfI2PCheck: 0, // this.kCheckNotInitiated,
 
-  // make this an nsIClassInfo object
-  flags: Ci.nsIClassInfo.DOM_OBJECT,
+  // make this an singleton object
+  flags: Ci.nsIClassInfo.SINGLETON,
 
   // method of nsIClassInfo
   classDescription: kMODULE_NAME,
@@ -71,17 +73,21 @@ IBI2PCheckService.prototype =
 
   init: function () {
     let self = this
+    this.isInProgressOfTestingConsole = true
     let req = this.createCheckConsoleRequest(true)
     req.onreadystatechange = function (event) {
       if (req.readyState === 4) {
         self.parseCheckConsoleResponse(req)
+        self.isInProgressOfTestingConsole = false
       }
     }
     req.send(null)
+    this.isInProgressOfTestingProxy = true
     let proxyReq = this.createCheckProxyRequest(true)
     proxyReq.onreadystatechange = function (event) {
       if (proxyReq.readyState === 4) {
         self.parseCheckProxyResponse(proxyReq)
+        self.isInProgressOfTestingConsole = false
       }
     }
     proxyReq.send(null)

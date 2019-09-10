@@ -100,8 +100,8 @@ const LauncherUtil = {
       return;
     }
 
-    const kSettingsURL = "chrome://i2pbutton/content/network-settings.xul";
-    const kWizardURL = "chrome://i2pbutton/content/network-settings-wizard.xul";
+    const kSettingsURL = "chrome://i2pbutton/chrome/content/network-settings.xul";
+    const kWizardURL = "chrome://i2pbutton/chrome/content/network-settings-wizard.xul";
 
     var wwSvc = Cc["@mozilla.org/embedcomp/window-watcher;1"]
                   .getService(Ci.nsIWindowWatcher);
@@ -109,8 +109,8 @@ const LauncherUtil = {
     var argsArray = this._createOpenWindowArgsArray(aIsInitialBootstrap,
                                                     aStartAtWizardPanel);
     let isProgress = (this.kWizardProgressPageID == aStartAtWizardPanel);
-    let url = (aIsInitialBootstrap || isProgress) ? kWizardURL : kSettingsURL;
-    wwSvc.openWindow(null, url, "_blank", winFeatures, argsArray);
+    //let url = (aIsInitialBootstrap || isProgress) ? kWizardURL : kSettingsURL;
+    wwSvc.openWindow(null, kWizardURL, "_blank", winFeatures, argsArray);
   },
 
   // Returns true if user confirms; false if not.
@@ -179,6 +179,7 @@ const LauncherUtil = {
       logFile.append('wrapper.log')
       args.push(`-Dwrapper.logfile=${logFile.path}`)
       args.push(`-Djetty.home=${i2pDir.path}`)
+      args.push(`-Djava.library.path=${libDir.path}`)
       args.push(`-Di2p.dir.config=${dataDir.path}`)
       args.push(`-Di2p.dir.router=${dataDir.path}`)
       args.push(`-Di2p.dir.app=${dataDir.path}`)
@@ -250,7 +251,7 @@ const LauncherUtil = {
     let dataDir = profDir.parent.parent.clone()
     dataDir.append('I2P')
     if (!dataDir.exists() && create) {
-      dataDir.create(dataDir.DIRECTORY_TYPE, 0o775)
+      dataDir.create(dataDir.DIRECTORY_TYPE, 0o700)
     }
 
     return dataDir

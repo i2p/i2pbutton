@@ -158,7 +158,7 @@ I2pbuttonLogger.prototype =
                   true);
               } else if (Services.prefs.
                 getIntPref("extensions.i2plauncher.logmethod", 3) !== 0) {
-                // If Tor Launcher is not available or its log method is not 0
+                // If I2P Launcher is not available or its log method is not 0
                 // then let's reset the dump pref.
                 Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
                   false);

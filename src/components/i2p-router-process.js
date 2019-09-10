@@ -276,7 +276,7 @@ I2PProcessService.prototype =
       // Get the I2P data directory first so it is created before we try to
       // construct paths to files that will be inside it.
       let dataDir = LauncherUtil.getI2PConfigPath(true)
-      let exeFile = LauncherUtil.getI2PFile("i2p", false)
+      let exeFile = LauncherUtil.getI2PBinary()
       this._logger.log(3, `Datadir => ${dataDir.path}\nExeFile => ${exeFile.path}`)
 
       var detailsKey;
@@ -297,8 +297,6 @@ I2PProcessService.prototype =
       let args = LauncherUtil.getRouterDefaultArgs()
 
       // Set an environment variable that points to the I2P data directory.
-      // This is used by meek-client-torbrowser to find the location for
-      // the meek browser profile.
       let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment)
       env.set("I2P_BROWSER_I2P_DATA_DIR", dataDir.path)
 
