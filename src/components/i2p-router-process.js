@@ -300,8 +300,8 @@ I2PProcessService.prototype =
     try
     {
       // Ideally, we would cd to the Firefox application directory before
-      // starting tor (but we don't know how to do that).  Instead, we
-      // rely on the TBB launcher to start Firefox from the right place.
+      // starting i2p (but we don't know how to do that).  Instead, we
+      // rely on the IBB launcher to start Firefox from the right place.
 
       // Get the I2P data directory first so it is created before we try to
       // construct paths to files that will be inside it.
@@ -421,8 +421,8 @@ I2PProcessService.prototype =
         this.mI2PProcess.kill()
       }
 
-      var asSvc = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
-      var flags = asSvc.eAttemptQuit;
+      let asSvc = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
+      let flags = asSvc.eAttemptQuit;
       asSvc.quit(flags);
     }
     catch (e)

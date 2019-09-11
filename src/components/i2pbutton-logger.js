@@ -11,6 +11,7 @@ const Cu = Components.utils
 
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
 Cu.import("resource://gre/modules/Services.jsm")
+Cu.import("resource://gre/modules/Log.jsm")
 
 let console = (Cu.import("resource://gre/modules/Console.jsm", {})).console
 
@@ -107,32 +108,32 @@ I2pbuttonLogger.prototype =
   },
 
   safe_log: function(level, str, scrub) {
-      if (this.loglevel < 4) {
-          this.eclog(level, str+scrub);
-      } else {
-          this.eclog(level, str+" [scrubbed]");
-      }
+    if (this.loglevel < 4) {
+      this.eclog(level, str+scrub);
+    } else {
+      this.eclog(level, str+" [scrubbed]");
+    }
   },
 
   log: function(level, str) {
-      switch(this.logmethod) {
-          case 2: // debuglogger
-              if(this._debuglog) {
-                  this._debuglog.log((6-level), this.formatLog(str,level));
-                  break;
-              }
-              // fallthrough
-          case 0: // stderr
-              if(this.loglevel <= level)
-                  dump(this.formatLog(str,level)+"\n");
-              break;
-          default:
-              dump("Bad log method: "+this.logmethod);
-          case 1: // errorconsole
-              if(this.loglevel <= level)
-                  this._console.logStringMessage(this.formatLog(str,level));
-              break;
-      }
+    switch(this.logmethod) {
+      case 2: // debuglogger
+        if(this._debuglog) {
+          this._debuglog.log((6-level), this.formatLog(str,level));
+          break;
+        }
+        // fallthrough
+      case 0: // stderr
+        if(this.loglevel <= level)
+          dump(this.formatLog(str,level)+"\n");
+        break;
+      default:
+          dump("Bad log method: "+this.logmethod);
+      case 1: // errorconsole
+        if(this.loglevel <= level)
+          this._console.logStringMessage(this.formatLog(str,level));
+        break;
+    }
   },
 
   error: function(str) { this.log(6, str) },
@@ -149,25 +150,25 @@ I2pbuttonLogger.prototype =
   // data:    which pref has been changed (relative to subject)
   observe: function(subject, topic, data)
   {
-      if (topic != "nsPref:changed") return;
-      switch (data) {
-          case "extensions.i2pbutton.logmethod":
-              this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
-              if (this.logmethod === 0) {
-                Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
-                  true);
-              } else if (Services.prefs.
-                getIntPref("extensions.i2plauncher.logmethod", 3) !== 0) {
-                // If I2P Launcher is not available or its log method is not 0
-                // then let's reset the dump pref.
-                Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
-                  false);
-              }
-              break;
-          case "extensions.i2pbutton.loglevel":
-              this.loglevel = Services.prefs.getIntPref("extensions.i2pbutton.loglevel");
-              break;
-      }
+    if (topic != "nsPref:changed") return;
+    switch (data) {
+      case "extensions.i2pbutton.logmethod":
+        this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
+        if (this.logmethod === 0) {
+          Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
+            true);
+        } else if (Services.prefs.
+          getIntPref("extensions.i2plauncher.logmethod", 3) !== 0) {
+          // If I2P Launcher is not available or its log method is not 0
+          // then let's reset the dump pref.
+          Services.prefs.setBoolPref("browser.dom.window.dump.enabled",
+            false);
+        }
+        break;
+      case "extensions.i2pbutton.loglevel":
+        this.loglevel = Services.prefs.getIntPref("extensions.i2pbutton.loglevel");
+        break;
+    }
   }
 }
 

@@ -167,11 +167,13 @@ const LauncherUtil = {
       let dataDir = this.getI2PConfigPath(true)
       let exeFile = this.getI2PBinary()
       let libDir = dataDir.clone()
-      let i2pDir = libDir.clone()
+      let i2pDir = exeFile.parent.parent.clone()
       libDir.append('lib')
       let args = []
       let logFile = dataDir.clone()
       logFile.append('wrapper.log')
+      let nativeLib = libDir.clone()
+      nativeLib.append('jbigi.jar')
       let clientConfigFile = dataDir.clone()
       clientConfigFile.append('clients.config')
       let routerCofigFile = dataDir.clone()
@@ -192,7 +194,7 @@ const LauncherUtil = {
       args.push('-Dwrapper.name=i2pbrowser')
       args.push('-Dwrapper.displayname=I2PBrowser')
       args.push('-cp')
-      args.push(`${i2pDir.path}:${libDir.path}:${dataDir.path}`)
+      args.push(`${i2pDir.path}:${nativeLib.path}:${libDir.path}:${dataDir.path}`)
       args.push("-Djava.awt.headless=true")
       args.push("-Dwrapper.console.loglevel=DEBUG")
       // Main class to execute

@@ -77,7 +77,7 @@ const getProfileDir = function() {
       getService(Ci.nsIProperties)
   // this is a reference to the profile dir (ProfD) now.
   let localDir = directoryService.get("ProfD", Ci.nsIFile)
-  return localDir.path
+  return localDir
 }
 
 function openFile(path, mode) {
@@ -135,10 +135,10 @@ var getPrefValue = function (prefName) {
 var bindPref = function (prefName, prefHandler, init = false) {
   let update = () => { prefHandler(getPrefValue(prefName)); },
       observer = { observe : function (subject, topic, data) {
-                     if (data === prefName) {
-                         update();
-                     }
-                   } };
+                    if (data === prefName) {
+                      update();
+                    }
+                  } };
   prefs.addObserver(prefName, observer, false);
   if (init) {
     update();
@@ -200,14 +200,14 @@ let dialogsByName = {};
 // Like window.openDialog, but if the window is already
 // open, just focuses it instead of opening a new one.
 var showDialog = function (parent, url, name, features) {
-  let existingDialog = dialogsByName[name];
+  let existingDialog = dialogsByName[name]
   if (existingDialog && !existingDialog.closed) {
-    existingDialog.focus();
-    return existingDialog;
+    existingDialog.focus()
+    return existingDialog
   } else {
-    let newDialog = parent.openDialog.apply(parent, Array.slice(arguments, 1));
-    dialogsByName[name] = newDialog;
-    return newDialog;
+    let newDialog = parent.openDialog.apply(parent, Array.slice(arguments, 1))
+    dialogsByName[name] = newDialog
+    return newDialog
   }
 }
 
