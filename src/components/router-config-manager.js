@@ -172,28 +172,10 @@ RouterConfigManager.prototype = {
   },
 
 
-  _write_router_config: function(configfile,onComplete) {
+  _write_config: function(configfile, content, onComplete) {
     const self = this
-    LauncherUtil.writeFileWithData(configfile, defaultRouterConfig, file => { onComplete(file) }, (err) => {
-      this._logger.log(6,`Can't write router config file :( - path was ${configfile.path}`)
-    })
-  },
-  _write_tunnel_config: function(configfile,onComplete) {
-    const self = this
-    LauncherUtil.writeFileWithData(configfile, defaultProxyTunnels, file => { onComplete(file) }, (err) => {
-      this._logger.log(6,`Can't write tunnel proxy config file :( - path was ${configfile.path}`)
-    })
-  },
-  _write_clients_config: function(configfile,onComplete) {
-    const self = this
-    LauncherUtil.writeFileWithData(configfile, defaultClientsConfig, file => { onComplete(file) }, (err) => {
-      this._logger.log(6,`Can't write clients config file :( - path was ${configfile.path}`)
-    })
-  },
-  _write_webapps_config: function(configfile,onComplete) {
-    const self = this
-    LauncherUtil.writeFileWithData(configfile, defaultWebappsConfig, file => { onComplete(file) }, (err) => {
-      this._logger.log(6,`Can't write webapps config file :( - path was ${configfile.path}`)
+    LauncherUtil.writeFileWithData(configfile, content, file => { onComplete(file) }, (err) => {
+      this._logger.log(6,`Can't write config file :( - path was ${configfile.path}, error: ${err}`)
     })
   },
 
@@ -270,36 +252,13 @@ RouterConfigManager.prototype = {
       this._logger.log(3, `Copied hosts.txt file`)
     }
 
-    // Temporary jetty fix
-    let orgDir = configDirectory.clone()
-    orgDir.append('org')
-    if (!orgDir.exists()) {
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
-      orgDir.append('eclipse')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
-      orgDir.append('jetty')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
-      orgDir.append('webapp')
-      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
-      let distJettyFile = LauncherUtil.getI2PBinary().parent.parent
-      distJettyFile.append('org')
-      distJettyFile.append('eclipse')
-      distJettyFile.append('jetty')
-      distJettyFile.append('webapp')
-      distJettyFile.append('webdefault.xml')
-      distJettyFile.copyTo(orgDir, '')
-    }
-
-    this.ensure_docs()
-    this.ensure_webapps()
-
     // Ensure they exists
     const self = this
 
     this.ensureRouterConfigPromise = () => {
       return new Promise(resolve => {
         if (!routerConfigFile.exists()) {
-          self._write_router_config(routerConfigFile, file => {
+          self._write_config(routerConfigFile, defaultRouterConfig, file => {
             self.mDoesRouterConfigExists = true
             self._logger.log(3, 'Wrote router.config')
             if (typeof onCompleteCallback === 'function') onCompleteCallback(file)
@@ -316,7 +275,7 @@ RouterConfigManager.prototype = {
     this.ensureTunnelConfigPromise = () => {
       return new Promise(resolve => {
         if (!tunnelConfigFile.exists()) {
-          self._write_tunnel_config(tunnelConfigFile, tfile => {
+          self._write_config(tunnelConfigFile, defaultProxyTunnels, tfile => {
             self._logger.log(3, 'Wrote i2ptunnel.config')
             self.mDoesTunnelConfigExists = true
             if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
@@ -333,7 +292,7 @@ RouterConfigManager.prototype = {
     this.ensureClientsConfigPromise = () => {
       return new Promise(resolve => {
         if (!clientsConfigFile.exists()) {
-          self._write_clients_config(clientsConfigFile, tfile => {
+          self._write_config(clientsConfigFile, defaultClientsConfig, tfile => {
             self._logger.log(3, 'Wrote clients.config')
             self.mDoesClientsConfigExists = true
             if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
@@ -350,7 +309,7 @@ RouterConfigManager.prototype = {
     this.ensureWebappsConfigPromise = () => {
       return new Promise(resolve => {
         if (!webappsConfigFile.exists()) {
-          self._write_webapps_config(webappsConfigFile, tfile => {
+          self._write_config(webappsConfigFile, defaultWebappsConfig, tfile => {
             self._logger.log(3, 'Wrote webapps.config')
             self.mDoesWebappsConfigExists = true
             if (typeof onCompleteCallback === 'function') onCompleteCallback(tfile)
