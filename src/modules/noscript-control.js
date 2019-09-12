@@ -8,11 +8,49 @@ const { utils: Cu } = Components;
 const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 const { LegacyExtensionContext } =
       Cu.import("resource://gre/modules/LegacyExtensionsUtils.jsm", {});
-const { bindPref } =
-      Cu.import("resource://i2pbutton/modules/utils.js", {});
 let logger = Components.classes["@geti2p.net/i2pbutton-logger;1"]
     .getService(Components.interfaces.nsISupports).wrappedJSObject;
 let log = (level, msg) => logger.log(level, msg);
+
+
+// __prefs__. A shortcut to Mozilla Services.prefs.
+let prefs = Services.prefs;
+
+// __getPrefValue(prefName)__
+// Returns the current value of a preference, regardless of its type.
+var getPrefValue = function (prefName) {
+  switch(prefs.getPrefType(prefName)) {
+    case prefs.PREF_BOOL: return prefs.getBoolPref(prefName);
+    case prefs.PREF_INT: return prefs.getIntPref(prefName);
+    case prefs.PREF_STRING: return prefs.getCharPref(prefName);
+    default: return null;
+  }
+};
+
+// __bindPref(prefName, prefHandler, init)__
+// Applies prefHandler whenever the value of the pref changes.
+// If init is true, applies prefHandler to the current value.
+// Returns a zero-arg function that unbinds the pref.
+var bindPref = function (prefName, prefHandler, init = false) {
+  let update = () => { prefHandler(getPrefValue(prefName)); },
+      observer = { observe : function (subject, topic, data) {
+                    if (data === prefName) {
+                      update();
+                    }
+                  } };
+  prefs.addObserver(prefName, observer, false);
+  if (init) {
+    update();
+  }
+  return () => { prefs.removeObserver(prefName, observer); };
+};
+
+// __bindPrefAndInit(prefName, prefHandler)__
+// Applies prefHandler to the current value of pref specified by prefName.
+// Re-applies prefHandler whenever the value of the pref changes.
+// Returns a zero-arg function that unbinds the pref.
+var bindPrefAndInit = (prefName, prefHandler) =>
+    bindPref(prefName, prefHandler, true);
 
 // ## NoScript settings
 
