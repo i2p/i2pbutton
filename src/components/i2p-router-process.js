@@ -8,10 +8,28 @@ const Cu = Components.utils
 // ctypes can be disabled at build time
 try { Cu.import("resource://gre/modules/ctypes.jsm") } catch(e) {}
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
+Cu.import("resource://gre/modules/Services.jsm")
 
 XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
 
 //let observerService = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService)
+
+const timer = Cc["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer)
+
+let routerStateLoglines = [
+  'Router state change from STARTING_1 to STARTING_2',
+  'Router state change from STARTING_2 to STARTING_3',
+  'Router state change from STARTING_3 to NETDB_READY',
+  'Router state change from NETDB_READY to RUNNING'
+]
+
+function setTimeout(fn, sleep) {
+  let event = {
+    notify: fn
+  }
+  return timer.initWithCallback(event, sleep, Components.interfaces.nsITimer.TYPE_ONE_SHOT)
+}
+
 
 function I2PProcessService()
 {
@@ -94,19 +112,49 @@ I2PProcessService.prototype =
 
 
       const self = this
-      this._logger.log(3, 'Checking if a console is already up (an router already running)')
-      this._isConsoleRunning(function(res) {
+      //this._logger.log(3, 'Checking if a console is already up (an router already running)')
+
+      let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
+      let shouldShowDelayUserDialog = prefs.getBoolPref("extensions.i2pbutton.delay_user_with_dialog", true)
+
+      try {
+        if (shouldShowDelayUserDialog) {
+          self.openWaitForRouterDialog()
+          setTimeout(() => {
+            let progressmeter = self.mDelayUserDialog.document.getElementById('progressMeter')
+            progressmeter.value = progressmeter.value + 35
+            var text = self.mDelayUserDialog.document.getElementById('progressPleaseWait')
+            text.value = 'Waiting for the router to open the console and proxy port.'
+          }, 5000)
+        }
+      } catch (err) {
+        self._logger.log(5, `Unknown error while executing delay user dialog: ${err}`)
+      }
+
+      let canStartPromise = self._config_checker.ensure_config()
+      canStartPromise.then(() => {
+        self._logger.log(3, 'Starting the router')
+        self.I2PStartAndControlI2P(true)
+
+      })
+
+      // After the router process is spawned.
+      /*if (self.mDelayUserDialog) {
+        setTimeout(() => {
+          let progressmeter = self.mDelayUserDialog.document.getElementById('progressMeter')
+          progressmeter.value = progressmeter.value + 35
+          var text = self.mDelayUserDialog.document.getElementById('progressPleaseWait')
+          text.value = 'Waiting for the router to open the console and proxy port.'
+        }, 5000)
+      }*/
+      /*this._isConsoleRunning(function(res) {
         if (res!=4) {
           // Yes, 4 is success
-          let canStartPromise = self._config_checker.ensure_config()
-          canStartPromise.then(() => {
-            self._logger.log(3, 'Starting the router')
-            self.I2PStartAndControlI2P(true)
-          })
+
         } else {
           self._logger.log(3, 'Already found a router, won\'t launch.')
         }
-      })
+      })*/
     }
     else if ("quit-application-granted" == aTopic)
     {
@@ -119,8 +167,8 @@ I2PProcessService.prototype =
         let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
         let shouldKillRouter = prefs.getBoolPref("extensions.i2pbutton.kill_router_on_exit", true)
         if (shouldKillRouter) this.mI2PProcess.kill()
-        this._logger.log(4, "Disconnecting from i2p process (pid " + this.mI2PProcess.pid + ")");
-        this.mI2PProcess = null;
+        this._logger.log(4, "Disconnecting from i2p process (pid " + this.mI2PProcess.pid + ")")
+        this.mI2PProcess = null
       }
     }
     else if (("process-failed" == aTopic) || ("process-finished" == aTopic))
@@ -135,11 +183,11 @@ I2PProcessService.prototype =
       this.mI2PProcessStatus = this.kStatusExited;
       this.mIsBootstrapDone = false;
 
-      this.mObsSvc.notifyObservers(null, "I2PProcessExited", null);
+      this.mObsSvc.notifyObservers(null, "I2PProcessExited", null)
 
       if (this.mIsQuitting)
       {
-        LauncherUtil.cleanupTempDirectories();
+        LauncherUtil.cleanupTempDirectories()
       }
       else
       {
@@ -147,9 +195,9 @@ I2PProcessService.prototype =
         var cancelBtnLabel = "OK";
         try
         {
-          const kSysBundleURI = "chrome://global/locale/commonDialogs.properties";
-          var sysBundle = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(kSysBundleURI);
-          cancelBtnLabel = sysBundle.GetStringFromName(cancelBtnLabel);
+          const kSysBundleURI = "chrome://global/locale/commonDialogs.properties"
+          var sysBundle = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(kSysBundleURI)
+          cancelBtnLabel = sysBundle.GetStringFromName(cancelBtnLabel)
         } catch(e) {}
 
         this._logger.log(3, 'The router stopped..')
@@ -167,9 +215,9 @@ I2PProcessService.prototype =
         this.mObsSvc.notifyObservers(null, "I2PProcessIsReady", null)
       }
     } else if (kBootstrapStatusTopic == aTopic) {
-      //this._processBootstrapStatus(aSubject.wrappedJSObject);
+      this._processBootstrapStatus(aSubject.wrappedJSObject)
     } else if (kUserQuitTopic == aTopic) {
-      this.mQuitSoon = true;
+      this.mQuitSoon = true
     }
   },
 
@@ -227,6 +275,23 @@ I2PProcessService.prototype =
 
   },
 
+  openWaitForRouterDialog: function() {
+    const self = this
+    //var win = ww.openWindow(null, "chrome://i2pbutton/content/progress.xul", "wizard", "chrome,dialog=no,modal,centerscreen", {blabla:0})
+    const ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"].getService(Components.interfaces.nsIWindowWatcher)
+
+    self.mDelayUserDialog = ww.openWindow(null, "chrome://i2pbutton/content/progress.xul", "startingrouter", "chrome,dialog=no,modal,centerscreen", {blabla:0})
+
+    setTimeout(() => {
+      let progressmeter = self.mDelayUserDialog.document.getElementById('progressMeter')
+      progressmeter.value = progressmeter.value + 15
+
+      var text = self.mDelayUserDialog.document.getElementById('progressPleaseWait')
+      text.hidden = false
+    }, 1000)
+    return self.mDelayUserDialog
+  },
+
   getWrapperLog: function() {
     let wrapperLogFile = LauncherUtil.dataDirectoryObject
     wrapperLogFile.append('I2P')
@@ -273,6 +338,7 @@ I2PProcessService.prototype =
   mLastI2PWarningPhase: null,
   mLastI2PWarningReason: null,
   mDefaultPreferencesAreLoaded: false,
+  mDelayUserDialog: null,
 
   // Private Methods /////////////////////////////////////////////////////////
 
@@ -382,6 +448,8 @@ I2PProcessService.prototype =
         let result = checkSvc.parseCheckConsoleResponse(req)
         self.mIsBootstrapDone = true
         self.mI2PProcessStatus = self.kStatusRunning
+        self._processBootstrapStatus({ PROGRESS: 100, message: 'The router has succcessfully started.' })
+
         var statusObj = { bootstrap: 'done', success: true }
         statusObj.wrappedJSObject = statusObj
         obsSvc.notifyObservers(statusObj, "I2PBootstrapStatus", null)
@@ -391,24 +459,65 @@ I2PProcessService.prototype =
     req.send(null)
   },
 
+  _processBootstrapStatus: function(aStatusObj)
+  {
+    if (!aStatusObj)
+      return
+
+    if (100 == aStatusObj.PROGRESS)
+    {
+      this.mIsBootstrapDone = true
+      this.mBootstrapErrorOccurred = false
+      LauncherUtil.setBoolPref(this.kPrefPromptAtStartup, false)
+    }
+    else
+    {
+      this.mIsBootstrapDone = false
+
+      if (aStatusObj._errorOccurred)
+      {
+        this.mBootstrapErrorOccurred = true
+        LauncherUtil.setBoolPref(this.kPrefPromptAtStartup, true)
+        let phase = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj,
+                                                                "TAG")
+        let reason = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj,
+                                                                 "REASON")
+        let details = LauncherUtil.getFormattedLocalizedString(
+                          "i2p_bootstrap_failed_details", [phase, reason], 2)
+        I2PLauncherLogger.log(5, "I2P bootstrap error: [" + aStatusObj.TAG +
+                                 "/" + aStatusObj.REASON + "] " + details);
+
+        if ((aStatusObj.TAG != this.mLastI2PWarningPhase) ||
+            (aStatusObj.REASON != this.mLastI2PWarningReason))
+        {
+          this.mLastI2PWarningPhase = aStatusObj.TAG
+          this.mLastI2PWarningReason = aStatusObj.REASON
+
+          let msg = LauncherUtil.getLocalizedString("i2p_bootstrap_failed")
+          this._notifyUserOfError(msg, details, this.kI2PBootstrapErrorTopic)
+        }
+      }
+    }
+  }, // _processBootstrapStatus()
+
   _controlI2P: function(aIsRunningI2P)
   {
 
     try
     {
       if (aIsRunningI2P)
-        this._monitorI2PProcessStartup();
+        this._monitorI2PProcessStartup()
 
       // If the user pressed "Quit" within settings/progress, exit.
       if (this.mQuitSoon)
-        this._quitApp();
+        this._quitApp()
     }
     catch (e)
     {
-      this.mI2PProcessStatus = this.kStatusExited;
-      var s = LauncherUtil.getLocalizedString("i2p_control_failed");
-      this._notifyUserOfError(s, null, null);
-      this._logger.log(4, "_controlI2P error: ", e);
+      this.mI2PProcessStatus = this.kStatusExited
+      var s = LauncherUtil.getLocalizedString("i2p_control_failed")
+      this._notifyUserOfError(s, null, null)
+      this._logger.log(4, "_controlI2P error: ", e)
     }
   }, // controlI2P()
 
@@ -458,7 +567,7 @@ I2PProcessService.prototype =
       let msg = aMessage
       if (aDetails)
         msg += "\n\n" + aDetails
-      I2PLauncherUtil.showAlert(null, msg)
+      LauncherUtil.showAlert(null, msg)
     }
   },
 
