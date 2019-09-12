@@ -100,8 +100,8 @@ const LauncherUtil = {
       return;
     }
 
-    const kSettingsURL = "chrome://i2pbutton/chrome/content/network-settings.xul"
-    const kWizardURL = "chrome://i2pbutton/chrome/content/network-settings-wizard.xul"
+    const kSettingsURL = "chrome://i2pbutton/chrome/content/i2pstartup-confdlg.xul"
+    const kWizardURL = "chrome://i2pbutton/chrome/content/i2pstartup-confdlg-wizard.xul"
 
     var wwSvc = Cc["@mozilla.org/embedcomp/window-watcher;1"]
                   .getService(Ci.nsIWindowWatcher)
