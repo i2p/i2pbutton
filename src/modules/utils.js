@@ -112,6 +112,22 @@ function array_to_hexdigits(array) {
                    }).join('');
 }
 
+function listExtensions(callbackFn) {
+  AddonManager.getAddonsByTypes(["extension"], function(addons) {
+    var addonData = [];
+
+    for (let i in addons) {
+      let cur = addons[i];
+      addonData.push({
+        id: cur.id.toString(),
+        name: cur.name,
+      });
+    };
+    console.log(JSON.stringify(addonData, null, '   '));
+    callbackFn(addonData)
+  });
+}
+
 //window.open("chrome://browser/content/browser.xul", "bmarks", "chrome,width=600,height=300")
 
 // __prefs__. A shortcut to Mozilla Services.prefs.
