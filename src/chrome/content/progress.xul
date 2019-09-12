@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+   - Copyright (c) 2019, The Invisible Internet Project.
+   - See LICENSE for licensing information.
+   - vim: set sw=2 sts=2 ts=8 et syntax=xml:
+  -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://i2pbutton/skin/progress.css"
+                 type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/progress.dtd">
+
+<dialog id="I2PProgress"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&i2pprogress.dialog.title;"
+        windowtype="I2PLauncher:Progress"
+        persist="screenX screenY"
+        buttons="cancel"
+        buttonlabelextra2="&i2pprogress.openSettings;"
+        ondialogcancel="return onCancel();"
+        ondialogextra2="onOpenSettings();"
+        onload="initDialog();"> <!-- extra2 was removed from buttons for now. -->
+
+    <script type="application/x-javascript"
+            src="chrome://i2pbutton/content/progress.js"/>
+  <vbox>
+    <hbox>
+      <vbox>
+        <spacer flex="1" />
+        <image id="ibb-icon" />
+        <spacer flex="1" />
+      </vbox>
+      <separator orient="vertical" />
+      <vbox flex="1">
+        <label id="progressHeading" value="&i2pprogress.heading;" />
+        <description id="progressDesc" />
+      </vbox>
+    </hbox>
+    <progressmeter id="progressMeter" mode="determined" value="0" max="100" />
+    <description id="progressPleaseWait"
+                 hidden="true">&i2pprogress.pleaseWait;</description>
+  </vbox>
+</dialog>

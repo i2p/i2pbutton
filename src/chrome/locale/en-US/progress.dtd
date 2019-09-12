@@ -1,0 +1,4 @@
+<!ENTITY i2pprogress.dialog.title "Starting the I2P router">
+<!ENTITY i2pprogress.openSettings "Settings">
+<!ENTITY i2pprogress.heading "I2P Browser">
+<!ENTITY i2pprogress.pleaseWait "Please wait while the router establish a connection to the I2P network. This may take several minutes">

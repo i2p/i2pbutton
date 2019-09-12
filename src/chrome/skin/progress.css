@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2019, The Invisible Internet Project.
+ * See LICENSE for licensing information.
+ *
+ * vim: set sw=2 sts=2 ts=8 et syntax=css:
+ */
+
+ dialog {
+  width: 400px;
+}
+
+#progressHeading {
+  font-size: 110%;
+  margin: 8px 0px 8px 0px;
+  font-weight: bold;
+}
+
+#progressPleaseWait {
+  font-size: 110%;
+  margin-bottom: 15px;
+}
+
+#ibb-icon {
+  list-style-image: url("chrome://i2pbutton/skin/default48.png");
+  width: 48px;
+  height: 48px;
+}
+
+#progressDesc {
+  height: 48px;
+}
+
+#progressMeter {
+  margin-bottom: 16px;
+}
+
+.i2pWarning {
+  list-style-image: url("chrome://i2pbutton/skin/warning.png");
+}
+
+/* Ensure that our caution icon is always shown on GTK-based platforms. */
+.i2pWarning .button-icon {
+  display: inline !important;
+}
