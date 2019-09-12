@@ -20,18 +20,17 @@
                   accesskey="&i2pbutton.context_menu.new_identity_key;"
                   insertafter="context-stop"
                   oncommand="i2pbutton_new_identity()"/>
-        <menuseparator/>
         <menuitem id="i2pbutton-cookie-protector"
                   label="&i2pbutton.context_menu.cookieProtections;"
                   accesskey="&i2pbutton.context_menu.cookieProtections.key;"
-                  insertafter="context-stop"
+                  insertafter="i2pbutton-new-identity"
                   hidden="true"
                   oncommand="i2pbutton_open_cookie_dialog()"/>
         <menuseparator id="i2pbutton-checkForUpdateSeparator"/>
         <menuitem id="i2pbutton-checkForUpdate"
                   label="&i2pbutton.context_menu.downloadUpdate;"
                   accesskey="&i2pbutton.context_menu.downloadUpdate.key;"
-                  insertafter="context-stop"
+                  insertafter="i2pbutton-cookie-protector"
                   oncommand="i2pbutton_check_for_update()"/>
       </vbox>
     </hbox>

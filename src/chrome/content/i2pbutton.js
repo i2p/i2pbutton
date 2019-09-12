@@ -61,6 +61,32 @@ function i2pbutton_i2p_console_check_ok() {
   return false
 }
 
+var i2pbutton_window_pref_observer =
+{
+  register: function()
+  {
+    m_ib_prefs.addObserver("extensions.i2pbutton", this, false);
+  },
+
+  unregister: function()
+  {
+    m_ib_prefs.removeObserver("extensions.i2pbutton", this);
+  },
+
+  // topic:   what event occurred
+  // subject: what nsIPrefBranch we're observing
+  // data:    which pref has been changed (relative to subject)
+  observe: function(subject, topic, data)
+  {
+    if (topic != "nsPref:changed") return;
+    switch (data) {
+      case k_ib_browser_update_needed_pref:
+        torbutton_notify_if_update_needed();
+        break;
+    }
+  }
+}
+
 var i2pbutton_unique_pref_observer =
 {
   register: function()
@@ -200,14 +226,82 @@ function i2pbutton_is_mobile() {
   return false;
 }
 
+function i2pbutton_update_is_needed() {
+  var updateNeeded = false
+  try {
+    updateNeeded = m_ib_prefs.getBoolPref(k_ib_browser_update_needed_pref)
+  } catch (e) {}
+
+  return updateNeeded
+}
+
+function i2pbutton_notify_if_update_needed() {
+  function setOrClearAttribute(aElement, aAttrName, aValue)
+  {
+    if (!aElement || !aAttrName)
+      return
+
+    if (aValue)
+      aElement.setAttribute(aAttrName, aValue)
+    else
+      aElement.removeAttribute(aAttrName)
+  }
+
+  let updateNeeded = i2pbutton_update_is_needed()
+
+  // Change look of toolbar item (enable/disable animated update icon).
+  var btn = i2pbutton_get_toolbutton()
+  setOrClearAttribute(btn, "ibUpdateNeeded", updateNeeded)
+
+  // Make the "check for update" menu item bold if an update is needed.
+  var item = document.getElementById("i2pbutton-checkForUpdate")
+  setOrClearAttribute(item, "ibUpdateNeeded", updateNeeded)
+}
+
+function i2pbutton_check_for_update() {
+  // Open the update prompt in the correct mode.  The update state
+  // checks used here were adapted from isPending() and isApplied() in
+  // Mozilla's browser/base/content/aboutDialog.js code.
+  let updateMgr = Cc["@mozilla.org/updates/update-manager;1"]
+                   .getService(Ci.nsIUpdateManager)
+  let update = updateMgr.activeUpdate
+  let updateState = (update) ? update.state : undefined
+  let pendingStates = [ "pending", "pending-service",
+                        "applied", "applied-service" ]
+  let isPending = (updateState && (pendingStates.indexOf(updateState) >= 0))
+
+  let prompter = Cc["@mozilla.org/updates/update-prompt;1"]
+                   .createInstance(Ci.nsIUpdatePrompt)
+  if (isPending)
+    prompter.showUpdateDownloaded(update, false)
+  else
+    prompter.checkForUpdates()
+}
+
+function i2pbutton_get_toolbutton() {
+  var o_toolbutton = false;
+
+  i2pbutton_log(1, 'get_toolbutton(): looking for button element');
+  if (document.getElementById("i2pbutton-button")) {
+    o_toolbutton = document.getElementById("i2pbutton-button");
+  } else if (document.getElementById("i2pbutton-button-ib")) {
+    o_toolbutton = document.getElementById("i2pbutton-button-ib");
+  } else if (document.getElementById("i2pbutton-button-ib-msg")) {
+    o_toolbutton = document.getElementById("i2pbutton-button-ib-msg");
+  } else {
+    i2pbutton_log(3, 'get_toolbutton(): did not find i2pbutton-button');
+  }
+
+  return o_toolbutton;
+}
 
 
 // This function closes all XUL browser windows except this one. For this
 // window, it closes all existing tabs and creates one about:blank tab.
 function i2pbutton_close_tabs_on_new_identity() {
   if (!m_ib_prefs.getBoolPref("extensions.i2pbutton.close_newnym", true)) {
-    i2pbutton_log(3, "Not closing tabs");
-    return;
+    i2pbutton_log(3, "Not closing tabs")
+    return
   }
 
   // TODO: muck around with browser.tabs.warnOnClose.. maybe..
@@ -454,6 +548,28 @@ function i2pbutton_new_identity() {
     window.alert("i2pbutton: Unexpected error on new identity: "+e);
   }
 }
+
+/* The "New Identity" implementation does the following:
+ *   1. Disables Javascript and plugins on all tabs
+ *   2. Clears state:
+ *      a. OCSP
+ *      b. Cache + image cache
+ *      c. Site-specific zoom
+ *      d. Cookies+DOM Storage+safe browsing key
+ *      e. google wifi geolocation token
+ *      f. http auth
+ *      g. SSL Session IDs
+ *      h. last open location url
+ *      i. clear content prefs
+ *      j. permissions
+ *      k. site security settings (e.g. HSTS)
+ *      l. IndexedDB and asmjscache storage
+ *   3. Sends tor the NEWNYM signal to get a new circuit
+ *   4. Opens a new window with the default homepage
+ *   5. Closes this window
+ *
+ * XXX: intermediate SSL certificates are not cleared.
+ */
 
 function i2pbutton_do_new_identity() {
   var obsSvc = Components.classes["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
@@ -1005,7 +1121,7 @@ var i2pbutton_resizelistener =
 // in XUL that should be in an XPCOM component
 function i2pbutton_close_window(event) {
     i2pbutton_window_pref_observer.unregister();
-    i2pbutton_tor_check_observer.unregister();
+    i2pbutton_i2p_check_observer.unregister();
 
     window.removeEventListener("sizemodechange", m_ib_resize_handler,
         false);

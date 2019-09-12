@@ -12,6 +12,8 @@ function i2pbutton_log(nLevel, sMsg) {
     return true;
 }
 
+function i2pbutton_init_security_ui() {}
+
 // get a preferences branch object
 // FIXME: this is lame.
 function i2pbutton_get_prefbranch(branch_name) {
