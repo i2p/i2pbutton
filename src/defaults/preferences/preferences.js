@@ -56,7 +56,7 @@ pref("browser.startup.homepage", "chrome://i2pbutton/content/locale/non-localize
 pref("extensions.i2pbutton.start_i2p", true);
 pref("extensions.i2pbutton.kill_router_on_exit", true);
 pref("extensions.i2pbutton.console_host", "127.0.0.1");
-pref("extensions.i2pbutton.console_port_i2pj", 17657);
+pref("extensions.i2pbutton.console_port_i2pj", 7647);
 pref("extensions.i2pbutton.console_port_i2pd", 17070);
 
 // I2P Implementation

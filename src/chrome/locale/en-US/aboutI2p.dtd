@@ -31,7 +31,7 @@
 <!ENTITY aboutI2p.refresh_link "Refresh">
 
 <!ENTITY aboutI2p.site "http://i2p-projekt.i2p/en">
-<!ENTITY aboutI2p.routerconsole "http://localhost:17657">
+<!ENTITY aboutI2p.routerconsole "http://localhost:7647">
 <!ENTITY aboutI2p.github "https://github.com/mikalv">
 <!ENTITY aboutI2p.trac "http://trac.i2p2.i2p">
 

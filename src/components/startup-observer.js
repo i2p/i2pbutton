@@ -73,13 +73,13 @@ StartupObserver.prototype = {
       this._prefs.setIntPref("network.proxy.type", 1);
       this._prefs.setIntPref("network.proxy.socks_port", 0);
       this._prefs.setCharPref("network.proxy.socks", "");
-      this._prefs.setIntPref("extensions.i2pbutton.console_port_i2pj", 17657);
+      this._prefs.setIntPref("extensions.i2pbutton.console_port_i2pj", 7647);
       this._prefs.setCharPref("network.proxy.http", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.http_port", 14444);
+      this._prefs.setIntPref("network.proxy.http_port", 7644);
       this._prefs.setCharPref("network.proxy.ssl", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.ssl_port", 14444);
+      this._prefs.setIntPref("network.proxy.ssl_port", 7644);
       this._prefs.setCharPref("network.proxy.ftp", "127.0.0.1");
-      this._prefs.setIntPref("network.proxy.ftp_port", 14444);
+      this._prefs.setIntPref("network.proxy.ftp_port", 7644);
       this._prefs.setCharPref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");
 
       // Force prefs to be synced to disk
