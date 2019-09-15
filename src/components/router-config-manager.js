@@ -252,6 +252,26 @@ RouterConfigManager.prototype = {
       this._logger.log(3, `Copied hosts.txt file`)
     }
 
+    // Temporary jetty fix
+    let orgDir = configDirectory.clone()
+    orgDir.append('org')
+    if (!orgDir.exists()) {
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
+      orgDir.append('eclipse')
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
+      orgDir.append('jetty')
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
+      orgDir.append('webapp')
+      orgDir.create(orgDir.DIRECTORY_TYPE, 0o700)
+      let distJettyFile = LauncherUtil.getI2PBinary().parent.parent
+      distJettyFile.append('org')
+      distJettyFile.append('eclipse')
+      distJettyFile.append('jetty')
+      distJettyFile.append('webapp')
+      distJettyFile.append('webdefault.xml')
+      distJettyFile.copyTo(orgDir, '')
+    }
+
     // Ensure they exists
     const self = this
 
