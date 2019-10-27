@@ -122,28 +122,20 @@ function stopI2PBootstrap()
 // Fake it for now. The main goal is to could say with more confidence that
 // the router has had time to start before the user can start using the browser
 // as any other browser.
+let consolePort = Services.prefs.getIntPref("extensions.i2pbutton.console_port_i2pj", 7647)
 
-setTimeout(() => {
+LauncherUtil.waitForPortToOpen(consolePort, () => {
   var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 5000)
+  if (meter) {
+    meter.value = meter.value + 30
+  }
+  setTimeout(() => {
+    window.close()
+  }, 5000)
+})
 
-setTimeout(() => {
-  var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 10000)
 
-setTimeout(() => {
-  var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 15000)
 
-setTimeout(() => {
-  window.close()
-}, 25000)
 
 
 var gObserver = {
