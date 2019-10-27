@@ -163,6 +163,33 @@ const LauncherUtil = {
     asSvc.quit(0x12) // eAttemptQuit (0x02) + eRestart (0x10)
   },
 
+
+
+  waitForPortToOpen: function(portNum, doneCallback, interval) {
+    interval = interval || 3000
+    let portOpen = false
+    let testPort = () => {
+      var xhr = new XMLHttpRequest()
+      xhr.open('GET', `http://127.0.0.1:${portNum}`)
+      xhr.onerror = () => {
+        console.log(`Still waiting for ${portNum} to open`)
+        if (!portOpen) {
+          setTimeout(testPort, interval)
+        }
+      }
+      xhr.onload = () => {
+        console.log(`Port ${portNum} seem open now finally`)
+        portOpen = true
+        if ('function' === typeof doneCallback) {
+          doneCallback(portNum)
+        }
+      }
+      xhr.send()
+    }
+    testPort()
+  },
+  //waitForPortToOpen(7647, () => { console.log('ALL DONE') })
+
   getRouterDefaultArgs: function() {
       let dataDir = this.getI2PConfigPath(true)
       let exeFile = this.getI2PBinary()
