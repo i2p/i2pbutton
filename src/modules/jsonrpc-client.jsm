@@ -51,7 +51,7 @@ class JsonRpcClient {
         default:
           console.log('Unknown method')
       }
-      if (callback) {
+      if('function' === typeof callback) {
         callback(self.xhr)
       }
       self.responses.push(self.xhr.response)
@@ -81,5 +81,13 @@ class I2PControlClient extends JsonRpcClient {
 
   shutdownRouter(callback) {
     this.makeRequest('RouterManager', {'API':1,'Token':this.token, 'Shutdown': true}, callback)
+  }
+
+  reseedRouter(callback) {
+    this.makeRequest('RouterManager', {'API':1,'Token':this.token, 'Reseed': true}, callback)
+  }
+
+  restartRouter(callback) {
+    this.makeRequest('RouterManager', {'API':1,'Token':this.token, 'Restart': true}, callback)
   }
 }
