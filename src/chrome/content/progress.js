@@ -8,6 +8,7 @@ const kI2PBootstrapErrorTopic = "I2PBootstrapError"
 const kI2PLogHasWarnOrErrTopic = "I2PLogHasWarnOrErr"
 
 
+Cu.import("resource://gre/modules/Services.jsm")
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
 
