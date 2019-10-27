@@ -137,6 +137,8 @@ router.startup.jetty9.migrated=true
 routerconsole.welcomeWizardComplete=true
 `
 
+let noscript = Cu.import("resource://i2pbutton/modules/noscript-control.js")
+noscript.initialize()
 
 function RouterConfigManager() {
   this.version = '0.1'
