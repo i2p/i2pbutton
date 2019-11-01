@@ -5,6 +5,8 @@ const Ci = Components.interfaces
 const Cu = Components.utils
 const Cr = Components.results
 
+Cu.importGlobalProperties(["XMLHttpRequest"])
+
 const kPropBundleURI = "chrome://i2pbutton/locale/i2pbutton.properties"
 const kPropNamePrefix = "i2pbutton."
 
@@ -17,6 +19,38 @@ let logger = {
   log:function(level, message) {
     console.log(message)
   }
+}
+
+const Timer = Components.Constructor("@mozilla.org/timer;1", "nsITimer", "initWithCallback");
+
+function delay(timeout, func) {
+  let timer = new Timer(function () {
+    // Remove the reference so that it can be reaped.
+    delete delay.timers[idx];
+
+    func();
+  }, timeout, Ci.nsITimer.TYPE_ONE_SHOT);
+
+  // Store a reference to the timer so that it's not reaped before it fires.
+  let idx = delay.timers.push(timer) - 1;
+  return idx
+}
+delay.timers = []
+
+function repeat(timeout, func) {
+  let timer = new Timer(function () {
+    func();
+  }, timeout, Ci.nsITimer.TYPE_REPEATING_SLACK);
+
+  // Store a reference to the timer so that it's not reaped before it fires.
+  let idx = delay.timers.push(timer) - 1;
+  return idx
+}
+repeat.timers = []
+
+// Wrapper since window.setTimeout isn't always available in context/scope.
+function setTimeout(func, interval) {
+  delay(interval, func)
 }
 
 
@@ -81,6 +115,13 @@ const LauncherUtil = {
     }
 
     return argsArray;
+  },
+
+  setTimeout: (func, interval) => {
+    delay(interval, func)
+  },
+  setInterval: (func, interval) => {
+    repeat(interval, func)
   },
 
   get _networkSettingsWindow()
