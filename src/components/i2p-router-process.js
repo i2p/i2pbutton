@@ -117,6 +117,13 @@ I2PProcessService.prototype =
       let prefs =  Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch)
       let shouldShowDelayUserDialog = prefs.getBoolPref("extensions.i2pbutton.delay_user_with_dialog", true)
 
+      let canStartPromise = self._config_checker.ensure_config()
+      canStartPromise.then(() => {
+        self._logger.log(3, 'Starting the router')
+        self.I2PStartAndControlI2P(true)
+
+      })
+
       try {
         if (shouldShowDelayUserDialog) {
           self.openWaitForRouterDialog()
@@ -130,13 +137,6 @@ I2PProcessService.prototype =
       } catch (err) {
         self._logger.log(5, `Unknown error while executing delay user dialog: ${err}`)
       }
-
-      let canStartPromise = self._config_checker.ensure_config()
-      canStartPromise.then(() => {
-        self._logger.log(3, 'Starting the router')
-        self.I2PStartAndControlI2P(true)
-
-      })
 
       // After the router process is spawned.
       /*if (self.mDelayUserDialog) {
@@ -280,7 +280,13 @@ I2PProcessService.prototype =
     //var win = ww.openWindow(null, "chrome://i2pbutton/content/progress.xul", "wizard", "chrome,dialog=no,modal,centerscreen", {blabla:0})
     const ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"].getService(Components.interfaces.nsIWindowWatcher)
 
-    self.mDelayUserDialog = ww.openWindow(null, "chrome://i2pbutton/content/progress.xul", "startingrouter", "chrome,dialog=no,modal,centerscreen", {blabla:0})
+    self.mDelayUserDialog = ww.openWindow(
+      null,
+      "chrome://i2pbutton/content/progress.xul",
+      "startingrouter",
+      "chrome,dialog=no,modal,centerscreen",
+      [true])
+      this._logger.log(3, 'After open wait for router dialog')
 
     setTimeout(() => {
       let progressmeter = self.mDelayUserDialog.document.getElementById('progressMeter')
@@ -396,7 +402,7 @@ I2PProcessService.prototype =
 
       // Set an environment variable that points to the I2P data directory.
       let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment)
-      env.set("I2P_BROWSER_I2P_DATA_DIR", dataDir.path)
+      env.set('I2P_BROWSER_I2P_DATA_DIR', dataDir.path)
 
       // On Windows, prepend the I2P program directory to PATH.  This is
       // needed so that pluggable transports can find OpenSSL DLLs, etc.
@@ -418,7 +424,7 @@ I2PProcessService.prototype =
       p.init(exeFile)
 
       for (var i = 0; i < args.length; ++i)
-        this._logger.log(2, "  " + args[i])
+        this._logger.log(2, ` ${args[i]}`)
 
       // Possible fix for Windows and cmd.exe window spawn.
       p.startHidden = true
@@ -478,10 +484,8 @@ I2PProcessService.prototype =
       {
         this.mBootstrapErrorOccurred = true
         LauncherUtil.setBoolPref(this.kPrefPromptAtStartup, true)
-        let phase = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj,
-                                                                "TAG")
-        let reason = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj,
-                                                                 "REASON")
+        let phase = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj, "TAG")
+        let reason = LauncherUtil.getLocalizedBootstrapStatus(aStatusObj, "REASON")
         let details = LauncherUtil.getFormattedLocalizedString(
                           "i2p_bootstrap_failed_details", [phase, reason], 2)
         I2PLauncherLogger.log(5, "I2P bootstrap error: [" + aStatusObj.TAG +

@@ -8,16 +8,22 @@ const kI2PBootstrapErrorTopic = "I2PBootstrapError"
 const kI2PLogHasWarnOrErrTopic = "I2PLogHasWarnOrErr"
 
 
+Cu.import("resource://gre/modules/Services.jsm")
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetter(this, "LauncherUtil", "resource://i2pbutton/modules/launcher-util.jsm")
 
 
 const I2PLauncherLogger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject
-const gI2PProcessService = Cc["@geti2p.net/i2pbutton-process-service;1"].getService(Ci.nsISupports).wrappedJSObject
 
 var gObsSvc
 var gOpenerCallbackFunc // Set when opened from network settings.
+var gIsInitialBootstrap
+var gInitialPanelID
 
+function closeThisWindow(reason) {
+  dump('closeThisWindow\n')
+  window.close()
+}
 
 function initDialog()
 {
@@ -33,7 +39,7 @@ function initDialog()
       return
     }
   }
-  catch (e) { dump(e + "\n") }
+  catch (e) { dump(`${e}\n`) }
 
   try
   {
@@ -42,39 +48,64 @@ function initDialog()
     gObsSvc.addObserver(gObserver, kBootstrapStatusTopic, false)
     gObsSvc.addObserver(gObserver, kI2PBootstrapErrorTopic, false)
     gObsSvc.addObserver(gObserver, kI2PLogHasWarnOrErrTopic, false)
-  }
-  catch (e) {}
 
-  var isBrowserStartup = false
-  if (window.arguments)
-  {
-    isBrowserStartup = window.arguments[0]
+    var isBrowserStartup = false
+    if (window.arguments)
+    {
+      let wargs = window.arguments || window.arguments.wrappedJSObject
+      isBrowserStartup = wargs[0]
+      dump(`window.arguments = ${wargs}\n`)
+      dump(`window.arguments.length = ${wargs.length}\n`)
 
-    if (window.arguments.length > 1)
-      gOpenerCallbackFunc = window.arguments[1]
-  }
+      if (window.arguments.length > 1)
+        gInitialPanelID = window.arguments[1]
+    }
 
-  if (gOpenerCallbackFunc)
-  {
-    // Dialog was opened from network settings: hide Open Settings button.
-    var extraBtn = document.documentElement.getButton("extra2")
-    extraBtn.setAttribute("hidden", true)
-  }
-  else
-  {
-    // Dialog was not opened from network settings: change Cancel to Quit.
-    var cancelBtn = document.documentElement.getButton("cancel")
-    var quitKey = (LauncherUtil.isWindows) ? "quit_win" : "quit"
-    cancelBtn.label = 'Cancel'//LauncherUtil.getLocalizedString(quitKey)
-  }
+    if (gOpenerCallbackFunc)
+    {
+      // Dialog was opened from network settings: hide Open Settings button.
+      var extraBtn = document.documentElement.getButton("extra2")
+      extraBtn.setAttribute("hidden", true)
+    }
+    else
+    {
+      // Dialog was not opened from network settings: change Cancel to Quit.
+      var cancelBtn = document.documentElement.getButton("cancel")
+      var quitKey = (LauncherUtil.isWindows) ? "quit_win" : "quit"
+      cancelBtn.label = 'Cancel'//LauncherUtil.getLocalizedString(quitKey)
+    }
 
-  // If opened during browser startup, display the "please wait" message.
-  if (isBrowserStartup)
-  {
-    var pleaseWait = document.getElementById("progressPleaseWait")
-    if (pleaseWait)
-      pleaseWait.removeAttribute("hidden")
+    // If opened during browser startup, display the "please wait" message.
+    if (isBrowserStartup)
+    {
+      var pleaseWait = document.getElementById("progressPleaseWait")
+      if (pleaseWait)
+        pleaseWait.removeAttribute("hidden")
+    }
+
+    // Test if the i2p console port is open or not
+
+    let consolePort = Services.prefs.getIntPref("extensions.i2pbutton.console_port_i2pj", 7647)
+    LauncherUtil.waitForPortToOpen(consolePort, () => {
+      var meter = document.getElementById("progressMeter")
+      if (meter) {
+        meter.value = meter.value + 30
+      }
+      setTimeout(() => {
+        window.close()
+      }, 5000)
+    })
   }
+  catch (e) {
+    dump(`Error: ${e}\n`)
+  }
+  dump('initDialog done\n')
+}
+
+function onCancel() {
+  //
+  dump('onCancel\n')
+  cleanup()
 }
 
 
@@ -104,13 +135,9 @@ function stopI2PBootstrap()
   const kErrorPrefix = "Setting DisableNetwork=1 failed: ";
   try
   {
-    var svc = Cc["@torproject.org/torlauncher-protocol-service;1"]
-                 .getService(Ci.nsISupports);
-    svc = svc.wrappedJSObject;
     var settings = {};
     settings["DisableNetwork"] = true;
     var errObj = {};
-    if (!svc.I2PSetConfWithReply(settings, errObj))
     I2PLauncherLogger.log(5, kErrorPrefix + errObj.details);
   }
   catch(e)
@@ -119,31 +146,8 @@ function stopI2PBootstrap()
   }
 }
 
-// Fake it for now. The main goal is to could say with more confidence that
-// the router has had time to start before the user can start using the browser
-// as any other browser.
 
-setTimeout(() => {
-  var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 5000)
 
-setTimeout(() => {
-  var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 10000)
-
-setTimeout(() => {
-  var meter = document.getElementById("progressMeter")
-  if (meter)
-    meter.value = meter.value + 15
-}, 15000)
-
-setTimeout(() => {
-  window.close()
-}, 25000)
 
 
 var gObserver = {

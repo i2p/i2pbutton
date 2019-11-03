@@ -6,8 +6,7 @@
   -->
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://i2pbutton/skin/progress.css"
-                 type="text/css"?>
+<?xml-stylesheet href="chrome://i2pbutton/skin/progress.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://i2pbutton/locale/progress.dtd">
 
@@ -18,7 +17,7 @@
         persist="screenX screenY"
         buttons="cancel"
         buttonlabelextra2="&i2pprogress.openSettings;"
-        ondialogcancel="return onCancel();"
+        ondialogcancel="onCancel();"
         ondialogextra2="onOpenSettings();"
         onload="initDialog();"> <!-- extra2 was removed from buttons for now. -->
 
