@@ -1,6 +1,8 @@
 // debug prefs
 pref("extensions.i2pbutton.loglevel", 3); // Loglevel = info would be nice for the beta period.
-pref("extensions.i2pbutton.logmethod",1); // 0=stdout, 1=errorconsole, 2=debuglog
+pref("extensions.i2pbutton.logmethod", 1); // 0=stdout, 1=errorconsole, 2=debuglog
+
+pref("browser.privatebrowsing.autostart", false)
 
 pref("extensions.i2pbutton@geti2p.net.description", "chrome://i2pbutton/locale/i2pbutton.properties");
 pref("extensions.i2pbutton.updateNeeded", false);
@@ -61,4 +63,3 @@ pref("extensions.i2pbutton.console_port_i2pd", 17070);
 
 // I2P Implementation
 pref("extensions.i2pbutton.i2pimpl_driver", "i2pj");
-
