@@ -11,30 +11,42 @@
 
 <!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :(">
 <!ENTITY aboutI2p.reccommend_not_running "If you just started the router, it may take up to 2 minutes for the router to start the proxy.">
-<!ENTITY aboutI2p.all_checks_ok "Super! The browser detected I2P running in background! :)">
+<!ENTITY aboutI2p.all_checks_ok "The browser detected I2P running in background!">
 <!ENTITY aboutI2p.warn_experimental "This is a experimental sub-project of I2P. It is currently Beta software.">
-<!ENTITY aboutI2p.console_visit_msg "It seems like your console is up, click to visit:">
+<!ENTITY aboutI2p.appExplain "These applications use I2P to provide them with security and privacy.">
+<!ENTITY aboutI2p.applications "Applications">
+<!ENTITY aboutI2p.console "Console:">
+<!ENTITY aboutI2p.torrent "Torrents:">
+<!ENTITY aboutI2p.i2ptunnel "Tunnels:">
+<!ENTITY aboutI2p.email "E-Mail:">
 <!ENTITY aboutI2p.i2ptunnel_visit_msg "I2P has a web-based interface for configuring .i2p services like web sites, to set up your own web sites, go here:">
 <!ENTITY aboutI2p.email_visit_msg "I2P also bundles a webmail client which can be used to access in-I2P e-mail. To use it, go here:">
 <!ENTITY aboutI2p.torrent_visit_msg "I2P is capable of anonymous Peer-to-Peer file sharing, to use the built-in bittorrent client go here:">
-<!ENTITY aboutI2p.console "Console">
-<!ENTITY aboutI2p.torrent "Torrents">
-<!ENTITY aboutI2p.i2ptunnel "Tunnels">
-<!ENTITY aboutI2p.email "E-Mail">
-<!ENTITY aboutI2p.i2pbutton_source "I2P Button source">
-<!ENTITY aboutI2p.build_scripts "Build scripts to compile from source">
-<!ENTITY aboutI2p.source "Browse the source code">
-<!ENTITY aboutI2p.bug_tracker "Submit a Bug Report">
-<!ENTITY aboutI2p.links "Links">
-<!ENTITY aboutI2p.design "Design Document">
+<!ENTITY aboutI2p.console_visit_msg "It seems like your console is up, click to visit:">
+
 <!ENTITY aboutI2p.refresh_text "Try refreshing the page.">
 <!ENTITY aboutI2p.refresh_link "Refresh">
 
+<!ENTITY aboutI2p.links "Links">
+<!ENTITY aboutI2p.linkExplain "If you want to get more information about I2P, you can visit these links.">
 <!ENTITY aboutI2p.site "http://i2p-projekt.i2p/en">
 <!ENTITY aboutI2p.routerconsole "http://localhost:7647">
-<!ENTITY aboutI2p.github "https://github.com/mikalv">
+<!ENTITY aboutI2p.github "https://github.com/i2p">
+<!ENTITY aboutI2p.githubdev "https://github.com/mikal">
 <!ENTITY aboutI2p.trac "http://trac.i2p2.i2p">
+<!ENTITY aboutI2p.i2pbutton_source "I2P Button Source Code:">
+<!ENTITY aboutI2p.build_scripts "I2P Browser Build Scripts:">
+<!ENTITY aboutI2p.source "I2P Browser Source Code:">
+<!ENTITY aboutI2p.bug_tracker "Submit a Bug Report:">
+<!ENTITY aboutI2p.design "I2P Browser Design Document:">
+<!ENTITY aboutI2p.browsersrc "Go here to browse the source code of our Firefox fork.">
+<!ENTITY aboutI2p.extsrc "Much of the functionality of the I2P Browser is implemented in the I2PButton plugin.">
+<!ENTITY aboutI2p.makesrc "These scripts are used to build the browser.">
+<!ENTITY aboutI2p.designsrc "This is the I2P Browser Design Document.">
+<!ENTITY aboutI2p.tracwiki "To report a bug, visit the Trac Wiki.">
+<!ENTITY aboutI2p.donatecta "I2P is funded by donations. In order to make a donation visit the project web site.">
 
 <!ENTITY aboutI2p.startup "Sometimes it takes a minute or two for I2P to get started for the first time. While you wait, visit the">
 <!ENTITY aboutI2p.startup_b "to get acquainted with all the capabilities of I2P.">
 <!ENTITY aboutI2p.rc "Router Console">
+<!ENTITY aboutI2p.proxyready "Your Proxy is ready, feel free to browse the eepWeb!">
