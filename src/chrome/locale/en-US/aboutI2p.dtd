@@ -46,7 +46,6 @@
 <!ENTITY aboutI2p.tracwiki "To report a bug, visit the Trac Wiki.">
 <!ENTITY aboutI2p.donatecta "I2P is funded by donations. In order to make a donation visit the project web site.">
 
-<!ENTITY aboutI2p.startup "Sometimes it takes a minute or two for I2P to get started for the first time. While you wait, visit the">
-<!ENTITY aboutI2p.startup_b "to get acquainted with all the capabilities of I2P.">
+<!ENTITY aboutI2p.startup "The proxy is not ready yet.">
 <!ENTITY aboutI2p.rc "Router Console">
-<!ENTITY aboutI2p.proxyready "Your Proxy is ready, feel free to browse the eepWeb!">
+<!ENTITY aboutI2p.proxyready "Your proxy is ready!">

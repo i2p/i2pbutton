@@ -61,12 +61,8 @@ function i2pbutton_i2p_console_check_ok() {
   return false
 }
 function i2pbutton_i2p_proxy_check_ok() {
-  if (routerCtrl.mI2PProcess != null) {
-    if (routerCtrl.mI2PProcess.isRunning) {
-      return checkSvc.isProxyWorking
-    }
-  }
-  return false
+  i2pbutton_log(3, "I2P Proxy readiness: " + checkSvc.isProxyWorking)
+  return (checkSvc.isProxyWorking)
 }
 var i2pbutton_window_pref_observer =
 {
