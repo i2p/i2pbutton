@@ -71,7 +71,8 @@ window.addEventListener("pageshow", function() {
             </p>
           </div>
         <div class="extended-info">
-          <h3>&aboutI2p.links;</h3>
+          <h3 id="links"><button class="showhider" onclick="flipVisibility('info-content')">&aboutI2p.links;</button></h3>
+            <div id="info-content">
             <p id="linksExplain">&aboutI2p.linkExplain;</p>
             <p>
               <ul>
@@ -107,9 +108,20 @@ window.addEventListener("pageshow", function() {
                 </a>
               </ul>
             </p>
+            </div>
           </div>
         </div>
      </div>
+  <script type="text/javascript">
+  function flipVisibility(div) {
+    var x = document.getElementById(div);
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+  </script>
   <!--</div>-->
 </body>
 </html>

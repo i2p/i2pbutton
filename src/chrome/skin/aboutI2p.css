@@ -106,6 +106,7 @@ p {
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px #fff, 0 0 1px #ccc;
   background: #F8F8FF;
+  min-width: 50%;
 }
 
 .application-info {
@@ -156,6 +157,29 @@ h3 {
   border-radius: 2px 2px 0 0;
   width: 90%;
   padding-left: 5%;
+}
+
+.showhider {
+  margin-right: auto;
+  font-family: "Droid Sans", "Noto Sans", Ubuntu, "Segoe UI", "Lucida Grande", Verdana, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 25px;
+  text-transform: uppercase;
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  width: 90%;
+  padding-left: 5%;
+  color: #3B6BBF;
+  text-decoration: none;
+  font-weight: bold;
+  word-wrap: break-word;
+  outline: none;
+  text-align: left;
+}
+
+#info-content {
+    display: none;
 }
 
 .section-header {
@@ -312,3 +336,4 @@ li {
     background: #F7E59A;
     box-shadow: inset 0 0 0 1px #fff, 0 0 1px #ccc;
 }
+
