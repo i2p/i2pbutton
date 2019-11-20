@@ -61,10 +61,9 @@ function i2pbutton_i2p_console_check_ok() {
   return false
 }
 function i2pbutton_i2p_proxy_check_ok() {
-  // This check will now test if the router subprocess is running
   if (routerCtrl.mI2PProcess != null) {
     if (routerCtrl.mI2PProcess.isRunning) {
-      return true
+      return checkSvc.isProxyWorking
     }
   }
   return false
