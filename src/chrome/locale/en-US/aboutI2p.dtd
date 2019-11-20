@@ -49,3 +49,15 @@
 <!ENTITY aboutI2p.startup "The proxy is not ready yet.">
 <!ENTITY aboutI2p.rc "Router Console">
 <!ENTITY aboutI2p.proxyready "Your proxy is ready!">
+
+<!ENTITY aboutI2p.onboardingTitle "New to I2P? Learn more here.">
+<!ENTITY aboutI2p.Zero "I2P Browser allows you to surf the internet using the private and secure I2P network. When using it, you are protected against tracking, surveillance, and censorship as a first-class participant in the I2P network. I2P Browser isolates cookies and deletes your browser history after your session. These modifications ensure your privacy and security are protected in the browser.">
+<!ENTITY aboutI2p.One "We also provide you with additional settings for bumping up your browser security. Our Security Settings allow you to block elements that could be used to attack your computer. Click below to see what the different options do. Note: By default, NoScript and HTTPS Everywhere are not included on the toolbar, but you can customize your toolbar to add them. With all the security and privacy features provided by I2P, your experience while browsing the internet may be a little different. Things may be a bit slower, and depending on your security level, some elements may not work or load. You may also be asked to prove you are a human and not a robot.">
+<!ENTITY aboutI2p.Two "I2P is capable of using peer-to-peer applications like BitTorrent, protecting your identity when you share files. Our anonymous bittorrent client is available in the browser.">
+<!ENTITY aboutI2p.Three "There is also an anonymous e-mail service available inside of I2P, which is accessible from our browser via the menu directly below.">
+<!ENTITY aboutI2p.Four "With all the security and privacy features provided by I2P, your experience while browsing the internet may be a little different. Things may be a bit slower, and depending on your security level, some elements may not work or load. You may also be asked to prove you are a human and not a robot.">
+<!ENTITY aboutI2p.ZeroTitle "Protect your Privacy">
+<!ENTITY aboutI2p.OneTitle "Configure your Experience">
+<!ENTITY aboutI2p.TwoTitle "Share Files">
+<!ENTITY aboutI2p.ThreeTitle "Hidden e-mail">
+<!ENTITY aboutI2p.FourTitle "Experience Tips">

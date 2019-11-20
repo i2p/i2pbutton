@@ -44,8 +44,19 @@ window.addEventListener("pageshow", function() {
             <div id="proxyUnready" class="hideIfI2PProxyOn">&aboutI2p.startup;</div>
             <div id="proxyReady" class="hideIfI2PProxyOff">&aboutI2p.proxyready;</div>
           </div>
-          <!--<div id="onboarding" class="hideIfI2PConsoleOff">
-          </div>-->
+          <div id="onboarding" class="hideIfI2PConsoleOff">
+            <h3 id="onboardingTitle">&aboutI2p.onboardingTitle;</h3>
+            <h4 id="onboardingZero"><button class="showhider" onclick="flipVisibility('onboardingContentZero')">&aboutI2p.ZeroTitle;</button></h4>
+            <p id="onboardingContentZero" class="onboardingContent">&aboutI2p.Zero;</p>
+            <h4 id="onboardingOne"><button class="showhider" onclick="flipVisibility('onboardingContentOne')">&aboutI2p.OneTitle;</button></h4>
+            <p id="onboardingContentOne" class="onboardingContent">&aboutI2p.Zero;</p>
+            <h4 id="onboardingTwo"><button class="showhider" onclick="flipVisibility('onboardingContentTwo')">&aboutI2p.TwoTitle;</button></h4>
+            <p id="onboardingContentTwo" class="onboardingContent">&aboutI2p.Zero;</p>
+            <h4 id="onboardingThree"><button class="showhider" onclick="flipVisibility('onboardingContentThree')">&aboutI2p.ThreeTitle;</button></h4>
+            <p id="onboardingContentThree" class="onboardingContent">&aboutI2p.Zero;</p>
+            <h4 id="onboardingFour"><button class="showhider" onclick="flipVisibility('onboardingContentFour')">&aboutI2p.FourTitle;</button></h4>
+            <p id="onboardingContentFour" class="onboardingContent">&aboutI2p.Zero;</p>
+          </div>
           <!--<p class="hideIfI2POn">&aboutI2p.warn_not_running; <a href="about:i2p">&aboutI2p.refresh_text;</a> &aboutI2p.reccommend_not_running;</p>-->
           <div class="application-info">
           <p class="hideIfI2PConsoleOff">
