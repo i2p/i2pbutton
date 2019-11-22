@@ -3,15 +3,15 @@
 
 <!ENTITY aboutI2p.viewChangelog.label "View Changelog">
 
-<!ENTITY aboutI2p.browser_name "The Invisible Internet Browser">
-<!ENTITY aboutI2p.browser_short_name "I2P Browser">
+<!ENTITY aboutI2p.browser_name "I2P Rhizome: Communications Security Toolkit">
+<!ENTITY aboutI2p.browser_short_name "I2P Rhizome">
 <!ENTITY aboutI2p.browser_description "is preconfigured to get your content using the anonymous and private I2P network and to provide accessible, first-class access to I2P Peer-to-Peer applications.">
 <!ENTITY aboutI2p.donate "Donate">
 <!ENTITY aboutI2p.supportus "Support I2P development">
 
-<!ENTITY aboutI2p.warn_not_running "It currently seems like your router is NOT running :(">
+<!ENTITY aboutI2p.warn_not_running "I2P hasn't started.">
 <!ENTITY aboutI2p.reccommend_not_running "If you just started the router, it may take up to 2 minutes for the router to start the proxy.">
-<!ENTITY aboutI2p.all_checks_ok "The browser detected I2P running in background!">
+<!ENTITY aboutI2p.all_checks_ok "I2P is running.">
 <!ENTITY aboutI2p.warn_experimental "This is a experimental sub-project of I2P. It is currently Beta software.">
 <!ENTITY aboutI2p.appExplain "These applications use I2P to provide them with security and privacy.">
 <!ENTITY aboutI2p.applications "Applications">
@@ -40,18 +40,18 @@
 <!ENTITY aboutI2p.bug_tracker "Submit a Bug Report:">
 <!ENTITY aboutI2p.design "I2P Browser Design Document:">
 <!ENTITY aboutI2p.browsersrc "Go here to browse the source code of our Firefox fork.">
-<!ENTITY aboutI2p.extsrc "Much of the functionality of the I2P Browser is implemented in the I2PButton plugin.">
+<!ENTITY aboutI2p.extsrc "Much of the functionality of the I2P Rhizome is implemented in the I2PButton plugin.">
 <!ENTITY aboutI2p.makesrc "These scripts are used to build the browser.">
 <!ENTITY aboutI2p.designsrc "This is the I2P Browser Design Document.">
 <!ENTITY aboutI2p.tracwiki "To report a bug, visit the Trac Wiki.">
 <!ENTITY aboutI2p.donatecta "I2P is funded by donations. In order to make a donation visit the project web site.">
 
-<!ENTITY aboutI2p.startup "The proxy is not ready yet.">
+<!ENTITY aboutI2p.startup "Proxy starting up.">
 <!ENTITY aboutI2p.rc "Router Console">
-<!ENTITY aboutI2p.proxyready "Your proxy is ready!">
+<!ENTITY aboutI2p.proxyready "Proxy Ready">
 
 <!ENTITY aboutI2p.onboardingTitle "New to I2P? Learn more here.">
-<!ENTITY aboutI2p.Zero "I2P Browser allows you to surf the internet using the private and secure I2P network. When using it, you are protected against tracking, surveillance, and censorship as a first-class participant in the I2P network. I2P Browser isolates cookies and deletes your browser history after your session. These modifications ensure your privacy and security are protected in the browser.">
+<!ENTITY aboutI2p.Zero "I2P Rhizome allows you to surf the internet using the private and secure I2P network. When using it, you are protected against tracking, surveillance, and censorship as a first-class participant in the I2P network. I2P Rhizome isolates cookies and deletes your browser history after your session. These modifications ensure your privacy and security are protected in the browser.">
 <!ENTITY aboutI2p.One "We also provide you with additional settings for bumping up your browser security. Our Security Settings allow you to block elements that could be used to attack your computer. Click below to see what the different options do. Note: By default, NoScript and HTTPS Everywhere are not included on the toolbar, but you can customize your toolbar to add them. With all the security and privacy features provided by I2P, your experience while browsing the internet may be a little different. Things may be a bit slower, and depending on your security level, some elements may not work or load. You may also be asked to prove you are a human and not a robot.">
 <!ENTITY aboutI2p.Two "I2P is capable of using peer-to-peer applications like BitTorrent, protecting your identity when you share files. Our anonymous bittorrent client is available in the browser.">
 <!ENTITY aboutI2p.Three "There is also an anonymous e-mail service available inside of I2P, which is accessible from our browser via the menu directly below.">
