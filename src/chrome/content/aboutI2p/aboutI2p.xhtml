@@ -28,44 +28,112 @@ window.addEventListener("pageshow", function() {
 </script>
 </head>
 <body dir="&locale.dir;">
-  <div>
+  <!--<div>-->
     <div class='background'>
       <div class='content'>
         <div class='section-header'>
           <h1>&aboutI2p.browser_name;</h1>
         </div>
         <div id="i2pbrowser-version"></div>
-          <p>
-              &aboutI2p.browser_name; ( &aboutI2p.browser_short_name; ) &aboutI2p.browser_description; <br />
-              &aboutI2p.startup; <a href="&aboutI2p.routerconsole;">&aboutI2p.rc;</a> &aboutI2p.startup_b;
-
-            <h3>&aboutI2p.links;</h3>
-            <p>
+          <div id="i2pbrowser-description">
+            <p id="description">&aboutI2p.browser_name; ( &aboutI2p.browser_short_name; ) &aboutI2p.browser_description;</p>
+            <p class="beta">&aboutI2p.warn_experimental;</p>
+          </div>
+          <div id="readyness">
+            <div id="consoleOn" class="hideIfI2PConsoleOff">&aboutI2p.all_checks_ok;</div>
+            <div id="proxyUnready" class="hideIfI2PProxyOn">&aboutI2p.startup;</div>
+            <div id="proxyReady" class="hideIfI2PProxyOff">&aboutI2p.proxyready;</div>
+          </div>
+          <div id="onboarding" class="hideIfI2PConsoleOff">
+            <h3 id="onboardingTitle">&aboutI2p.onboardingTitle;</h3>
+            <h4 id="onboardingZero"><button class="showhider" onclick="flipVisibility('onboardingContentZero')">&aboutI2p.ZeroTitle;</button></h4>
+            <p id="onboardingContentZero" class="onboardingContent">&aboutI2p.Zero;</p>
+            <h4 id="onboardingOne"><button class="showhider" onclick="flipVisibility('onboardingContentOne')">&aboutI2p.OneTitle;</button></h4>
+            <p id="onboardingContentOne" class="onboardingContent">&aboutI2p.One;</p>
+            <h4 id="onboardingTwo"><button class="showhider" onclick="flipVisibility('onboardingContentTwo')">&aboutI2p.TwoTitle;</button></h4>
+            <p id="onboardingContentTwo" class="onboardingContent">&aboutI2p.Two;</p>
+            <h4 id="onboardingThree"><button class="showhider" onclick="flipVisibility('onboardingContentThree')">&aboutI2p.ThreeTitle;</button></h4>
+            <p id="onboardingContentThree" class="onboardingContent">&aboutI2p.Three;</p>
+            <h4 id="onboardingFour"><button class="showhider" onclick="flipVisibility('onboardingContentFour')">&aboutI2p.FourTitle;</button></h4>
+            <p id="onboardingContentFour" class="onboardingContent">&aboutI2p.Four;</p>
+          </div>
+          <!--<p class="hideIfI2POn">&aboutI2p.warn_not_running; <a href="about:i2p">&aboutI2p.refresh_text;</a> &aboutI2p.reccommend_not_running;</p>-->
+          <div class="application-info">
+          <p class="hideIfI2PConsoleOff">
+            <h3>&aboutI2p.applications;</h3>
+            <p id="applicationExplain">&aboutI2p.appExplain;</p>
               <ul>
-                <li>&aboutI2p.source;: <a href="&aboutI2p.github;/test-i2p-browser/tree/i2p-browser-60.7.0esr-9.0-1-build3">&aboutI2p.github;/test-i2p-browser/tree/i2p-browser-60.7.0esr-9.0-1-build3</a></li>
-                <li>&aboutI2p.design;: <a href="&aboutI2p.github;/i2p-browser-design-docs">&aboutI2p.github;/i2p-browser-design-docs</a></li>
-                <li>&aboutI2p.bug_tracker;: <a href="&aboutI2p.trac;/">&aboutI2p.trac;/</a></li>
-                <li>&aboutI2p.build_scripts;: <a href="&aboutI2p.github;/i2p-browser-build-scripts">&aboutI2p.github;/i2p-browser-build-scripts</a></li>
-                <li>&aboutI2p.i2pbutton_source;: <a href="&aboutI2p.github;/i2pbutton">&aboutI2p.github;/i2pbutton</a></li>
-                <li><em>&aboutI2p.donate;: <a href="&aboutI2p.site;/get-involved/donate">&aboutI2p.supportus;</a></em></li>
+                <a class="applicationName" href="&aboutI2p.routerconsole;/i2ptunnel">
+                  <li class="application">
+                    &aboutI2p.i2ptunnel; <span class="applicationDesc">&aboutI2p.i2ptunnel_visit_msg;</span>
+                  </li>
+                </a>
+                <a class="applicationName" href="&aboutI2p.routerconsole;/susimail">
+                  <li class="application">
+                  &aboutI2p.email; <span class="applicationDesc">&aboutI2p.email_visit_msg;</span>
+                  </li>
+                </a>
+                <a class="applicationName" href="&aboutI2p.routerconsole;/i2psnark">
+                  <li class="application">
+                    &aboutI2p.torrent; <span class="applicationDesc">&aboutI2p.torrent_visit_msg;</span>
+                  </li>
+                </a>
               </ul>
             </p>
-
-            &aboutI2p.warn_experimental;
-          </p>
-          <!--<p class="hideIfI2POn">&aboutI2p.warn_not_running; <a href="about:i2p">&aboutI2p.refresh_text;</a> &aboutI2p.reccommend_not_running;</p>-->
-          <p class="hideIfI2PConsoleOff">&aboutI2p.all_checks_ok;</p>
-          <p class="hideIfI2PConsoleOff">
-            <ul>
-              <li>&aboutI2p.i2ptunnel_visit_msg; <a href="&aboutI2p.routerconsole;/i2ptunnelmgr">&aboutI2p.i2ptunnel;</a></li>
-              <li>&aboutI2p.email_visit_msg; <a href="&aboutI2p.routerconsole;/webmail">&aboutI2p.email;</a></li>
-              <li>&aboutI2p.torrent_visit_msg; <a href="&aboutI2p.routerconsole;/torrents">&aboutI2p.torrent;</a></li>
-              <li>&aboutI2p.console_visit_msg; <a href="&aboutI2p.routerconsole;">&aboutI2p.console;</a></li>
-            </ul>
-          </p>
+          </div>
+        <div class="extended-info">
+          <h3 id="links"><button class="showhider" onclick="flipVisibility('info-content')">&aboutI2p.links;</button></h3>
+            <div id="info-content">
+            <p id="linksExplain">&aboutI2p.linkExplain;</p>
+            <p>
+              <ul>
+                <a href="&aboutI2p.github;/i2p-browser">
+                <li>
+                  &aboutI2p.source; <span class="applicationDesc">&aboutI2p.browsersrc;</span>
+                </li>
+                </a>
+                <a href="&aboutI2p.github;/i2pbutton">
+                <li>
+                  &aboutI2p.i2pbutton_source; <span class="applicationDesc">&aboutI2p.extsrc;</span>
+                </li>
+                </a>
+                <a href="&aboutI2p.githubdev;/i2p-browser-build-scripts">
+                <li>
+                  &aboutI2p.build_scripts; <span class="applicationDesc">&aboutI2p.makesrc;</span>
+                </li>
+                </a>
+                <a href="&aboutI2p.githubdev;/i2p-browser-design-docs">
+                <li>
+                  &aboutI2p.design; <span class="applicationDesc">&aboutI2p.designsrc;</span>
+                </li>
+                </a>
+                <a href="&aboutI2p.trac;/">
+                <li>
+                  &aboutI2p.bug_tracker; <span class="applicationDesc">&aboutI2p.tracwiki;</span>
+                </li>
+                </a>
+                <a href="&aboutI2p.site;/get-involved/donate">
+                <li>
+                  <em>&aboutI2p.supportus;</em> <span class="applicationDesc">&aboutI2p.donatecta;</span>
+                </li>
+                </a>
+              </ul>
+            </p>
+            </div>
+          </div>
         </div>
      </div>
-  </div>
+  <script type="text/javascript">
+  function flipVisibility(div) {
+    var x = document.getElementById(div);
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+  </script>
+  <!--</div>-->
 </body>
 </html>
 

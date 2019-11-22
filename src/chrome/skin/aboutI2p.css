@@ -1,77 +1,286 @@
 * {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0
 }
-
 html {
-  height: 100%;
+  height: 100%
 }
-
+a {
+  color: #3b6bbf;
+  text-decoration: none;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0
+}
+.applicationDesc {
+  color: #81888f;
+  text-decoration: none;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0
+}
+.applicationDesc:hover,
+a:hover {
+  color: #495057;
+  text-decoration: none;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0
+}
 body {
   display: flex;
   flex-direction: column;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
   width: 100%;
   height: 100%;
-  margin: 0px auto;
-  padding: 0px 0px;
-  font-family: Helvetica, Arial, sans-serif;
-  color: var(--abouttor-text-color);
-  background-color: var(--abouttor-bg-toroff-color);
+  margin: 0 auto;
+  padding: 0;
+  color: #495057;
   background-attachment: fixed;
   background-size: 100% 100%;
+  text-decoration: none;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0
 }
-
-/* Hide the entire document by default to avoid showing the incorrect
- * I2P on / off status (that info must be retrieved from the chrome
- * process, which involves IPC when multiprocess mode is enabled). An
- * initialized attribute will be added as soon as the status is known.
- */
- body:not([initialized]) {
-  display: none;
+body:not([initialized]) {
+  display: none
 }
-
 .background {
-  background-color: #3960b5;
-  padding: 120px;
-  height: 100%;
+  background-color: #f8f8ff;
+  height: 100%
 }
-
 p {
-  margin-top: 40px;
-  font-family: Open Sans, sans-serif;
-  font-weight: 300;
   line-height: 32px;
   font-size: 17px;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
+  text-decoration: none;
+  color: #495057;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0
 }
-
 .content {
-  padding: 110px;
-  background-color: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0px 30px 200px rgba(61,0,84,0.7);
+  min-height: 3rem;
+  padding: 1rem;
+  margin: 1.5rem;
+  display: inline-block;
+  border: 1px solid #d9d9d6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc;
+  background: #f8f8ff
 }
-
+.extended-info {
+  min-height: 3rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  display: inline-block;
+  border: 1px solid #d9d9d6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc;
+  background: #f8f8ff;
+  min-width: 50%
+}
+.application-info {
+  min-height: 3rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  display: inline-block;
+  border: 1px solid #d9d9d6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc;
+  background: #f8f8ff
+}
 h1 {
   margin-right: auto;
-  font-family: Montserrat, sans-serif;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  text-transform: uppercase;
+  color: #41465f;
+  border: 1px solid #dee2e6;
+  border-radius: 2px 2px 0 0;
+  width: 90%;
+  padding-left: 5%
+}
+h2,
+h3 {
+  margin-right: auto;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
   font-weight: 600;
   font-size: 25px;
   text-transform: uppercase;
+  color: #41465f;
+  border: 1px solid #dee2e6;
+  border-radius: 2px 2px 0 0;
+  width: 90%;
+  padding-left: 5%
 }
-
+h4 {
+  margin-right: auto;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
+  font-weight: 600;
+  font-size: 20px!important;
+  text-transform: uppercase;
+  color: #41465f;
+  border: 1px solid #dee2e6;
+  border-radius: 2px 2px 0 0;
+  width: 90%;
+  padding-left: 5%
+}
+.showhider {
+  margin-right: auto;
+  font-family: "Droid Sans","Noto Sans",Ubuntu,"Segoe UI","Lucida Grande",Verdana,Helvetica,sans-serif;
+  text-transform: uppercase;
+  background: 0 0!important;
+  border: none;
+  padding: 0!important;
+  width: 90%;
+  color: #3b6bbf;
+  text-decoration: none;
+  font-weight: 700;
+  word-wrap: break-word;
+  outline: 0;
+  text-align: left
+}
+#links .showhider {
+  font-size: 25px
+}
+#info-content {
+  display: none
+}
 .section-header {
   display: flex;
   flex-direction: row;
-  margin-bottom: 80px;
+  margin-bottom: 80px
 }
-
-body[i2pon] .hideIfI2POn,
+body:not([i2pconsoleon]) .hideIfI2PConsoleOff,
 body:not([i2pon]) .hideIfI2POff,
+body:not([i2pproxyon]) .hideIfI2PProxyOff,
 body[i2pconsoleon] .hideIfI2PConsoleOn,
-body:not([i2pconsoleon]) .hideIfI2PConsoleOff {
-  display: none;
+body[i2pon] .hideIfI2POn,
+body[i2pproxyon] .hideIfI2PProxyOn {
+  display: none!important
 }
-
 ul {
   margin-left: 2rem;
+  list-style: none
+}
+li {
+  min-height: 3rem;
+  padding: .5rem;
+  background: #dee2e6;
+  border: 1px solid #dee2e6;
+  width: 64%;
+  min-width: 64%;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc;
+  margin: .5rem .5rem .5rem 32%
+}
+#readyness {
+  min-height: 5rem;
+  padding: .5rem;
+  margin: .5rem;
+  width: 42%;
+  min-width: 42%;
+  background: #dee2e6;
+  text-align: center!important;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#onboarding {
+  min-height: 5rem;
+  padding: .5rem;
+  margin: .5rem;
+  width: 42%;
+  min-width: 42%;
+  font-size: 2rem;
+  background: #a48fe1;
+  text-align: center!important;
+  border: 1px solid #a48fe1;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#i2pbrowser-description {
+  width: 50%;
+  min-width: 50%;
+  min-height: 5rem;
+  padding: .5rem;
+  display: inline;
+  background: #dee2e6;
+  float: right;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#applicationExplain,
+#linksExplain {
+  min-height: 5rem;
+  padding: .5rem;
+  margin: .5rem;
+  width: 30%;
+  min-width: 30%;
+  background: #dee2e6;
+  float: left;
+  text-align: center!important;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#proxyReady {
+  height: 3.5rem;
+  padding: .5rem;
+  margin: .2rem;
+  width: 38%;
+  min-width: 38%;
+  display: inline;
+  background: #d9d9d6;
+  float: right;
+  text-align: center!important;
+  border: 1px solid #d9d9d6;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#proxyUnready {
+  height: 3.5rem;
+  padding: .5rem;
+  margin: .2rem;
+  width: 38%;
+  min-width: 38%;
+  display: inline;
+  float: right;
+  text-align: center!important;
+  border: 1px solid #ffc56d;
+  border-radius: 2px;
+  background: #ffc56d;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#consoleOn {
+  height: 3.5rem;
+  padding: .5rem;
+  margin: .2rem;
+  width: 38%;
+  min-width: 38%;
+  display: inline;
+  float: left;
+  text-align: center!important;
+  border: 1px solid #f7e59a;
+  border-radius: 2px;
+  background: #f7e59a;
+  box-shadow: inset 0 0 0 1px #fff,0 0 1px #ccc
+}
+#onboardingContentFour,
+#onboardingContentOne,
+#onboardingContentThree,
+#onboardingContentTwo,
+#onboardingContentZero {
+  display: none
+}
+.onboardingContent {
+  font-size: .8rem!important;
+  text-align: left
+}
+#onboarding-overlay-button {
+  display: none
 }

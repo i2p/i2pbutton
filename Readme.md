@@ -56,5 +56,5 @@ To test local changes, you need to copy the pkg/i2pbutton-*.xpi over the
 i2pbutton@geti2p.net.xpi
 
 ```
-Desktop\I2P Browser Alpha\Browser\I2PBrowser\Data\Browser\%profile_directory%\extensions\
+Desktop\I2P Browser Beta\Browser\I2PBrowser\Data\Browser\%profile_directory%\extensions\
 ```

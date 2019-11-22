@@ -60,7 +60,10 @@ function i2pbutton_i2p_console_check_ok() {
   }
   return false
 }
-
+function i2pbutton_i2p_proxy_check_ok() {
+  i2pbutton_log(3, "I2P Proxy readiness: " + checkSvc.isProxyWorking)
+  return (checkSvc.isProxyWorking)
+}
 var i2pbutton_window_pref_observer =
 {
   register: function()
@@ -197,7 +200,8 @@ var i2pbutton_abouti2p_message_handler = {
     let dataObj = {
       updateChannel: AppConstants.MOZ_UPDATE_CHANNEL,
       i2pOn: i2pbutton_i2p_check_ok(),
-      i2pConsoleOn: i2pbutton_i2p_console_check_ok()
+      i2pConsoleOn: i2pbutton_i2p_console_check_ok(),
+      i2pProxyOn: i2pbutton_i2p_proxy_check_ok()
     };
 
     if (aIsRespondingToPageLoad) {

@@ -79,6 +79,12 @@ var AboutI2pListener = {
       body.removeAttribute("i2pconsoleon")
     }
 
+    if (aData.i2pProxyOn) {
+      body.setAttribute("i2pproxyon", "yes")
+    } else {
+      body.removeAttribute("i2pproxyon")
+    }
+
     if (aData.updateChannel)
       body.setAttribute("updatechannel", aData.updateChannel);
     else
