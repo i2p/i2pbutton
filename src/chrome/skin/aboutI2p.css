@@ -281,3 +281,6 @@ li {
   font-size: .8rem!important;
   text-align: left
 }
+#onboarding-overlay-button {
+  display: none
+}
