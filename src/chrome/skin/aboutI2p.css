@@ -12,6 +12,10 @@ a {
   word-wrap: break-word;
   outline: 0
 }
+.beta,
+.version {
+  font-style: italic
+}
 .applicationDesc {
   color: #81888f;
   text-decoration: none;
