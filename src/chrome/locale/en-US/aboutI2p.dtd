@@ -6,6 +6,8 @@
 <!ENTITY aboutI2p.browser_name "I2P Rhizome: Communications Security Toolkit">
 <!ENTITY aboutI2p.browser_short_name "I2P Rhizome">
 <!ENTITY aboutI2p.browser_description "is preconfigured to get your content using the anonymous and private I2P network and to provide accessible, first-class access to I2P Peer-to-Peer applications.">
+<!ENTITY aboutI2p.browser_version_declare "This build of I2P Rhizome was made with">
+<!ENTITY aboutI2p.browser_version "0.9.43">
 <!ENTITY aboutI2p.donate "Donate">
 <!ENTITY aboutI2p.supportus "Support I2P development">
 
