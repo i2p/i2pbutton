@@ -59,5 +59,8 @@ pref("extensions.i2pbutton.console_host", "127.0.0.1");
 pref("extensions.i2pbutton.console_port_i2pj", 7647);
 pref("extensions.i2pbutton.console_port_i2pd", 17070);
 
+pref("extensions.i2pbutton.pop3_port", 7645);
+pref("extensions.i2pbutton.smtp_port", 7646);
+
 // I2P Implementation
 pref("extensions.i2pbutton.i2pimpl_driver", "i2pj");
