@@ -23,8 +23,7 @@ function I2pbuttonLogger() {
   this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
 
   try {
-    var logMngr = Components.classes["@mozmonkey.com/debuglogger/manager;1"]
-        .getService(Components.interfaces.nsIDebugLoggerManager);
+    var logMngr = Cc["@mozmonkey.com/debuglogger/manager;1"].getService(Ci.nsIDebugLoggerManager);
     this._debuglog = logMngr.registerLogger("i2pbutton");
   } catch (exErr) {
     this._debuglog = false;
