@@ -4,14 +4,9 @@
  * Implements an observer that filters drag events to prevent OS
  * access to URLs (a potential proxy bypass vector).
  *************************************************************************/
+const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
-
-Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 // Module specific constants
 const kMODULE_NAME = "I2pbutton Drag and Drop Handler";
@@ -21,22 +16,20 @@ const kMODULE_CID = Components.ID("f605ec27-d867-44b5-ad97-2a29276642c3");
 const kInterfaces = [Ci.nsIObserver, Ci.nsIClassInfo];
 
 function DragDropFilter() {
-  this.logger = Cc["@geti2p.net/i2pbutton-logger;1"]
+  this.logger = Cc["@torproject.org/torbutton-logger;1"]
       .getService(Ci.nsISupports).wrappedJSObject;
   this.logger.log(3, "Component Load 0: New DragDropFilter.");
 
   try {
-    var observerService = Cc["@mozilla.org/observer-service;1"].
-        getService(Ci.nsIObserverService);
-    observerService.addObserver(this, "on-datatransfer-available", false);
-  } catch(e) {
+    Services.obs.addObserver(this, "on-datatransfer-available");
+  } catch (e) {
     this.logger.log(5, "Failed to register drag observer");
   }
 }
 
 DragDropFilter.prototype =
 {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIObserver]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIObserver]),
 
   // make this an nsIClassInfo object
   flags: Ci.nsIClassInfo.DOM_OBJECT,
@@ -86,3 +79,5 @@ DragDropFilter.prototype =
 };
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([DragDropFilter]);
+
+
