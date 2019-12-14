@@ -4,13 +4,14 @@ const kMODULE_NAME = "I2pbutton Logger"
 const kMODULE_CONTRACTID = "@geti2p.net/i2pbutton-logger;1"
 const kMODULE_CID = Components.ID("f36d72c9-9718-4134-b550-e109638331d7")
 
-const Cr = Components.results
 const Cc = Components.classes
 const Ci = Components.interfaces
 const Cu = Components.utils
 
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
-Cu.import("resource://gre/modules/Services.jsm")
 Cu.import("resource://gre/modules/Log.jsm")
 
 let console = (Cu.import("resource://gre/modules/Console.jsm", {})).console
@@ -23,14 +24,12 @@ function I2pbuttonLogger() {
   this.logmethod = Services.prefs.getIntPref("extensions.i2pbutton.logmethod");
 
   try {
-    var logMngr = Components.classes["@mozmonkey.com/debuglogger/manager;1"]
-        .getService(Components.interfaces.nsIDebugLoggerManager);
+    var logMngr = Cc["@mozmonkey.com/debuglogger/manager;1"].getService(Ci.nsIDebugLoggerManager);
     this._debuglog = logMngr.registerLogger("i2pbutton");
   } catch (exErr) {
     this._debuglog = false;
   }
-  this._console = Components.classes["@mozilla.org/consoleservice;1"]
-      .getService(Components.interfaces.nsIConsoleService);
+  this._console = Services.console;
 
   // This JSObject is exported directly to chrome
   this.wrappedJSObject = this;
