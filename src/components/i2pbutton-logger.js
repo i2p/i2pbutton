@@ -4,7 +4,6 @@ const kMODULE_NAME = "I2pbutton Logger"
 const kMODULE_CONTRACTID = "@geti2p.net/i2pbutton-logger;1"
 const kMODULE_CID = Components.ID("f36d72c9-9718-4134-b550-e109638331d7")
 
-const Cr = Components.results
 const Cc = Components.classes
 const Ci = Components.interfaces
 const Cu = Components.utils
