@@ -16,8 +16,7 @@ const kMODULE_CID = Components.ID("f605ec27-d867-44b5-ad97-2a29276642c3");
 const kInterfaces = [Ci.nsIObserver, Ci.nsIClassInfo];
 
 function DragDropFilter() {
-  this.logger = Cc["@torproject.org/torbutton-logger;1"]
-      .getService(Ci.nsISupports).wrappedJSObject;
+  this.logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject;
   this.logger.log(3, "Component Load 0: New DragDropFilter.");
 
   try {
