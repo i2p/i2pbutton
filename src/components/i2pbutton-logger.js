@@ -9,8 +9,10 @@ const Cc = Components.classes
 const Ci = Components.interfaces
 const Cu = Components.utils
 
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
-Cu.import("resource://gre/modules/Services.jsm")
 Cu.import("resource://gre/modules/Log.jsm")
 
 let console = (Cu.import("resource://gre/modules/Console.jsm", {})).console
@@ -28,8 +30,7 @@ function I2pbuttonLogger() {
   } catch (exErr) {
     this._debuglog = false;
   }
-  this._console = Components.classes["@mozilla.org/consoleservice;1"]
-      .getService(Components.interfaces.nsIConsoleService);
+  this._console = Services.console;
 
   // This JSObject is exported directly to chrome
   this.wrappedJSObject = this;
