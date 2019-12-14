@@ -66,18 +66,7 @@ I2PProcessService.prototype =
   kI2PBootstrapErrorTopic: "I2PBootstrapError",
 
   // nsISupports implementation.
-  QueryInterface: function(aIID)
-  {
-    if (!aIID.equals(Ci.nsISupports) &&
-        !aIID.equals(Ci.nsIFactory) &&
-        !aIID.equals(Ci.nsIObserver) &&
-        !aIID.equals(Ci.nsIClassInfo))
-    {
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    }
-
-    return this;
-  },
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIClassInfo]),
 
   // nsIFactory implementation.
   createInstance: function(aOuter, aIID)
@@ -240,20 +229,6 @@ I2PProcessService.prototype =
   classDescription: this.kServiceName,
   classID: this.kClassID,
   flags: Ci.nsIClassInfo.SINGLETON,
-
-  classInfo : XPCOMUtils.generateCI({
-    classID: this.kClassID,
-    contractID: this.kContractID,
-    classDescription: this.kServiceName,
-    interfaces: [
-      Ci.nsISupports,
-      Ci.nsIFactory,
-      Ci.nsIObserver,
-      Ci.nsIClassInfo
-    ],
-    flags: Ci.nsIClassInfo.SINGLETON
-  }),
-
 
   // Hack to get us registered early to observe recovery
   _xpcom_categories: [{category:"profile-after-change"}],
@@ -715,4 +690,4 @@ function NSGetFactory(aClassID)
 
 
 // This is the new stuff, stay away from generateNSGetModule which is the old stuff..
-//var NSGetFactory = XPCOMUtils.generateNSGetFactory([I2PProcessService])
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([I2PProcessService])
