@@ -1,5 +1,5 @@
-let { Services } = Cu.import("resource://gre/modules/Services.jsm", {})
-const {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm")
+var { Services } = Cu.import("resource://gre/modules/Services.jsm", {})
+var {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm")
 
 //let SecurityPrefs  = Cu.import("resource://i2pbutton/modules/security-prefs.js", {})
 
