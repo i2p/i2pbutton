@@ -3,8 +3,8 @@ var {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm
 
 //let SecurityPrefs  = Cu.import("resource://i2pbutton/modules/security-prefs.js", {})
 
-var m_ib_prefs = Services.prefs
-var m_ib_domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils)
+var m_ib_prefs = Services.prefs;
+var m_ib_domWindowUtils = window.windowUtils;
 
 const k_ib_last_browser_version_pref = "extensions.i2pbutton.lastBrowserVersion";
 const k_ib_browser_update_needed_pref = "extensions.i2pbutton.updateNeeded";
