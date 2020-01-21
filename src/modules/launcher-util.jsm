@@ -204,18 +204,6 @@ const LauncherUtil = {
 
   cleanupTempDirectories: function()
   {
-    try
-    {
-      let dirPath = this.getCharPref(LauncherUtilInternal.kIPCDirPrefName);
-      this.clearUserPref(LauncherUtilInternal.kIPCDirPrefName);
-      if (dirPath)
-      {
-        let f = Cc['@mozilla.org/file/local;1'].createInstance(Ci.nsIFile);
-        f.initWithPath(dirPath);
-        if (f.exists())
-          f.remove(false) // Remove directory if it is empty
-      }
-    } catch(e) {}
   },
 
   restartBrowser: function() {
