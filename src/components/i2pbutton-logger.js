@@ -117,8 +117,8 @@ I2pbuttonLogger.prototype =
   log: function(level, str) {
     switch(this.logmethod) {
       case 2: // debuglogger
-        if(this._debuglog) {
-          this._debuglog.log((6-level), this.formatLog(str,level));
+        if(this._console) {
+          this._console.log((6-level), this.formatLog(str,level));
           break;
         }
         // fallthrough

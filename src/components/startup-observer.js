@@ -18,7 +18,6 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm")
 
 Cu.import("resource://i2pbutton/modules/default-prefs.js", {}).ensureDefaultPrefs()
-let NoScriptControl = Cu.import("resource://i2pbutton/modules/noscript-control.js", {})
 
 // Module specific constants
 const kMODULE_NAME = "Startup"
