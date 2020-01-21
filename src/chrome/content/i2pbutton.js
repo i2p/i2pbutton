@@ -23,6 +23,10 @@ var m_ib_window_width = window.outerWidth
 let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
 //let routerCtrl = Cc["@geti2p.net/i2pbutton-process-service;1"].getService(Ci.nsISupports).wrappedJSObject
 
+function i2pbutton_log(lvl, msg) {
+  console.log(`[i2pbutton:${lvl}] ${msg}`)
+}
+
 function checkI2P(callback,proxyCallback) {
   let req = checkSvc.createCheckConsoleRequest(true);
   req.onreadystatechange = function(event) {
