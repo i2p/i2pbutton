@@ -5,6 +5,11 @@ const Ci = Components.interfaces
 const Cr = Components.results
 const Cu = Components.utils
 
+const nsISupports = Components.interfaces.nsISupports;
+const nsIClassInfo = Components.interfaces.nsIClassInfo;
+const nsIComponentRegistrar = Components.interfaces.nsIComponentRegistrar;
+const nsIObserverService = Components.interfaces.nsIObserverService;
+
 /*const ZipReader = Components.Constructor(
   "@mozilla.org/libjar/zip-reader;1",
   "nsIZipReader",
@@ -234,9 +239,15 @@ RouterConfigManager.prototype = {
   mHasChecksStarted: false,
   mIsChecksDone: false,
 
-
-  // nsISupports implementation.
-  QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsISupports]),
+  QueryInterface: function(iid)
+  {
+    if (!iid.equals(nsIClassInfo) &&
+        !iid.equals(nsISupports)) {
+      Components.returnCode = Cr.NS_ERROR_NO_INTERFACE;
+      return null;
+    }
+    return this;
+  },
 
   canRouterStart: function() {
     return (this.mDoesRouterConfigExists && this.mDoesClientsConfigExists && this.mDoesTunnelConfigExists)
