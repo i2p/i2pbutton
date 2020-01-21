@@ -1,5 +1,5 @@
 // ### Shortcut
-const { Cu: utils, Cr: results } = Components
+let {classes: Cc, utils: Cu } = Components;
 
 // ### Import Mozilla Services
 Cu.import("resource://gre/modules/Services.jsm")
@@ -203,7 +203,7 @@ var getEnv = function (name) {
 // __getLocale
 // Reads the browser locale, the default locale is en-US.
 var getLocale = function() {
-  return Services.locale.getRequestedLocale() || "en-US";
+  return "en-US";
 }
 
 // ## Windows

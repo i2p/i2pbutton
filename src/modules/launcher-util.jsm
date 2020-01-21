@@ -21,6 +21,25 @@ let logger = {
   }
 }
 
+// ## Environment variables
+
+// __env__.
+// Provides access to process environment variables.
+let env = Cc["@mozilla.org/process/environment;1"]
+            .getService(Ci.nsIEnvironment);
+
+// __getEnv(name)__.
+// Reads the environment variable of the given name.
+var getEnv = function (name) {
+  return env.exists(name) ? env.get(name) : undefined;
+};
+
+// __getLocale
+// Reads the browser locale, the default locale is en-US.
+var getLocale = function() {
+  return Services.locale.requestedLocale || "en-US";
+};
+
 const Timer = Components.Constructor("@mozilla.org/timer;1", "nsITimer", "initWithCallback");
 
 function delay(timeout, func) {

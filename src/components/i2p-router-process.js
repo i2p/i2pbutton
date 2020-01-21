@@ -5,6 +5,11 @@ const Ci = Components.interfaces
 const Cr = Components.results
 const Cu = Components.utils
 
+const nsISupports = Components.interfaces.nsISupports;
+const nsIClassInfo = Components.interfaces.nsIClassInfo;
+const nsIComponentRegistrar = Components.interfaces.nsIComponentRegistrar;
+const nsIObserverService = Components.interfaces.nsIObserverService;
+
 // ctypes can be disabled at build time
 try { Cu.import("resource://gre/modules/ctypes.jsm") } catch(e) {}
 Cu.import("resource://gre/modules/XPCOMUtils.jsm")
@@ -41,10 +46,14 @@ function I2PProcessService()
 
 I2PProcessService.prototype =
 {
-  kContractID : "@geti2p.net/i2pbutton-process-service;1",
-  kServiceName : "I2P Launcher Process Service",
-  kClassID: Components.ID("{f77babef-dead-b00b-beff-babe6c9afda7}"),
+  contractID : "@geti2p.net/i2pbutton-process-service;1",
+  serviceName : "I2P Launcher Process Service",
+  classID: Components.ID("{f77babef-dead-b00b-beff-babe6c9afda7}"),
   kI2PLauncherExtPath: "i2pbutton@geti2p.net", // This could vary.
+
+
+  classDescription: this.kServiceName,
+  flags: Ci.nsIClassInfo.SINGLETON,
 
   kPrefPromptAtStartup: "extensions.i2pbutton.prompt_at_startup",
 
@@ -75,6 +84,16 @@ I2PProcessService.prototype =
       throw Cr.NS_ERROR_NO_AGGREGATION;
 
     return this.QueryInterface(aIID);
+  },
+
+  QueryInterface: function(iid)
+  {
+    if (!iid.equals(nsIClassInfo) &&
+        !iid.equals(nsISupports)) {
+      Components.returnCode = Cr.NS_ERROR_NO_INTERFACE;
+      return null;
+    }
+    return this;
   },
 
   init: function(aWindow) {},
@@ -224,14 +243,6 @@ I2PProcessService.prototype =
   },
 
   getHelperForLanguage: function (aLanguage) { return null; },
-
-  contractID: this.kContractID,
-  classDescription: this.kServiceName,
-  classID: this.kClassID,
-  flags: Ci.nsIClassInfo.SINGLETON,
-
-  // Hack to get us registered early to observe recovery
-  _xpcom_categories: [{category:"profile-after-change"}],
 
 
   // Public Properties and Methods ///////////////////////////////////////////

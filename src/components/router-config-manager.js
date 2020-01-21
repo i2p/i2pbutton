@@ -207,9 +207,6 @@ router.startup.jetty9.migrated=true
 routerconsole.welcomeWizardComplete=true
 `
 
-let noscript = Cu.import("resource://i2pbutton/modules/noscript-control.js")
-noscript.initialize()
-
 function RouterConfigManager() {
   this.version = '0.1'
   this._logger = Cc["@geti2p.net/i2pbutton-logger;1"].getService(Ci.nsISupports).wrappedJSObject

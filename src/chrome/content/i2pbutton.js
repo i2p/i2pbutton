@@ -21,7 +21,7 @@ var m_ib_window_height = window.outerHeight
 var m_ib_window_width = window.outerWidth
 
 let checkSvc = Cc["@geti2p.net/i2pbutton-i2pCheckService;1"].getService(Ci.nsISupports).wrappedJSObject
-let routerCtrl = Cc["@geti2p.net/i2pbutton-process-service;1"].getService(Ci.nsISupports).wrappedJSObject
+//let routerCtrl = Cc["@geti2p.net/i2pbutton-process-service;1"].getService(Ci.nsISupports).wrappedJSObject
 
 function checkI2P(callback,proxyCallback) {
   let req = checkSvc.createCheckConsoleRequest(true);
@@ -53,11 +53,11 @@ function i2pbutton_i2p_check_ok()
 }
 function i2pbutton_i2p_console_check_ok() {
   // This check will now test if the router subprocess is running
-  if (routerCtrl.mI2PProcess != null) {
+  /*if (routerCtrl.mI2PProcess != null) {
     if (routerCtrl.mI2PProcess.isRunning) {
       return true
     }
-  }
+  }*/
   return false
 }
 function i2pbutton_i2p_proxy_check_ok() {
@@ -784,36 +784,7 @@ function i2pbutton_do_new_identity() {
 
   // Run garbage collection and cycle collection after window is gone.
   // This ensures that blob URIs are forgotten.
-  window.addEventListener("unload", function (event) {
-    i2pbutton_log(3, "Initiating New Identity GC pass");
-    // Clear out potential pending sInterSliceGCTimer:
-    m_ib_domWindowUtils.runNextCollectorTimer();
-
-    // Clear out potential pending sICCTimer:
-    m_ib_domWindowUtils.runNextCollectorTimer();
-
-    // Schedule a garbage collection in 4000-1000ms...
-    m_ib_domWindowUtils.garbageCollect();
-
-    // To ensure the GC runs immediately instead of 4-10s from now, we need
-    // to poke it at least 11 times.
-    // We need 5 pokes for GC, 1 poke for the interSliceGC, and 5 pokes for CC.
-    // See nsJSContext::RunNextCollectorTimer() in
-    // https://mxr.mozilla.org/mozilla-central/source/dom/base/nsJSEnvironment.cpp#1970.
-    // XXX: We might want to make our own method for immediate full GC...
-    for (let poke = 0; poke < 11; poke++) {
-       m_ib_domWindowUtils.runNextCollectorTimer();
-    }
-
-    // And now, since the GC probably actually ran *after* the CC last time,
-    // run the whole thing again.
-    m_ib_domWindowUtils.garbageCollect();
-    for (let poke = 0; poke < 11; poke++) {
-       m_ib_domWindowUtils.runNextCollectorTimer();
-    }
-
-    i2pbutton_log(3, "Completed New Identity GC pass");
-  });
+  window.addEventListener("unload", function (event) {});
 
   // Close the current window for added safety
   window.close();
@@ -1125,7 +1096,6 @@ var i2pbutton_resizelistener =
 // in XUL that should be in an XPCOM component
 function i2pbutton_close_window(event) {
     i2pbutton_window_pref_observer.unregister();
-    i2pbutton_i2p_check_observer.unregister();
 
     window.removeEventListener("sizemodechange", m_ib_resize_handler,
         false);
@@ -1198,7 +1168,6 @@ function i2pbutton_do_main_window_startup()
 {
   i2pbutton_log(3, "I2pbutton main window startup");
   m_ib_is_main_window = true;
-  i2pbutton_unique_pref_observer.register();
 }
 
 // Bug 1506 P4: Most of this function is now useless, save
@@ -1319,7 +1288,6 @@ function i2pbutton_new_window(event)
 // in XUL that should be in an XPCOM component
 function i2pbutton_close_window(event) {
     i2pbutton_window_pref_observer.unregister();
-    i2pbutton_i2p_check_observer.unregister();
 
     window.removeEventListener("sizemodechange", m_ib_resize_handler,
         false);
