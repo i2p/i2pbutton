@@ -6,7 +6,7 @@
         <em:name>I2pbutton</em:name>
         <em:creator>Meeh, Mikal Villa</em:creator>
         <em:id>i2pbutton@geti2p.net</em:id>
-        <em:version>0.3.8</em:version>
+        <em:version>0.3.9</em:version>
         <em:multiprocessCompatible>true</em:multiprocessCompatible>
         <em:homepageURL>https://geti2p.net/en/download/lab</em:homepageURL>
         <em:iconURL>chrome://i2pbutton/skin/i2p.png</em:iconURL>
